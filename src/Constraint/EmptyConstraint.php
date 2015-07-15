@@ -1,36 +1,47 @@
 <?php
 
 /*
- * This file is part of Composer.
+ * This file is part of composer/semver.
  *
- * (c) Nils Adermann <naderman@naderman.de>
- *     Jordi Boggiano <j.boggiano@seld.be>
+ * (c) Composer <https://github.com/composer>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Package\LinkConstraint;
+namespace Composer\Semver\Constraint;
 
 /**
- * Defines an absence of constraints
+ * Defines an absence of constraints.
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
 class EmptyConstraint implements LinkConstraintInterface
 {
+    /** @var string */
     protected $prettyString;
 
+    /**
+     * @param LinkConstraintInterface $provider
+     *
+     * @return bool
+     */
     public function matches(LinkConstraintInterface $provider)
     {
         return true;
     }
 
+    /**
+     * @param $prettyString
+     */
     public function setPrettyString($prettyString)
     {
         $this->prettyString = $prettyString;
     }
 
+    /**
+     * @return string
+     */
     public function getPrettyString()
     {
         if ($this->prettyString) {
@@ -40,6 +51,9 @@ class EmptyConstraint implements LinkConstraintInterface
         return $this->__toString();
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return '[]';

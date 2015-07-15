@@ -1,19 +1,18 @@
 <?php
 
 /*
- * This file is part of Composer.
+ * This file is part of composer/semver.
  *
- * (c) Nils Adermann <naderman@naderman.de>
- *     Jordi Boggiano <j.boggiano@seld.be>
+ * (c) Composer <https://github.com/composer>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Test\Package\LinkConstraint;
+namespace Composer\Test\Semver\Constraint;
 
-use Composer\Package\LinkConstraint\VersionConstraint;
-use Composer\Package\LinkConstraint\MultiConstraint;
+use Composer\Semver\Constraint\MultiConstraint;
+use Composer\Semver\Constraint\VersionConstraint;
 
 class MultiConstraintTest extends \PHPUnit_Framework_TestCase
 {

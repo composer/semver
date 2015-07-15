@@ -1,19 +1,18 @@
 <?php
 
 /*
- * This file is part of Composer.
+ * This file is part of composer/semver.
  *
- * (c) Nils Adermann <naderman@naderman.de>
- *     Jordi Boggiano <j.boggiano@seld.be>
+ * (c) Composer <https://github.com/composer>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Package\LinkConstraint;
+namespace Composer\Semver\Constraint;
 
 /**
- * Constrains a package link based on package version
+ * Constrains a package link based on package version.
  *
  * Version numbers must be compatible with version_compare
  *
@@ -29,11 +28,11 @@ class VersionConstraint extends SpecificConstraint
     const OP_NE = 5;
 
     private static $transOpStr = array(
-        '='  => self::OP_EQ,
+        '=' => self::OP_EQ,
         '==' => self::OP_EQ,
-        '<'  => self::OP_LT,
+        '<' => self::OP_LT,
         '<=' => self::OP_LE,
-        '>'  => self::OP_GT,
+        '>' => self::OP_GT,
         '>=' => self::OP_GE,
         '<>' => self::OP_NE,
         '!=' => self::OP_NE,
@@ -52,10 +51,10 @@ class VersionConstraint extends SpecificConstraint
     private $version;
 
     /**
-     * Sets operator and version to compare a package with
+     * Sets operator and version to compare a package with.
      *
      * @param string $operator A comparison operator
-     * @param string $version  A version to compare to
+     * @param string $version A version to compare to
      */
     public function __construct($operator, $version)
     {
@@ -63,12 +62,20 @@ class VersionConstraint extends SpecificConstraint
         $this->version = $version;
     }
 
+    /**
+     * @param string $a
+     * @param string $b
+     * @param string $operator
+     * @param bool|false $compareBranches
+     *
+     * @return bool|mixed
+     */
     public function versionCompare($a, $b, $operator, $compareBranches = false)
     {
         $aIsBranch = 'dev-' === substr($a, 0, 4);
         $bIsBranch = 'dev-' === substr($b, 0, 4);
         if ($aIsBranch && $bIsBranch) {
-            return $operator == '==' && $a === $b;
+            return $operator === '==' && $a === $b;
         }
 
         // when branches are not comparable, we make sure dev branches never match anything
@@ -80,8 +87,9 @@ class VersionConstraint extends SpecificConstraint
     }
 
     /**
-     * @param  VersionConstraint $provider
-     * @param  bool              $compareBranches
+     * @param VersionConstraint $provider
+     * @param bool $compareBranches
+     *
      * @return bool
      */
     public function matchSpecific(VersionConstraint $provider, $compareBranches = false)
@@ -103,14 +111,16 @@ class VersionConstraint extends SpecificConstraint
 
         // an example for the condition is <= 2.0 & < 1.0
         // these kinds of comparisons always have a solution
-        if ($this->operator !== self::OP_EQ && $noEqualOp == $providerNoEqualOp) {
+        if ($this->operator !== self::OP_EQ && $noEqualOp === $providerNoEqualOp) {
             return true;
         }
 
         if ($this->versionCompare($provider->version, $this->version, self::$transOpInt[$this->operator], $compareBranches)) {
             // special case, e.g. require >= 1.0 and provide < 1.0
             // 1.0 >= 1.0 but 1.0 is outside of the provided interval
-            if ($provider->version == $this->version && self::$transOpInt[$provider->operator] == $providerNoEqualOp && self::$transOpInt[$this->operator] != $noEqualOp) {
+            if ($provider->version === $this->version
+                && self::$transOpInt[$provider->operator] === $providerNoEqualOp
+                && self::$transOpInt[$this->operator] !== $noEqualOp) {
                 return false;
             }
 
@@ -120,8 +130,11 @@ class VersionConstraint extends SpecificConstraint
         return false;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
-        return self::$transOpInt[$this->operator].' '.$this->version;
+        return self::$transOpInt[$this->operator] . ' ' . $this->version;
     }
 }

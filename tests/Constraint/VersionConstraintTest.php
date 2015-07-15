@@ -1,18 +1,17 @@
 <?php
 
 /*
- * This file is part of Composer.
+ * This file is part of composer/semver.
  *
- * (c) Nils Adermann <naderman@naderman.de>
- *     Jordi Boggiano <j.boggiano@seld.be>
+ * (c) Composer <https://github.com/composer>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Test\Package\LinkConstraint;
+namespace Composer\Test\Semver\Constraint;
 
-use Composer\Package\LinkConstraint\VersionConstraint;
+use Composer\Semver\Constraint\VersionConstraint;
 
 class VersionConstraintTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,9 +28,9 @@ class VersionConstraintTest extends \PHPUnit_Framework_TestCase
             array('==', '2', '>=', '2'),
             array('!=', '1', '!=', '1'),
             array('!=', '1', '==', '2'),
-            array('!=', '1', '<',  '1'),
+            array('!=', '1', '<', '1'),
             array('!=', '1', '<=', '1'),
-            array('!=', '1', '>',  '1'),
+            array('!=', '1', '>', '1'),
             array('!=', '1', '>=', '1'),
             array('==', 'dev-foo-bar', '==', 'dev-foo-bar'),
             array('==', 'dev-foo-xyz', '==', 'dev-foo-xyz'),
@@ -72,8 +71,8 @@ class VersionConstraintTest extends \PHPUnit_Framework_TestCase
             array('==', 'dev-foo-bist', '==', 'dev-foo-aist'),
             array('<=', 'dev-foo-bist', '>=', 'dev-foo-aist'),
             array('>=', 'dev-foo-bist', '<', 'dev-foo-aist'),
-            array('<',  '0.12', '==', 'dev-foo'), // branches are not comparable
-            array('>',  '0.12', '==', 'dev-foo'), // branches are not comparable
+            array('<', '0.12', '==', 'dev-foo'), // branches are not comparable
+            array('>', '0.12', '==', 'dev-foo'), // branches are not comparable
         );
     }
 
