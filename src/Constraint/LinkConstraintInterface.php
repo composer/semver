@@ -1,16 +1,15 @@
 <?php
 
 /*
- * This file is part of Composer.
+ * This file is part of composer/semver.
  *
- * (c) Nils Adermann <naderman@naderman.de>
- *     Jordi Boggiano <j.boggiano@seld.be>
+ * (c) Composer <https://github.com/composer>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Package\LinkConstraint;
+namespace Composer\Semver\Constraint;
 
 /**
  * Defines a constraint on a link between two packages.
@@ -20,7 +19,10 @@ namespace Composer\Package\LinkConstraint;
 interface LinkConstraintInterface
 {
     public function matches(LinkConstraintInterface $provider);
+
     public function setPrettyString($prettyString);
+
     public function getPrettyString();
+
     public function __toString();
 }
