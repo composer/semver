@@ -22,9 +22,15 @@ matrix:
   allow_failures:
     - php: hhvm-nightly
 
+before_install:
+  - if [[ "$TRAVIS_PHP_VERSION" == "5.6" ]]; then composer require --dev fabpot/php-cs-fixer:^1.9; fi
+
+install:
+  - composer install --no-interaction --no-progress --prefer-dist
+
 before_script:
   - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
-  - composer install --no-interaction --no-progress --prefer-dist
 
 script:
   - vendor/bin/phpunit
+  - if [[ "$TRAVIS_PHP_VERSION" == "5.6" ]]; then vendor/bin/php-cs-fixer fix --config-file=.php_cs --diff --verbose --dry-run; fi
