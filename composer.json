@@ -36,11 +36,6 @@
         "phpunit/phpunit": "~4.5",
         "phpunit/phpunit-mock-objects": "~2.3"
     },
-    "config": {
-        "platform": {
-            "php": "5.3.3"
-        }
-    },
     "autoload": {
         "psr-4": {
             "Composer\\Semver\\": "src"
