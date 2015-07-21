@@ -51,6 +51,16 @@ class VersionConstraint extends SpecificConstraint
     private $version;
 
     /**
+     * Get all supported comparison operators.
+     *
+     * @return array
+     */
+    public static function getSupportedOperators()
+    {
+        return array_keys(self::$transOpStr);
+    }
+
+    /**
      * Sets operator and version to compare a package with.
      *
      * @param string $operator A comparison operator
