@@ -38,9 +38,9 @@ functions for comparing versions:
 Each function takes two version strings as arguments. For example:
 
 ```php
-use Composer\Semver\Comparator
+use Composer\Semver\Comparator;
 
-Comparator::greaterThan('1.25.0', '1.24.0') // 1.25.0 > 1.24.0
+Comparator::greaterThan('1.25.0', '1.24.0'); // 1.25.0 > 1.24.0
 ```
 
 
