@@ -18,11 +18,25 @@ namespace Composer\Semver\Constraint;
  */
 interface LinkConstraintInterface
 {
+    /**
+     * @param LinkConstraintInterface $provider
+     *
+     * @return bool
+     */
     public function matches(LinkConstraintInterface $provider);
 
+    /**
+     * @param string $prettyString
+     */
     public function setPrettyString($prettyString);
 
+    /**
+     * @return string
+     */
     public function getPrettyString();
 
+    /**
+     * @return string
+     */
     public function __toString();
 }
