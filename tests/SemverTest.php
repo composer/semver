@@ -24,16 +24,35 @@ class SemverTest extends \PHPUnit_Framework_TestCase
      *
      * @param string $version
      * @param string $constraint
+     * @param bool $expected
      */
-    public function testSatisfies($version, $constraint)
+    public function testSatisfies($version, $constraint, $expected)
     {
-        $this->assertEquals(true, Semver::satisfies($version, $constraint));
+        $this->assertEquals($expected, Semver::satisfies($version, $constraint));
     }
 
     /**
      * @return array
      */
     public function satisfiesProvider()
+    {
+        $positive = array_map(function ($array) {
+            $array[] = true;
+            return $array;
+        }, $this->satisfiesProviderPositive());
+
+        $negative = array_map(function ($array) {
+            $array[] = false;
+            return $array;
+        }, $this->satisfiesProviderNegative());
+
+        return array_merge($positive, $negative);
+    }
+
+    /**
+     * @return array
+     */
+    public function satisfiesProviderPositive()
     {
         return array(
             array('1.2.3', '1.0.0 - 2.0.0'),
@@ -128,6 +147,79 @@ class SemverTest extends \PHPUnit_Framework_TestCase
 //            array('1.2.3-pre', '^1.2.3-alpha'),
 //            array('1.2.0-pre', '^1.2.0-alpha'),
             array('0.0.1-beta', '^0.0.1-alpha'),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function satisfiesProviderNegative()
+    {
+        return array(
+            array('2.2.3', '1.0.0 - 2.0.0'),
+//            array('1.2.3-pre.2', '1.2.3+asdf - 2.4.3+asdf'),
+//            array('2.4.3-alpha', '1.2.3+asdf - 2.4.3+asdf'),
+//            array('2.0.0', '^1.2.3+build'),
+//            array('1.2.0', '^1.2.3+build'),
+//            array('1.2.3-pre', '^1.2.3'),
+//            array('1.2.0-pre', '^1.2'),
+//            array('1.3.0-beta', '>1.2'),
+//            array('1.2.3-beta', '<=1.2.3'),
+//            array('1.2.3-beta', '^1.2.3'),
+//            array('0.7.0-asdf', '=0.7.x'),
+//            array('0.7.0-asdf', '>=0.7.x'),
+            array('1.0.0beta', '1'),
+            array('1.0.0beta', '<1'),
+            array('1.0.0beta', '< 1'),
+            array('1.0.1', '1.0.0'),
+            array('0.0.0', '>=1.0.0'),
+            array('0.0.1', '>=1.0.0'),
+            array('0.1.0', '>=1.0.0'),
+            array('0.0.1', '>1.0.0'),
+            array('0.1.0', '>1.0.0'),
+            array('3.0.0', '<=2.0.0'),
+            array('2.9999.9999', '<=2.0.0'),
+            array('2.2.9', '<=2.0.0'),
+            array('2.9999.9999', '<2.0.0'),
+            array('2.2.9', '<2.0.0'),
+            array('v0.1.93', '>=0.1.97'),
+            array('0.1.93', '>=0.1.97'),
+            array('1.2.3', '0.1.20 || 1.2.4'),
+            array('0.0.3', '>=0.2.3 || <0.0.1'),
+            array('0.2.2', '>=0.2.3 || <0.0.1'),
+//            array('1.1.3', '2.x.x'),
+//            array('3.1.3', '2.x.x'),
+            array('1.3.3', '1.2.x'),
+            array('3.1.3', '1.2.x || 2.x'),
+            array('1.1.3', '1.2.x || 2.x'),
+//            array('1.1.3', '2.*.*'),
+//            array('3.1.3', '2.*.*'),
+            array('1.3.3', '1.2.*'),
+            array('3.1.3', '1.2.* || 2.*'),
+            array('1.1.3', '1.2.* || 2.*'),
+            array('1.1.2', '2'),
+            array('2.4.1', '2.3'),
+//            array('2.5.0', '~2.4'), // >=2.4.0 <2.5.0
+            array('2.3.9', '~2.4'),
+//            array('3.3.2', '~>3.2.1'), // >=3.2.1 <3.3.0
+//            array('3.2.0', '~>3.2.1'), // >=3.2.1 <3.3.0
+            array('0.2.3', '~1'), // >=1.0.0 <2.0.0
+//            array('2.2.3', '~>1'),
+//            array('1.1.0', '~1.0'), // >=1.0.0 <1.1.0
+            array('1.0.0', '<1'),
+            array('1.1.1', '>=1.2'),
+            array('2.0.0beta', '1'),
+//            array('0.5.4-alpha', '~v0.5.4-beta'),
+//            array('0.8.2', '=0.7.x'),
+//            array('0.6.2', '>=0.7.x'),
+//            array('0.7.2', '<0.7.x'),
+            array('1.2.3-beta', '<1.2.3'),
+            array('1.2.3-beta', '=1.2.3'),
+//            array('1.2.8', '>1.2'),
+            array('2.0.0-alpha', '^1.2.3'),
+            array('1.2.2', '^1.2.3'),
+            array('1.1.9', '^1.2'),
+//            array('v1.2.3-foo', '*'),
         );
     }
 }
