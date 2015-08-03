@@ -9,7 +9,7 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Test\Semver\Constraint;
+namespace Composer\Semver\Test\Constraint;
 
 use Composer\Semver\Constraint\MultiConstraint;
 use Composer\Semver\Constraint\VersionConstraint;
