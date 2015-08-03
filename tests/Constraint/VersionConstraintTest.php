@@ -101,4 +101,30 @@ class VersionConstraintTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($versionRequire->matches($versionProvide));
         $this->assertTrue($versionRequire->matchSpecific($versionProvide, true));
     }
+
+    /**
+     * @dataProvider invalidOperators
+     *
+     * @param string $version
+     * @param string $operator
+     * @param bool $expected
+     */
+    public function testInvalidOperators($version, $operator, $expected)
+    {
+        $this->setExpectedException($expected);
+
+        new VersionConstraint($operator, $version);
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidOperators()
+    {
+        return array(
+            array('1.2.3', 'invalid', 'InvalidArgumentException'),
+            array('1.2.3', '!', 'InvalidArgumentException'),
+            array('1.2.3', 'equals', 'InvalidArgumentException'),
+        );
+    }
 }
