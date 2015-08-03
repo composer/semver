@@ -266,6 +266,8 @@ class VersionParser
     /**
      * @param string $constraint
      *
+     * @throws \UnexpectedValueException
+     *
      * @return array
      */
     private function parseConstraint($constraint)
@@ -453,7 +455,7 @@ class VersionParser
      * Support function for {@link parseConstraint()}
      *
      * @param array $matches Array with version parts in array indexes 1,2,3,4
-     * @param int $position 1,2,3,4 - which segment of the version to decrement
+     * @param int $position 1,2,3,4 - which segment of the version to increment/decrement
      * @param int $increment
      * @param string $pad The string to pad version parts after $position
      *
@@ -482,6 +484,13 @@ class VersionParser
         return $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '.' . $matches[4];
     }
 
+    /**
+     * Expand shorthand stability string to long version.
+     *
+     * @param string $stability
+     *
+     * @return string
+     */
     private function expandStability($stability)
     {
         $stability = strtolower($stability);
