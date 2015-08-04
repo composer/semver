@@ -11,7 +11,7 @@
 
 namespace Composer\Semver;
 
-use Composer\Semver\Constraint\VersionConstraint;
+use Composer\Semver\Constraint\Constraint;
 
 class Comparator
 {
@@ -104,8 +104,8 @@ class Comparator
      */
     public static function compare($version1, $operator, $version2)
     {
-        $constraint = new VersionConstraint($operator, $version2);
+        $constraint = new Constraint($operator, $version2);
 
-        return $constraint->matches(new VersionConstraint('==', $version1));
+        return $constraint->matches(new Constraint('==', $version1));
     }
 }

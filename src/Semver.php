@@ -11,7 +11,7 @@
 
 namespace Composer\Semver;
 
-use Composer\Semver\Constraint\VersionConstraint;
+use Composer\Semver\Constraint\Constraint;
 
 class Semver
 {
@@ -32,7 +32,7 @@ class Semver
             static::$versionParser = new VersionParser();
         }
 
-        $provider = new VersionConstraint('==', static::$versionParser->normalize($version));
+        $provider = new Constraint('==', static::$versionParser->normalize($version));
         $constraints = static::$versionParser->parseConstraints($constraint);
 
         return $constraints->matches($provider);

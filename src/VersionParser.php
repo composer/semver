@@ -11,10 +11,10 @@
 
 namespace Composer\Semver;
 
+use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Semver\Constraint\EmptyConstraint;
-use Composer\Semver\Constraint\LinkConstraintInterface;
 use Composer\Semver\Constraint\MultiConstraint;
-use Composer\Semver\Constraint\VersionConstraint;
+use Composer\Semver\Constraint\Constraint;
 
 /**
  * Version parser.
@@ -323,13 +323,13 @@ class VersionParser
                 $stabilitySuffix = '-dev';
             }
             $lowVersion = $this->manipulateVersionString($matches, $position, 0) . $stabilitySuffix;
-            $lowerBound = new VersionConstraint('>=', $lowVersion);
+            $lowerBound = new Constraint('>=', $lowVersion);
 
             // For upper bound, we increment the position of one more significance,
             // but highPosition = 0 would be illegal
             $highPosition = max(1, $position - 1);
             $highVersion = $this->manipulateVersionString($matches, $highPosition, 1) . '-dev';
-            $upperBound = new VersionConstraint('<', $highVersion);
+            $upperBound = new Constraint('<', $highVersion);
 
             return array(
                 $lowerBound,
@@ -355,12 +355,12 @@ class VersionParser
             }
 
             $lowVersion = $this->normalize(substr($constraint . $stabilitySuffix, 1));
-            $lowerBound = new VersionConstraint('>=', $lowVersion);
+            $lowerBound = new Constraint('>=', $lowVersion);
 
             // For upper bound, we increment the position of one more significance,
             // but highPosition = 0 would be illegal
             $highVersion = $this->manipulateVersionString($matches, $position, 1) . '-dev';
-            $upperBound = new VersionConstraint('<', $highVersion);
+            $upperBound = new Constraint('<', $highVersion);
 
             return array(
                 $lowerBound,
@@ -382,12 +382,12 @@ class VersionParser
             $highVersion = $this->manipulateVersionString($matches, $position, 1) . '-dev';
 
             if ($lowVersion === '0.0.0.0-dev') {
-                return array(new VersionConstraint('<', $highVersion));
+                return array(new Constraint('<', $highVersion));
             }
 
             return array(
-                new VersionConstraint('>=', $lowVersion),
-                new VersionConstraint('<', $highVersion),
+                new Constraint('>=', $lowVersion),
+                new Constraint('<', $highVersion),
             );
         }
 
@@ -400,7 +400,7 @@ class VersionParser
             }
 
             $lowVersion = $this->normalize($matches['from']);
-            $lowerBound = new VersionConstraint('>=', $lowVersion . $lowStabilitySuffix);
+            $lowerBound = new Constraint('>=', $lowVersion . $lowStabilitySuffix);
 
             $empty = function ($x) {
                 return ($x === 0 || $x === '0') ? false : empty($x);
@@ -408,11 +408,11 @@ class VersionParser
 
             if ((!$empty($matches[11]) && !$empty($matches[12])) || !empty($matches[14]) || !empty($matches[16])) {
                 $highVersion = $this->normalize($matches['to']);
-                $upperBound = new VersionConstraint('<=', $highVersion);
+                $upperBound = new Constraint('<=', $highVersion);
             } else {
                 $highMatch = array('', $matches[10], $matches[11], $matches[12], $matches[13]);
                 $highVersion = $this->manipulateVersionString($highMatch, $empty($matches[11]) ? 1 : 2, 1) . '-dev';
-                $upperBound = new VersionConstraint('<', $highVersion);
+                $upperBound = new Constraint('<', $highVersion);
             }
 
             return array(
@@ -436,7 +436,7 @@ class VersionParser
                     }
                 }
 
-                return array(new VersionConstraint($matches[1] ?: '=', $version));
+                return array(new Constraint($matches[1] ?: '=', $version));
             } catch (\Exception $e) {
             }
         }

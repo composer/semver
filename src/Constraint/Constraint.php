@@ -12,14 +12,11 @@
 namespace Composer\Semver\Constraint;
 
 /**
- * Constrains a package link based on package version.
- *
- * Version numbers must be compatible with version_compare
- *
- * @author Nils Adermann <naderman@naderman.de>
+ * Defines a constraint.
  */
-class VersionConstraint extends SpecificConstraint
+class Constraint extends AbstractConstraint
 {
+    /* operator integer values */
     const OP_EQ = 0;
     const OP_LT = 1;
     const OP_LE = 2;
@@ -27,6 +24,11 @@ class VersionConstraint extends SpecificConstraint
     const OP_GE = 4;
     const OP_NE = 5;
 
+    /**
+     * Operator to integer translation table.
+     *
+     * @var array
+     */
     private static $transOpStr = array(
         '=' => self::OP_EQ,
         '==' => self::OP_EQ,
@@ -38,6 +40,11 @@ class VersionConstraint extends SpecificConstraint
         '!=' => self::OP_NE,
     );
 
+    /**
+     * Integer to operator translation table.
+     *
+     * @var array
+     */
     private static $transOpInt = array(
         self::OP_EQ => '==',
         self::OP_LT => '<',
@@ -47,7 +54,10 @@ class VersionConstraint extends SpecificConstraint
         self::OP_NE => '!=',
     );
 
+    /** @var string */
     private $operator;
+
+    /** @var string */
     private $version;
 
     /**
@@ -118,12 +128,12 @@ class VersionConstraint extends SpecificConstraint
     }
 
     /**
-     * @param VersionConstraint $provider
+     * @param Constraint $provider
      * @param bool $compareBranches
      *
      * @return bool
      */
-    public function matchSpecific(VersionConstraint $provider, $compareBranches = false)
+    public function matchSpecific(Constraint $provider, $compareBranches = false)
     {
         $noEqualOp = str_replace('=', '', self::$transOpInt[$this->operator]);
         $providerNoEqualOp = str_replace('=', '', self::$transOpInt[$provider->operator]);

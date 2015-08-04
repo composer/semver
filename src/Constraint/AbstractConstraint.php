@@ -12,26 +12,26 @@
 namespace Composer\Semver\Constraint;
 
 /**
- * Provides a common basis for specific package link constraints.
- *
- * @author Nils Adermann <naderman@naderman.de>
+ * Base constraint class.
  */
-abstract class SpecificConstraint implements LinkConstraintInterface
+abstract class AbstractConstraint implements ConstraintInterface
 {
     /** @var string */
     protected $prettyString;
 
     /**
-     * @param LinkConstraintInterface $provider
+     * @param ConstraintInterface $provider
      *
      * @return bool
      */
-    public function matches(LinkConstraintInterface $provider)
+    public function matches(ConstraintInterface $provider)
     {
         if ($provider instanceof MultiConstraint) {
             // turn matching around to find a match
             return $provider->matches($this);
-        } elseif ($provider instanceof $this) {
+        }
+
+        if ($provider instanceof $this) {
             // see note at bottom of this class declaration
             return $this->matchSpecific($provider);
         }
