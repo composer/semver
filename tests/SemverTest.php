@@ -21,6 +21,8 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::satisfies
      * @dataProvider satisfiesProvider
+     * @uses Composer\Semver\VersionParser::normalize
+     * @uses Composer\Semver\VersionParser::parseConstraints
      *
      * @param string $version
      * @param string $constraint
@@ -34,6 +36,8 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::satisfiedBy
      * @dataProvider satisfiedByProvider
+     * @uses Composer\Semver\VersionParser::normalize
+     * @uses Composer\Semver\VersionParser::parseConstraints
      *
      * @param string $constraint
      * @param array $versions
@@ -42,6 +46,36 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     public function testSatisfiedBy($constraint, $versions, $expected)
     {
         $this->assertEquals($expected, Semver::satisfiedBy($constraint, $versions));
+    }
+
+    /**
+     * @covers ::sort
+     * @covers ::rsort
+     * @covers ::usort
+     * @dataProvider sortProvider
+     *
+     * @param array $versions
+     * @param array $sorted
+     * @param array $rsorted
+     */
+    public function testSort(array $versions, array $sorted, array $rsorted)
+    {
+        $this->assertEquals($sorted, Semver::sort($versions));
+        $this->assertEquals($rsorted, Semver::rsort($versions));
+    }
+
+    /**
+     * @return array
+     */
+    public function sortProvider()
+    {
+        return array(
+            array(
+                array('1.0', '0.1', '0.1', '3.2.1', '2.4.0-alpha', '2.4.0'),
+                array('0.1', '0.1', '1.0', '2.4.0-alpha', '2.4.0', '3.2.1'),
+                array('3.2.1', '2.4.0', '2.4.0-alpha', '1.0', '0.1', '0.1'),
+            ),
+        );
     }
 
     /**
