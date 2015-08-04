@@ -246,12 +246,19 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('2.*', new Constraint('>=', '2.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('2.*.*', new Constraint('>=', '2.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
             array('20.*', new Constraint('>=', '20.0.0.0-dev'), new Constraint('<', '21.0.0.0-dev')),
+            array('20.*.*', new Constraint('>=', '20.0.0.0-dev'), new Constraint('<', '21.0.0.0-dev')),
             array('2.0.*', new Constraint('>=', '2.0.0.0-dev'), new Constraint('<', '2.1.0.0-dev')),
+            array('2.x', new Constraint('>=', '2.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('2.x.x', new Constraint('>=', '2.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
             array('2.2.x', new Constraint('>=', '2.2.0.0-dev'), new Constraint('<', '2.3.0.0-dev')),
             array('2.10.X', new Constraint('>=', '2.10.0.0-dev'), new Constraint('<', '2.11.0.0-dev')),
             array('2.1.3.*', new Constraint('>=', '2.1.3.0-dev'), new Constraint('<', '2.1.4.0-dev')),
             array('0.*', null, new Constraint('<', '1.0.0.0-dev')),
+            array('0.*.*', null, new Constraint('<', '1.0.0.0-dev')),
+            array('0.x', null, new Constraint('<', '1.0.0.0-dev')),
+            array('0.x.x', null, new Constraint('<', '1.0.0.0-dev')),
         );
     }
 

@@ -285,11 +285,11 @@ class VersionParser
 
         $versionRegex = '(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.(\d+))?' . self::$modifierRegex;
 
-        // match tilde constraints
-        // like wildcard constraints, unsuffixed tilde constraints say that they must be greater than the previous
-        // version, to ensure that unstable instances of the current version are allowed.
-        // however, if a stability suffix is added to the constraint, then a >= match on the current version is
-        // used instead
+        // Tilde Range
+        //
+        // Like wildcard constraints, unsuffixed tilde constraints say that they must be greater than the previous
+        // version, to ensure that unstable instances of the current version are allowed. However, if a stability
+        // suffix is added to the constraint, then a >= match on the current version is used instead.
         if (preg_match('{^~>?' . $versionRegex . '$}i', $constraint, $matches)) {
             if (substr($constraint, 0, 2) === '~>') {
                 throw new \UnexpectedValueException(
@@ -337,7 +337,11 @@ class VersionParser
             );
         }
 
-        // match caret constraints
+        // Caret Range
+        //
+        // Allows changes that do not modify the left-most non-zero digit in the [major, minor, patch] tuple.
+        // In other words, this allows patch and minor updates for versions 1.0.0 and above, patch updates for
+        // versions 0.X >=0.1.0, and no updates for versions 0.0.X
         if (preg_match('{^\^' . $versionRegex . '($)}i', $constraint, $matches)) {
             // Work out which position in the version we are operating at
             if ('0' !== $matches[1] || '' === $matches[2]) {
@@ -369,7 +373,7 @@ class VersionParser
         }
 
         // match wildcard constraints
-        if (preg_match('{^(\d+)(?:\.(\d+))?(?:\.(\d+))?\.[xX*]$}', $constraint, $matches)) {
+        if (preg_match('{^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.[xX*])+$}', $constraint, $matches)) {
             if (isset($matches[3]) && '' !== $matches[3]) {
                 $position = 3;
             } elseif (isset($matches[2]) && '' !== $matches[2]) {
