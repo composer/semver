@@ -32,6 +32,19 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::satisfiedBy
+     * @dataProvider satisfiedByProvider
+     *
+     * @param string $constraint
+     * @param array $versions
+     * @param array $expected
+     */
+    public function testSatisfiedBy($constraint, $versions, $expected)
+    {
+        $this->assertEquals($expected, Semver::satisfiedBy($constraint, $versions));
+    }
+
+    /**
      * @return array
      */
     public function satisfiesProvider()
@@ -66,8 +79,6 @@ class SemverTest extends \PHPUnit_Framework_TestCase
 //            array('2.4.3-alpha', '1.2.3-pre+asdf - 2.4.3-pre+asdf'),
 //            array('1.2.3', '1.2.3+asdf - 2.4.3+asdf'),
             array('1.0.0', '1.0.0'),
-//            array('0.2.4', '>=*'),
-//            array('', '1.0.0'),
             array('1.2.3', '*'),
             array('v1.2.3', '*'),
             array('1.0.0', '>=1.0.0'),
@@ -89,15 +100,13 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('1.9999.9999', '<= 2.0.0'),
             array('0.2.9', '<=  2.0.0'),
             array('1.9999.9999', '<    2.0.0'),
-//            array('0.2.9', '<\t2.0.0'),
+            array('0.2.9', "<\t2.0.0"),
             array('v0.1.97', '>=0.1.97'),
             array('0.1.97', '>=0.1.97'),
             array('1.2.4', '0.1.20 || 1.2.4'),
             array('0.0.0', '>=0.2.3 || <0.0.1'),
             array('0.2.3', '>=0.2.3 || <0.0.1'),
             array('0.2.4', '>=0.2.3 || <0.0.1'),
-//            array('1.3.4', '||'),
-//            array('2.1.3', '2.x.x'),
             array('1.2.3', '1.2.x'),
             array('2.1.3', '1.2.x || 2.x'),
             array('1.2.3', '1.2.x || 2.x'),
@@ -107,14 +116,9 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('2.1.3', '1.2.* || 2.*'),
             array('1.2.3', '1.2.* || 2.*'),
             array('1.2.3', '*'),
-//            array('2.1.2', '2'),
-//            array('2.3.1', '2.3'),
             array('2.4.0', '~2.4'), // >=2.4.0 <2.5.0
             array('2.4.5', '~2.4'),
-//            array('3.2.2', '~>3.2.1'), // >=3.2.1 <3.3.0,
             array('1.2.3', '~1'), // >=1.0.0 <2.0.0
-//            array('1.2.3', '~>1'),
-//            array('1.2.3', '~> 1'),
             array('1.0.2', '~1.0'), // >=1.0.0 <1.1.0,
 //            array('1.0.2', '~ 1.0'),
 //            array('1.0.12', '~ 1.0.3'),
@@ -122,12 +126,6 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('1.0.0', '>= 1'),
             array('1.1.1', '<1.2'),
             array('1.1.1', '< 1.2'),
-//            array('0.5.5', '~v0.5.4-pre'),
-//            array('0.5.4', '~v0.5.4-pre'),
-//            array('0.7.2', '=0.7.x'),
-//            array('0.7.2', '<=0.7.x'),
-//            array('0.7.2', '>=0.7.x'),
-//            array('0.6.2', '<=0.7.x'),
             array('1.2.3', '~1.2.1 >=1.2.3'),
             array('1.2.3', '~1.2.1 =1.2.3'),
             array('1.2.3', '~1.2.1 1.2.3'),
@@ -166,8 +164,6 @@ class SemverTest extends \PHPUnit_Framework_TestCase
 //            array('1.3.0-beta', '>1.2'),
 //            array('1.2.3-beta', '<=1.2.3'),
 //            array('1.2.3-beta', '^1.2.3'),
-//            array('0.7.0-asdf', '=0.7.x'),
-//            array('0.7.0-asdf', '>=0.7.x'),
             array('1.0.0beta', '1'),
             array('1.0.0beta', '<1'),
             array('1.0.0beta', '< 1'),
@@ -187,8 +183,6 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('1.2.3', '0.1.20 || 1.2.4'),
             array('0.0.3', '>=0.2.3 || <0.0.1'),
             array('0.2.2', '>=0.2.3 || <0.0.1'),
-//            array('1.1.3', '2.x.x'),
-//            array('3.1.3', '2.x.x'),
             array('1.3.3', '1.2.x'),
             array('3.1.3', '1.2.x || 2.x'),
             array('1.1.3', '1.2.x || 2.x'),
@@ -201,25 +195,41 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('2.4.1', '2.3'),
 //            array('2.5.0', '~2.4'), // >=2.4.0 <2.5.0
             array('2.3.9', '~2.4'),
-//            array('3.3.2', '~>3.2.1'), // >=3.2.1 <3.3.0
-//            array('3.2.0', '~>3.2.1'), // >=3.2.1 <3.3.0
             array('0.2.3', '~1'), // >=1.0.0 <2.0.0
-//            array('2.2.3', '~>1'),
-//            array('1.1.0', '~1.0'), // >=1.0.0 <1.1.0
             array('1.0.0', '<1'),
             array('1.1.1', '>=1.2'),
             array('2.0.0beta', '1'),
 //            array('0.5.4-alpha', '~v0.5.4-beta'),
-//            array('0.8.2', '=0.7.x'),
-//            array('0.6.2', '>=0.7.x'),
-//            array('0.7.2', '<0.7.x'),
             array('1.2.3-beta', '<1.2.3'),
             array('1.2.3-beta', '=1.2.3'),
 //            array('1.2.8', '>1.2'),
             array('2.0.0-alpha', '^1.2.3'),
             array('1.2.2', '^1.2.3'),
             array('1.1.9', '^1.2'),
-//            array('v1.2.3-foo', '*'),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function satisfiedByProvider()
+    {
+        return array(
+            array(
+                '~1.0',
+                array('1.0', '1.2', '1.9999.9999', '2.0', '2.1', '0.9999.9999'),
+                array('1.0', '1.2', '1.9999.9999'),
+            ),
+            array(
+                '>1.0 <3.0 || >=4.0',
+                array('1.0', '1.1', '2.9999.9999', '3.0', '3.1', '3.9999.9999', '4.0', '4.1'),
+                array('1.1', '2.9999.9999', '4.0', '4.1'),
+            ),
+            array(
+                '^0.2.0',
+                array('0.1.1', '0.1.9999', '0.2.0', '0.2.1', '0.3.0'),
+                array('0.2.0', '0.2.1'),
+            ),
         );
     }
 }
