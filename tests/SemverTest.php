@@ -21,14 +21,12 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::satisfies
      * @dataProvider satisfiesProvider
-     * @uses Composer\Semver\VersionParser::normalize
-     * @uses Composer\Semver\VersionParser::parseConstraints
      *
+     * @param bool $expected
      * @param string $version
      * @param string $constraint
-     * @param bool $expected
      */
-    public function testSatisfies($version, $constraint, $expected)
+    public function testSatisfies($expected, $version, $constraint)
     {
         $this->assertEquals($expected, Semver::satisfies($version, $constraint));
     }
@@ -36,8 +34,6 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::satisfiedBy
      * @dataProvider satisfiedByProvider
-     * @uses Composer\Semver\VersionParser::normalize
-     * @uses Composer\Semver\VersionParser::parseConstraints
      *
      * @param string $constraint
      * @param array $versions
@@ -84,12 +80,12 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     public function satisfiesProvider()
     {
         $positive = array_map(function ($array) {
-            $array[] = true;
+            array_unshift($array, true);
             return $array;
         }, $this->satisfiesProviderPositive());
 
         $negative = array_map(function ($array) {
-            $array[] = false;
+            array_unshift($array, false);
             return $array;
         }, $this->satisfiesProviderNegative());
 
@@ -103,15 +99,13 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('1.2.3', '1.0.0 - 2.0.0'),
-//            array('1.2.3', '^1.2.3+build'),
-//            array('1.3.0', '^1.2.3+build'),
-//            array('1.2.3', '1.2.3-pre+asdf - 2.4.3-pre+asdf'),
-//            array('1.2.3', '1.2.3pre+asdf - 2.4.3-pre+asdf'),
-//            array('1.2.3', '1.2.3-pre+asdf - 2.4.3pre+asdf'),
-//            array('1.2.3', '1.2.3pre+asdf - 2.4.3pre+asdf'),
-//            array('1.2.3-pre.2', '1.2.3-pre+asdf - 2.4.3-pre+asdf'),
-//            array('2.4.3-alpha', '1.2.3-pre+asdf - 2.4.3-pre+asdf'),
-//            array('1.2.3', '1.2.3+asdf - 2.4.3+asdf'),
+            array('1.2.3', '^1.2.3+build'),
+            array('1.3.0', '^1.2.3+build'),
+            array('2.4.3-alpha', '1.2.3+asdf - 2.4.3+asdf'),
+            array('1.3.0-beta', '>1.2'),
+            array('1.2.3-beta', '<=1.2.3'),
+            array('1.2.3-beta', '^1.2.3'),
+            array('1.2.3', '1.2.3+asdf - 2.4.3+asdf'),
             array('1.0.0', '1.0.0'),
             array('1.2.3', '*'),
             array('v1.2.3', '*'),
@@ -151,15 +145,14 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('2.1.3', '1.2.* || 2.*'),
             array('1.2.3', '1.2.* || 2.*'),
             array('1.2.3', '*'),
-            array('2.4.0', '~2.4'), // >=2.4.0 <2.5.0
+            array('2.9.0', '~2.4'), // >=2.4.0 <3.0.0
             array('2.4.5', '~2.4'),
             array('1.2.3', '~1'), // >=1.0.0 <2.0.0
-            array('1.0.2', '~1.0'), // >=1.0.0 <1.1.0,
-//            array('1.0.2', '~ 1.0'),
-//            array('1.0.12', '~ 1.0.3'),
+            array('1.4.7', '~1.0'), // >=1.0.0 <2.0.0
             array('1.0.0', '>=1'),
             array('1.0.0', '>= 1'),
-            array('1.1.1', '<1.2'),
+            array('1.2.8', '>1.2'), // >1.2.0
+            array('1.1.1', '<1.2'), // <1.2.0
             array('1.1.1', '< 1.2'),
             array('1.2.3', '~1.2.1 >=1.2.3'),
             array('1.2.3', '~1.2.1 =1.2.3'),
@@ -177,8 +170,6 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('0.1.2', '^0.1'),
             array('1.4.2', '^1.2'),
             array('1.4.2', '^1.2 ^1'),
-//            array('1.2.3-pre', '^1.2.3-alpha'),
-//            array('1.2.0-pre', '^1.2.0-alpha'),
             array('0.0.1-beta', '^0.0.1-alpha'),
         );
     }
@@ -190,15 +181,8 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('2.2.3', '1.0.0 - 2.0.0'),
-//            array('1.2.3-pre.2', '1.2.3+asdf - 2.4.3+asdf'),
-//            array('2.4.3-alpha', '1.2.3+asdf - 2.4.3+asdf'),
-//            array('2.0.0', '^1.2.3+build'),
-//            array('1.2.0', '^1.2.3+build'),
-//            array('1.2.3-pre', '^1.2.3'),
-//            array('1.2.0-pre', '^1.2'),
-//            array('1.3.0-beta', '>1.2'),
-//            array('1.2.3-beta', '<=1.2.3'),
-//            array('1.2.3-beta', '^1.2.3'),
+            array('2.0.0', '^1.2.3+build'),
+            array('1.2.0', '^1.2.3+build'),
             array('1.0.0beta', '1'),
             array('1.0.0beta', '<1'),
             array('1.0.0beta', '< 1'),
@@ -230,16 +214,14 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('1.1.3', '1.2.* || 2.*'),
             array('1.1.2', '2'),
             array('2.4.1', '2.3'),
-//            array('2.5.0', '~2.4'), // >=2.4.0 <2.5.0
+            array('3.0.0', '~2.4'), // >=2.4.0 <3.0.0
             array('2.3.9', '~2.4'),
             array('0.2.3', '~1'), // >=1.0.0 <2.0.0
             array('1.0.0', '<1'),
             array('1.1.1', '>=1.2'),
             array('2.0.0beta', '1'),
-//            array('0.5.4-alpha', '~v0.5.4-beta'),
+            array('0.5.4-alpha', '~v0.5.4-beta'),
             array('1.2.3-beta', '<1.2.3'),
-            array('1.2.3-beta', '=1.2.3'),
-//            array('1.2.8', '>1.2'),
             array('2.0.0-alpha', '^1.2.3'),
             array('1.2.2', '^1.2.3'),
             array('1.1.9', '^1.2'),
