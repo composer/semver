@@ -95,12 +95,12 @@ class VersionParser
             $fullVersion = $version;
         }
 
-        // ignore aliases and just assume the alias is required instead of the source
+        // strip off aliasing
         if (preg_match('{^([^,\s]+) +as +([^,\s]+)$}', $version, $match)) {
             $version = $match[1];
         }
 
-        // ignore build metadata
+        // strip off build metadata
         if (preg_match('{^([^,\s+]+)\+[^\s]+$}', $version, $match)) {
             $version = $match[1];
         }
@@ -115,7 +115,7 @@ class VersionParser
         }
 
         // match classical versioning
-        if (preg_match('{^v?(\d{1,3})(\.\d+)?(\.\d+)?(\.\d+)?' . self::$modifierRegex . '$}i', $version, $matches)) {
+        if (preg_match('{^v?(\d{1,5})(\.\d+)?(\.\d+)?(\.\d+)?' . self::$modifierRegex . '$}i', $version, $matches)) {
             $version = $matches[1]
                 . (!empty($matches[2]) ? $matches[2] : '.0')
                 . (!empty($matches[3]) ? $matches[3] : '.0')
@@ -125,13 +125,6 @@ class VersionParser
         } elseif (preg_match('{^v?(\d{4}(?:[.:-]?\d{2}){1,6}(?:[.:-]?\d{1,3})?)' . self::$modifierRegex . '$}i', $version, $matches)) {
             $version = preg_replace('{\D}', '-', $matches[1]);
             $index = 2;
-        // match more classical versioning
-        } elseif (preg_match('{^v?(\d{4,})(\.\d+)?(\.\d+)?(\.\d+)?' . self::$modifierRegex . '$}i', $version, $matches)) {
-            $version = $matches[1]
-                . (!empty($matches[2]) ? $matches[2] : '.0')
-                . (!empty($matches[3]) ? $matches[3] : '.0')
-                . (!empty($matches[4]) ? $matches[4] : '.0');
-            $index = 5;
         }
 
         // add version modifiers if a version was matched
