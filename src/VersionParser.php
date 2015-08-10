@@ -317,6 +317,7 @@ class VersionParser
             if (!$stabilitySuffix) {
                 $stabilitySuffix = '-dev';
             }
+
             $lowVersion = $this->manipulateVersionString($matches, $position, 0) . $stabilitySuffix;
             $lowerBound = new Constraint('>=', $lowVersion);
 
