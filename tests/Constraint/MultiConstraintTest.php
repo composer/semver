@@ -9,18 +9,18 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Test\Semver\Constraint;
+namespace Composer\Semver\Test\Constraint;
 
 use Composer\Semver\Constraint\MultiConstraint;
-use Composer\Semver\Constraint\VersionConstraint;
+use Composer\Semver\Constraint\Constraint;
 
 class MultiConstraintTest extends \PHPUnit_Framework_TestCase
 {
     public function testMultiVersionMatchSucceeds()
     {
-        $versionRequireStart = new VersionConstraint('>', '1.0');
-        $versionRequireEnd = new VersionConstraint('<', '1.2');
-        $versionProvide = new VersionConstraint('==', '1.1');
+        $versionRequireStart = new Constraint('>', '1.0');
+        $versionRequireEnd = new Constraint('<', '1.2');
+        $versionProvide = new Constraint('==', '1.1');
 
         $multiRequire = new MultiConstraint(array($versionRequireStart, $versionRequireEnd));
 
@@ -29,10 +29,10 @@ class MultiConstraintTest extends \PHPUnit_Framework_TestCase
 
     public function testMultiVersionProvidedMatchSucceeds()
     {
-        $versionRequireStart = new VersionConstraint('>', '1.0');
-        $versionRequireEnd = new VersionConstraint('<', '1.2');
-        $versionProvideStart = new VersionConstraint('>=', '1.1');
-        $versionProvideEnd = new VersionConstraint('<', '2.0');
+        $versionRequireStart = new Constraint('>', '1.0');
+        $versionRequireEnd = new Constraint('<', '1.2');
+        $versionProvideStart = new Constraint('>=', '1.1');
+        $versionProvideEnd = new Constraint('<', '2.0');
 
         $multiRequire = new MultiConstraint(array($versionRequireStart, $versionRequireEnd));
         $multiProvide = new MultiConstraint(array($versionProvideStart, $versionProvideEnd));
@@ -42,9 +42,9 @@ class MultiConstraintTest extends \PHPUnit_Framework_TestCase
 
     public function testMultiVersionMatchFails()
     {
-        $versionRequireStart = new VersionConstraint('>', '1.0');
-        $versionRequireEnd = new VersionConstraint('<', '1.2');
-        $versionProvide = new VersionConstraint('==', '1.2');
+        $versionRequireStart = new Constraint('>', '1.0');
+        $versionRequireEnd = new Constraint('<', '1.2');
+        $versionProvide = new Constraint('==', '1.2');
 
         $multiRequire = new MultiConstraint(array($versionRequireStart, $versionRequireEnd));
 

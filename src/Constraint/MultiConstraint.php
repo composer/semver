@@ -12,14 +12,11 @@
 namespace Composer\Semver\Constraint;
 
 /**
- * Defines a conjunctive or disjunctive set of constraints on the target of a package link.
- *
- * @author Nils Adermann <naderman@naderman.de>
- * @author Jordi Boggiano <j.boggiano@seld.be>
+ * Defines a conjunctive or disjunctive set of constraints.
  */
-class MultiConstraint implements LinkConstraintInterface
+class MultiConstraint implements ConstraintInterface
 {
-    /** @var array */
+    /** @var ConstraintInterface[] */
     protected $constraints;
 
     /** @var string */
@@ -29,9 +26,7 @@ class MultiConstraint implements LinkConstraintInterface
     protected $conjunctive;
 
     /**
-     * Sets operator and version to compare a package with.
-     *
-     * @param array $constraints A set of constraints
+     * @param ConstraintInterface[] $constraints A set of constraints
      * @param bool $conjunctive Whether the constraints should be treated as conjunctive or disjunctive
      */
     public function __construct(array $constraints, $conjunctive = true)
@@ -41,11 +36,11 @@ class MultiConstraint implements LinkConstraintInterface
     }
 
     /**
-     * @param LinkConstraintInterface $provider
+     * @param ConstraintInterface $provider
      *
      * @return bool
      */
-    public function matches(LinkConstraintInterface $provider)
+    public function matches(ConstraintInterface $provider)
     {
         if (false === $this->conjunctive) {
             foreach ($this->constraints as $constraint) {
@@ -93,7 +88,7 @@ class MultiConstraint implements LinkConstraintInterface
     {
         $constraints = array();
         foreach ($this->constraints as $constraint) {
-            $constraints[] = $constraint->__toString();
+            $constraints[] = (string) $constraint;
         }
 
         return '[' . implode($this->conjunctive ? ' ' : ' || ', $constraints) . ']';

@@ -11,18 +11,27 @@
 
 namespace Composer\Semver\Constraint;
 
-/**
- * Defines a constraint on a link between two packages.
- *
- * @author Nils Adermann <naderman@naderman.de>
- */
-interface LinkConstraintInterface
+interface ConstraintInterface
 {
-    public function matches(LinkConstraintInterface $provider);
+    /**
+     * @param ConstraintInterface $provider
+     *
+     * @return bool
+     */
+    public function matches(ConstraintInterface $provider);
 
+    /**
+     * @param string $prettyString
+     */
     public function setPrettyString($prettyString);
 
+    /**
+     * @return string
+     */
     public function getPrettyString();
 
+    /**
+     * @return string
+     */
     public function __toString();
 }

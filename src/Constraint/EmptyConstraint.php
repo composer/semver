@@ -12,21 +12,19 @@
 namespace Composer\Semver\Constraint;
 
 /**
- * Defines an absence of constraints.
- *
- * @author Jordi Boggiano <j.boggiano@seld.be>
+ * Defines the absence of a constraint.
  */
-class EmptyConstraint implements LinkConstraintInterface
+class EmptyConstraint implements ConstraintInterface
 {
     /** @var string */
     protected $prettyString;
 
     /**
-     * @param LinkConstraintInterface $provider
+     * @param ConstraintInterface $provider
      *
      * @return bool
      */
-    public function matches(LinkConstraintInterface $provider)
+    public function matches(ConstraintInterface $provider)
     {
         return true;
     }

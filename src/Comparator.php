@@ -11,12 +11,12 @@
 
 namespace Composer\Semver;
 
-use Composer\Semver\Constraint\VersionConstraint;
+use Composer\Semver\Constraint\Constraint;
 
 class Comparator
 {
     /**
-     * Whether $version1 > $version2.
+     * Evaluates the expression: $version1 > $version2.
      *
      * @param string $version1
      * @param string $version2
@@ -29,7 +29,7 @@ class Comparator
     }
 
     /**
-     * Whether $version1 >= $version2.
+     * Evaluates the expression: $version1 >= $version2.
      *
      * @param string $version1
      * @param string $version2
@@ -42,7 +42,7 @@ class Comparator
     }
 
     /**
-     * Whether $version1 < $version2.
+     * Evaluates the expression: $version1 < $version2.
      *
      * @param string $version1
      * @param string $version2
@@ -55,7 +55,7 @@ class Comparator
     }
 
     /**
-     * Whether $version1 <= $version2.
+     * Evaluates the expression: $version1 <= $version2.
      *
      * @param string $version1
      * @param string $version2
@@ -68,7 +68,7 @@ class Comparator
     }
 
     /**
-     * Whether $version1 == $version2.
+     * Evaluates the expression: $version1 == $version2.
      *
      * @param string $version1
      * @param string $version2
@@ -81,7 +81,7 @@ class Comparator
     }
 
     /**
-     * Whether $version1 != $version2.
+     * Evaluates the expression: $version1 != $version2.
      *
      * @param string $version1
      * @param string $version2
@@ -94,28 +94,18 @@ class Comparator
     }
 
     /**
-     * Evaluate $version1 $operator $version2.
+     * Evaluates the expression: $version1 $operator $version2.
      *
      * @param string $version1
-     * @param string $operator Comparison operator like ">" or "<=", etc.
+     * @param string $operator
      * @param string $version2
-     *
-     * @throws \InvalidArgumentException
      *
      * @return bool
      */
     public static function compare($version1, $operator, $version2)
     {
-        if (!in_array($operator, VersionConstraint::getSupportedOperators())) {
-            throw new \InvalidArgumentException(sprintf(
-                'Operator "%s" not supported, expected one of: %s',
-                $operator,
-                implode(', ', VersionConstraint::getSupportedOperators())
-            ));
-        }
+        $constraint = new Constraint($operator, $version2);
 
-        $constraint = new VersionConstraint($operator, $version2);
-
-        return $constraint->matches(new VersionConstraint('==', $version1));
+        return $constraint->matches(new Constraint('==', $version1));
     }
 }

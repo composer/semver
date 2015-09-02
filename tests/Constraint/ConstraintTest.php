@@ -9,11 +9,11 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Test\Semver\Constraint;
+namespace Composer\Semver\Test\Constraint;
 
-use Composer\Semver\Constraint\VersionConstraint;
+use Composer\Semver\Constraint\Constraint;
 
-class VersionConstraintTest extends \PHPUnit_Framework_TestCase
+class ConstraintTest extends \PHPUnit_Framework_TestCase
 {
     public static function successfulVersionMatches()
     {
@@ -47,8 +47,8 @@ class VersionConstraintTest extends \PHPUnit_Framework_TestCase
      */
     public function testVersionMatchSucceeds($requireOperator, $requireVersion, $provideOperator, $provideVersion)
     {
-        $versionRequire = new VersionConstraint($requireOperator, $requireVersion);
-        $versionProvide = new VersionConstraint($provideOperator, $provideVersion);
+        $versionRequire = new Constraint($requireOperator, $requireVersion);
+        $versionProvide = new Constraint($provideOperator, $provideVersion);
 
         $this->assertTrue($versionRequire->matches($versionProvide));
     }
@@ -81,24 +81,50 @@ class VersionConstraintTest extends \PHPUnit_Framework_TestCase
      */
     public function testVersionMatchFails($requireOperator, $requireVersion, $provideOperator, $provideVersion)
     {
-        $versionRequire = new VersionConstraint($requireOperator, $requireVersion);
-        $versionProvide = new VersionConstraint($provideOperator, $provideVersion);
+        $versionRequire = new Constraint($requireOperator, $requireVersion);
+        $versionProvide = new Constraint($provideOperator, $provideVersion);
 
         $this->assertFalse($versionRequire->matches($versionProvide));
     }
 
     public function testComparableBranches()
     {
-        $versionRequire = new VersionConstraint('>', '0.12');
-        $versionProvide = new VersionConstraint('==', 'dev-foo');
+        $versionRequire = new Constraint('>', '0.12');
+        $versionProvide = new Constraint('==', 'dev-foo');
 
         $this->assertFalse($versionRequire->matches($versionProvide));
         $this->assertFalse($versionRequire->matchSpecific($versionProvide, true));
 
-        $versionRequire = new VersionConstraint('<', '0.12');
-        $versionProvide = new VersionConstraint('==', 'dev-foo');
+        $versionRequire = new Constraint('<', '0.12');
+        $versionProvide = new Constraint('==', 'dev-foo');
 
         $this->assertFalse($versionRequire->matches($versionProvide));
         $this->assertTrue($versionRequire->matchSpecific($versionProvide, true));
+    }
+
+    /**
+     * @dataProvider invalidOperators
+     *
+     * @param string $version
+     * @param string $operator
+     * @param bool $expected
+     */
+    public function testInvalidOperators($version, $operator, $expected)
+    {
+        $this->setExpectedException($expected);
+
+        new Constraint($operator, $version);
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidOperators()
+    {
+        return array(
+            array('1.2.3', 'invalid', 'InvalidArgumentException'),
+            array('1.2.3', '!', 'InvalidArgumentException'),
+            array('1.2.3', 'equals', 'InvalidArgumentException'),
+        );
     }
 }
