@@ -41,7 +41,7 @@ class SemverTest extends \PHPUnit_Framework_TestCase
      */
     public function testSatisfiedBy($constraint, $versions, $expected)
     {
-        $this->assertEquals($expected, Semver::satisfiedBy($constraint, $versions));
+        $this->assertEquals($expected, Semver::satisfiedBy($versions, $constraint));
     }
 
     /**
