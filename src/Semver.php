@@ -45,23 +45,15 @@ class Semver
     /**
      * Return all versions that satisfy given constraints.
      *
-     * @param string $constraints
      * @param array $versions
+     * @param string $constraints
      *
      * @return array
      */
-    public static function satisfiedBy($constraints, array $versions)
+    public static function satisfiedBy(array $versions, $constraints)
     {
-        if (null === self::$versionParser) {
-            self::$versionParser = new VersionParser();
-        }
-
-        $versionParser = self::$versionParser;
-        $constraints = $versionParser->parseConstraints($constraints);
-        $versions = array_filter($versions, function ($version) use ($constraints, $versionParser) {
-            $version = new Constraint('==', $versionParser->normalize($version));
-
-            return $constraints->matches($version);
+        $versions = array_filter($versions, function ($version) use ($constraints) {
+            return Semver::satisfies($version, $constraints);
         });
 
         return array_values($versions);
