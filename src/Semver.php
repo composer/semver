@@ -53,7 +53,7 @@ class Semver
     public static function satisfiedBy(array $versions, $constraints)
     {
         $versions = array_filter($versions, function ($version) use ($constraints) {
-            return self::satisfies($version, $constraints);
+            return Semver::satisfies($version, $constraints);
         });
 
         return array_values($versions);
