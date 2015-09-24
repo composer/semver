@@ -205,7 +205,7 @@ class VersionParser
     }
 
     /**
-     * Parses as constraint string into MultiConstraint and/or Constraint objects.
+     * Parses a constraint string into MultiConstraint and/or Constraint objects.
      *
      * @param string $constraints
      *
