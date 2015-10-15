@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [Unreleased]
+
+  * Added: tests to make sure `Constraint` inverses matching when
+    `Constraint::matches` is given any implementation other than itself.
+  * Break: `AbstractConstraint` was removed.
+  * Break: `Constraint::matchSpecific` was removed.
+
 ### [1.0.0] 2015-09-21
 
   * Break: `VersionConstraint` renamed to `Constraint`.
@@ -26,3 +33,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - Namespace: `Composer\Test\Package\Version` -> `Composer\Test\Semver`
     - Namespace: `Composer\Test\Package\LinkConstraint` -> `Composer\Test\Semver\Constraint`
   * Changed: code style using php-cs-fixer.
+
+[Unreleased]: https://github.com/composer/semver/compare/1.0.0...HEAD/
+[1.0.0]: https://github.com/composer/semver/compare/0.1.0...1.0.0/
+[0.1.0]: https://github.com/composer/semver/compare/5e0b9a4da...0.1.0

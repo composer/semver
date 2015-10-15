@@ -17,13 +17,13 @@ namespace Composer\Semver\Constraint;
 class MultiConstraint implements ConstraintInterface
 {
     /** @var ConstraintInterface[] */
-    protected $constraints;
+    private $constraints;
 
     /** @var string */
-    protected $prettyString;
+    private $prettyString;
 
     /** @var bool */
-    protected $conjunctive;
+    private $conjunctive;
 
     /**
      * @param ConstraintInterface[] $constraints A set of constraints

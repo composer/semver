@@ -17,7 +17,7 @@ namespace Composer\Semver\Constraint;
 class EmptyConstraint implements ConstraintInterface
 {
     /** @var string */
-    protected $prettyString;
+    private $prettyString;
 
     /**
      * @param ConstraintInterface $provider

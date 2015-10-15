@@ -12,6 +12,7 @@
 namespace Composer\Semver\Test\Constraint;
 
 use Composer\Semver\Constraint\Constraint;
+use Composer\Semver\Constraint\EmptyConstraint;
 
 class ConstraintTest extends \PHPUnit_Framework_TestCase
 {
@@ -87,19 +88,49 @@ class ConstraintTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($versionRequire->matches($versionProvide));
     }
 
+    public function testInverseMatchingOtherConstraints()
+    {
+        $constraint = new Constraint('>', '1.0.0');
+
+        $multiConstraint = $this
+            ->getMockBuilder('Composer\Semver\Constraint\MultiConstraint')
+            ->disableOriginalConstructor()
+            ->setMethods(array('matches'))
+            ->getMock()
+        ;
+
+        $emptyConstraint = $this
+            ->getMockBuilder('Composer\Semver\Constraint\EmptyConstraint')
+            ->setMethods(array('matches'))
+            ->getMock()
+        ;
+
+        foreach (array($multiConstraint, $emptyConstraint) as $mock) {
+            $mock
+                ->expects($this->once())
+                ->method('matches')
+                ->with($constraint)
+                ->willReturn(true)
+            ;
+        }
+
+        $this->assertTrue($constraint->matches($multiConstraint));
+        $this->assertTrue($constraint->matches($emptyConstraint));
+    }
+
     public function testComparableBranches()
     {
         $versionRequire = new Constraint('>', '0.12');
         $versionProvide = new Constraint('==', 'dev-foo');
 
         $this->assertFalse($versionRequire->matches($versionProvide));
-        $this->assertFalse($versionRequire->matchSpecific($versionProvide, true));
+        $this->assertFalse($versionRequire->matches($versionProvide, true));
 
         $versionRequire = new Constraint('<', '0.12');
         $versionProvide = new Constraint('==', 'dev-foo');
 
         $this->assertFalse($versionRequire->matches($versionProvide));
-        $this->assertTrue($versionRequire->matchSpecific($versionProvide, true));
+        $this->assertTrue($versionRequire->matches($versionProvide, true));
     }
 
     /**
