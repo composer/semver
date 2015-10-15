@@ -55,13 +55,13 @@ class Constraint implements ConstraintInterface
     );
 
     /** @var string */
-    protected $operator;
+    private $operator;
 
     /** @var string */
-    protected $version;
+    private $version;
 
     /** @var string */
-    protected $prettyString;
+    private $prettyString;
 
     /**
      * Get all supported comparison operators.
@@ -158,8 +158,8 @@ class Constraint implements ConstraintInterface
      */
     public function matches(ConstraintInterface $provider, $compareBranches = false)
     {
+        // turn matching around if provider is not an instance of self
         if (!($provider instanceof self)) {
-            // turn matching around to find a match
             return $provider->matches($this);
         }
 
