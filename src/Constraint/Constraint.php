@@ -158,7 +158,7 @@ class Constraint implements ConstraintInterface
      */
     public function matches(ConstraintInterface $provider, $compareBranches = false)
     {
-        if ($provider instanceof MultiConstraint) {
+        if (!($provider instanceof self)) {
             // turn matching around to find a match
             return $provider->matches($this);
         }
