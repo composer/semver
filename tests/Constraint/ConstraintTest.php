@@ -12,6 +12,7 @@
 namespace Composer\Semver\Test\Constraint;
 
 use Composer\Semver\Constraint\Constraint;
+use Composer\Semver\Constraint\EmptyConstraint;
 
 class ConstraintTest extends \PHPUnit_Framework_TestCase
 {
@@ -85,6 +86,36 @@ class ConstraintTest extends \PHPUnit_Framework_TestCase
         $versionProvide = new Constraint($provideOperator, $provideVersion);
 
         $this->assertFalse($versionRequire->matches($versionProvide));
+    }
+
+    public function testInverseMatchingOtherConstraints()
+    {
+        $constraint = new Constraint('>', '1.0.0');
+
+        $multiConstraint = $this
+            ->getMockBuilder('Composer\Semver\Constraint\MultiConstraint')
+            ->disableOriginalConstructor()
+            ->setMethods(array('matches'))
+            ->getMock()
+        ;
+
+        $emptyConstraint = $this
+            ->getMockBuilder('Composer\Semver\Constraint\EmptyConstraint')
+            ->setMethods(array('matches'))
+            ->getMock()
+        ;
+
+        foreach (array($multiConstraint, $emptyConstraint) as $mock) {
+            $mock
+                ->expects($this->once())
+                ->method('matches')
+                ->with($constraint)
+                ->willReturn(true)
+            ;
+        }
+
+        $this->assertTrue($constraint->matches($multiConstraint));
+        $this->assertTrue($constraint->matches($emptyConstraint));
     }
 
     public function testComparableBranches()
