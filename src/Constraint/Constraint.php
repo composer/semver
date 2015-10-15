@@ -55,10 +55,10 @@ class Constraint implements ConstraintInterface
     );
 
     /** @var string */
-    private $operator;
+    protected $operator;
 
     /** @var string */
-    private $version;
+    protected $version;
 
     /** @var string */
     protected $prettyString;
