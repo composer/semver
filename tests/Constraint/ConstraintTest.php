@@ -93,13 +93,13 @@ class ConstraintTest extends \PHPUnit_Framework_TestCase
         $versionProvide = new Constraint('==', 'dev-foo');
 
         $this->assertFalse($versionRequire->matches($versionProvide));
-        $this->assertFalse($versionRequire->matchSpecific($versionProvide, true));
+        $this->assertFalse($versionRequire->matches($versionProvide, true));
 
         $versionRequire = new Constraint('<', '0.12');
         $versionProvide = new Constraint('==', 'dev-foo');
 
         $this->assertFalse($versionRequire->matches($versionProvide));
-        $this->assertTrue($versionRequire->matchSpecific($versionProvide, true));
+        $this->assertTrue($versionRequire->matches($versionProvide, true));
     }
 
     /**

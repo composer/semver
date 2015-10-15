@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a constraint.
  */
-class Constraint extends AbstractConstraint
+class Constraint implements ConstraintInterface
 {
     /* operator integer values */
     const OP_EQ = 0;
@@ -60,6 +60,9 @@ class Constraint extends AbstractConstraint
     /** @var string */
     private $version;
 
+    /** @var string */
+    protected $prettyString;
+
     /**
      * Get all supported comparison operators.
      *
@@ -90,6 +93,26 @@ class Constraint extends AbstractConstraint
 
         $this->operator = self::$transOpStr[$operator];
         $this->version = $version;
+    }
+
+    /**
+     * @param string $prettyString
+     */
+    public function setPrettyString($prettyString)
+    {
+        $this->prettyString = $prettyString;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrettyString()
+    {
+        if ($this->prettyString) {
+            return $this->prettyString;
+        }
+
+        return $this->__toString();
     }
 
     /**
@@ -128,13 +151,18 @@ class Constraint extends AbstractConstraint
     }
 
     /**
-     * @param Constraint $provider
+     * @param ConstraintInterface $provider
      * @param bool $compareBranches
      *
      * @return bool
      */
-    public function matchSpecific(Constraint $provider, $compareBranches = false)
+    public function matches(ConstraintInterface $provider, $compareBranches = false)
     {
+        if ($provider instanceof MultiConstraint) {
+            // turn matching around to find a match
+            return $provider->matches($this);
+        }
+
         $noEqualOp = str_replace('=', '', self::$transOpInt[$this->operator]);
         $providerNoEqualOp = str_replace('=', '', self::$transOpInt[$provider->operator]);
 
