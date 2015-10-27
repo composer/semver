@@ -71,7 +71,6 @@ class Constraint implements ConstraintInterface
     public function matches(ConstraintInterface $provider)
     {
         if ($provider instanceof $this) {
-            // see note at bottom of this class declaration
             return $this->matchSpecific($provider);
         }
 
