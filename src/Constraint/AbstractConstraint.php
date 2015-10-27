@@ -26,17 +26,13 @@ abstract class AbstractConstraint implements ConstraintInterface
      */
     public function matches(ConstraintInterface $provider)
     {
-        if ($provider instanceof MultiConstraint) {
-            // turn matching around to find a match
-            return $provider->matches($this);
-        }
-
         if ($provider instanceof $this) {
             // see note at bottom of this class declaration
             return $this->matchSpecific($provider);
         }
 
-        return true;
+        // turn matching around to find a match
+        return $provider->matches($this);
     }
 
     /**
