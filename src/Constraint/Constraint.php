@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a constraint.
  */
-class Constraint extends AbstractConstraint
+class Constraint implements ConstraintInterface
 {
     /* operator integer values */
     const OP_EQ = 0;
@@ -55,10 +55,48 @@ class Constraint extends AbstractConstraint
     );
 
     /** @var string */
-    private $operator;
+    protected $operator;
 
     /** @var string */
-    private $version;
+    protected $version;
+
+    /** @var string */
+    protected $prettyString;
+
+    /**
+     * @param ConstraintInterface $provider
+     *
+     * @return bool
+     */
+    public function matches(ConstraintInterface $provider)
+    {
+        if ($provider instanceof $this) {
+            return $this->matchSpecific($provider);
+        }
+
+        // turn matching around to find a match
+        return $provider->matches($this);
+    }
+
+    /**
+     * @param string $prettyString
+     */
+    public function setPrettyString($prettyString)
+    {
+        $this->prettyString = $prettyString;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrettyString()
+    {
+        if ($this->prettyString) {
+            return $this->prettyString;
+        }
+
+        return $this->__toString();
+    }
 
     /**
      * Get all supported comparison operators.

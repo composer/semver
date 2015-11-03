@@ -11,6 +11,8 @@
 
 namespace Composer\Semver\Constraint;
 
+trigger_error('The ' . __CLASS__ . ' abstract class is deprecated, there is no replacement for it, it will be removed in the next major version.', E_USER_DEPRECATED);
+
 /**
  * Base constraint class.
  */
@@ -26,17 +28,13 @@ abstract class AbstractConstraint implements ConstraintInterface
      */
     public function matches(ConstraintInterface $provider)
     {
-        if ($provider instanceof MultiConstraint) {
-            // turn matching around to find a match
-            return $provider->matches($this);
-        }
-
         if ($provider instanceof $this) {
             // see note at bottom of this class declaration
             return $this->matchSpecific($provider);
         }
 
-        return true;
+        // turn matching around to find a match
+        return $provider->matches($this);
     }
 
     /**
