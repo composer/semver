@@ -9,12 +9,11 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Semver\Test;
+namespace Composer\Semver;
 
 use Composer\Semver\Constraint\EmptyConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
 use Composer\Semver\Constraint\Constraint;
-use Composer\Semver\VersionParser;
 
 class VersionParserTest extends \PHPUnit_Framework_TestCase
 {

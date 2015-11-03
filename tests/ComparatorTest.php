@@ -9,9 +9,7 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Semver\Test;
-
-use Composer\Semver\Comparator;
+namespace Composer\Semver;
 
 /**
  * @coversDefaultClass \Composer\Semver\Comparator

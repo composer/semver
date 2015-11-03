@@ -9,10 +9,7 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Semver\Test\Constraint;
-
-use Composer\Semver\Constraint\MultiConstraint;
-use Composer\Semver\Constraint\Constraint;
+namespace Composer\Semver\Constraint;
 
 class MultiConstraintTest extends \PHPUnit_Framework_TestCase
 {

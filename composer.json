@@ -44,7 +44,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Composer\\Semver\\Test\\": "tests"
+            "Composer\\Semver\\": "tests"
         }
     },
     "extra": {
