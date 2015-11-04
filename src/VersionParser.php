@@ -24,7 +24,7 @@ use Composer\Semver\Constraint\Constraint;
 class VersionParser
 {
     /** @var string */
-    private static $modifierRegex = '[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)(?:[.-]?(\d+))?)?([.-]?dev)?';
+    private static $modifierRegex = '[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)([.-]?\d+)*)?([.-]?dev)?';
 
     /** @var array */
     private static $stabilities = array(
