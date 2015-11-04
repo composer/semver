@@ -19,6 +19,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::greaterThan
      * @dataProvider greaterThanProvider
+     *
      * @uses \Composer\Semver\Comparator::compare
      *
      * @param string $version1
@@ -33,6 +34,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::greaterThanOrEqualTo
      * @dataProvider greaterThanOrEqualToProvider
+     *
      * @uses \Composer\Semver\Comparator::compare
      *
      * @param string $version1
@@ -47,6 +49,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::lessThan
      * @dataProvider lessThanProvider
+     *
      * @uses \Composer\Semver\Comparator::compare
      *
      * @param string $version1
@@ -61,6 +64,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::lessThanOrEqualTo
      * @dataProvider lessThanOrEqualToProvider
+     *
      * @uses \Composer\Semver\Comparator::compare
      *
      * @param string $version1
@@ -75,6 +79,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::equalTo
      * @dataProvider equalToProvider
+     *
      * @uses \Composer\Semver\Comparator::compare
      *
      * @param string $version1
@@ -89,6 +94,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::notEqualTo
      * @dataProvider notEqualToProvider
+     *
      * @uses \Composer\Semver\Comparator::compare
      *
      * @param string $version1

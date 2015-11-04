@@ -79,11 +79,13 @@ class SemverTest extends \PHPUnit_Framework_TestCase
     {
         $positive = array_map(function ($array) {
             array_unshift($array, true);
+
             return $array;
         }, $this->satisfiesProviderPositive());
 
         $negative = array_map(function ($array) {
             array_unshift($array, false);
+
             return $array;
         }, $this->satisfiesProviderNegative());
 

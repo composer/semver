@@ -371,9 +371,9 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
     public function hyphenConstraints()
     {
         return array(
-            array('1 - 2', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<',  '3.0.0.0-dev')),
+            array('1 - 2', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
             array('1.2.3 - 2.3.4.5', new Constraint('>=', '1.2.3.0-dev'), new Constraint('<=', '2.3.4.5')),
-            array('1.2-beta - 2.3', new Constraint('>=', '1.2.0.0-beta'), new Constraint('<',  '2.4.0.0-dev')),
+            array('1.2-beta - 2.3', new Constraint('>=', '1.2.0.0-beta'), new Constraint('<', '2.4.0.0-dev')),
             array('1.2-beta - 2.3-dev', new Constraint('>=', '1.2.0.0-beta'), new Constraint('<=', '2.3.0.0-dev')),
             array('1.2-RC - 2.3.1', new Constraint('>=', '1.2.0.0-RC'), new Constraint('<=', '2.3.1.0')),
             array('1.2.3-alpha - 2.3-RC', new Constraint('>=', '1.2.3.0-alpha'), new Constraint('<=', '2.3.0.0-RC')),
