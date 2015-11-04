@@ -88,6 +88,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
             'semver metadata' => array('dev-master+foo.bar', '9999999-dev'),
             'semver metadata/2' => array('1.0.0-beta.5+foo', '1.0.0.0-beta.5'),
             'semver metadata/3' => array('1.0.0+foo', '1.0.0.0'),
+            'semver metadata/4' => array('1.0.0-alpha.3.1+foo', '1.0.0.0-alpha.3.1'),
             'metadata w/ alias' => array('1.0.0+foo as 2.0', '1.0.0.0'),
         );
     }
