@@ -194,6 +194,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
         return array(
             'match any' => array('*', new EmptyConstraint()),
             'match any/2' => array('*.*',  new EmptyConstraint()),
+            'match any/2v' => array('v*.*', new EmptyConstraint()),
             'match any/3' => array('*.x.*', new EmptyConstraint()),
             'match any/4' => array('x.X.x.*', new EmptyConstraint()),
             'not equal' => array('<>1.0.0', new Constraint('<>', '1.0.0.0')),
@@ -249,7 +250,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
     public function wildcardConstraints()
     {
         return array(
-            array('2.*', new Constraint('>=', '2.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('v2.*', new Constraint('>=', '2.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
             array('2.*.*', new Constraint('>=', '2.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
             array('20.*', new Constraint('>=', '20.0.0.0-dev'), new Constraint('<', '21.0.0.0-dev')),
             array('20.*.*', new Constraint('>=', '20.0.0.0-dev'), new Constraint('<', '21.0.0.0-dev')),
@@ -291,7 +292,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
     public function tildeConstraints()
     {
         return array(
-            array('~1', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '2.0.0.0-dev')),
+            array('~v1', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '2.0.0.0-dev')),
             array('~1.0', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '2.0.0.0-dev')),
             array('~1.0.0', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '1.1.0.0-dev')),
             array('~1.2', new Constraint('>=', '1.2.0.0-dev'), new Constraint('<', '2.0.0.0-dev')),
@@ -330,7 +331,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
     public function caretConstraints()
     {
         return array(
-            array('^1', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '2.0.0.0-dev')),
+            array('^v1', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '2.0.0.0-dev')),
             array('^0', new Constraint('>=', '0.0.0.0-dev'), new Constraint('<', '1.0.0.0-dev')),
             array('^0.0', new Constraint('>=', '0.0.0.0-dev'), new Constraint('<', '0.1.0.0-dev')),
             array('^1.2', new Constraint('>=', '1.2.0.0-dev'), new Constraint('<', '2.0.0.0-dev')),
@@ -371,7 +372,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
     public function hyphenConstraints()
     {
         return array(
-            array('1 - 2', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('v1 - v2', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
             array('1.2.3 - 2.3.4.5', new Constraint('>=', '1.2.3.0-dev'), new Constraint('<=', '2.3.4.5')),
             array('1.2-beta - 2.3', new Constraint('>=', '1.2.0.0-beta'), new Constraint('<', '2.4.0.0-dev')),
             array('1.2-beta - 2.3-dev', new Constraint('>=', '1.2.0.0-beta'), new Constraint('<=', '2.3.0.0-dev')),
