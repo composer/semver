@@ -23,13 +23,23 @@ use Composer\Semver\Constraint\Constraint;
  */
 class VersionParser
 {
-    /** @var string */
-    private static $modifierRegex = '[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)(?:[.-]?(\d+))?)?([.-]?dev)?';
+    /**
+     * Regex to match pre-release data (sort of).
+     *
+     * Due to backwards compatibility:
+     *   - Instead of enforcing hyphen, an underscore, dot or nothing at all are also accepted.
+     *   - Only stabilities as recognized by Composer are allowed to precede a numerical identifier.
+     *   - Numerical-only pre-release identifiers are not supported, see tests.
+     *
+     *                        |--------------|
+     * [major].[minor].[patch] -[pre-release] +[build-metadata]
+     *
+     * @var string
+     */
+    private static $modifierRegex = '[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)((?:[.-]?\d+)*)?)?([.-]?dev)?';
 
     /** @var array */
-    private static $stabilities = array(
-        'stable', 'RC', 'beta', 'alpha', 'dev',
-    );
+    private static $stabilities = array('stable', 'RC', 'beta', 'alpha', 'dev');
 
     /**
      * Returns the stability of a version.
@@ -133,7 +143,7 @@ class VersionParser
                 if ('stable' === $matches[$index]) {
                     return $version;
                 }
-                $version .= '-' . $this->expandStability($matches[$index]) . (!empty($matches[$index + 1]) ? $matches[$index + 1] : '');
+                $version .= '-' . $this->expandStability($matches[$index]) . (!empty($matches[$index + 1]) ? ltrim($matches[$index + 1], '.-') : '');
             }
 
             if (!empty($matches[$index + 2])) {

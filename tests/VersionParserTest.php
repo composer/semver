@@ -88,6 +88,11 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
             'semver metadata' => array('dev-master+foo.bar', '9999999-dev'),
             'semver metadata/2' => array('1.0.0-beta.5+foo', '1.0.0.0-beta5'),
             'semver metadata/3' => array('1.0.0+foo', '1.0.0.0'),
+            'semver metadata/4' => array('1.0.0-alpha.3.1+foo', '1.0.0.0-alpha3.1'),
+            'semver metadata/5' => array('1.0.0-alpha2.1+foo', '1.0.0.0-alpha2.1'),
+            'semver metadata/6' => array('1.0.0-alpha-2.1-3+foo', '1.0.0.0-alpha2.1-3'),
+            // not supported for BC 'semver metadata/7' => array('1.0.0-0.3.7', '1.0.0.0-0.3.7'),
+            // not supported for BC 'semver metadata/8' => array('1.0.0-x.7.z.92', '1.0.0.0-x.7.z.92'),
             'metadata w/ alias' => array('1.0.0+foo as 2.0', '1.0.0.0'),
         );
     }
