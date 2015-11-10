@@ -209,6 +209,9 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
             array('1.25.0', '<', '1.24.0', false),
             array('1.25.0', '<', '1.25.0', false),
             array('1.25.0', '<', '1.26.0', true),
+            array('1.25.0-beta2.1', '<', '1.25.0-b.3', true),
+            array('1.25.0-b2.1', '<', '1.25.0beta.3', true),
+            array('1.25.0-b-2.1', '<', '1.25.0-rc', true),
 
             array('1.25.0', '<=', '1.24.0', false),
             array('1.25.0', '<=', '1.25.0', true),
@@ -217,6 +220,8 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
             array('1.25.0', '==', '1.24.0', false),
             array('1.25.0', '==', '1.25.0', true),
             array('1.25.0', '==', '1.26.0', false),
+            array('1.25.0-beta2.1', '==', '1.25.0-b.2.1', true),
+            array('1.25.0beta2.1', '==', '1.25.0-b2.1', true),
 
             array('1.25.0', '=', '1.24.0', false),
             array('1.25.0', '=', '1.25.0', true),
