@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [1.2.0] 2015-11-10
+
+  * Changed: allow multiple numerical identifiers in 'pre-release' version part.
+  * Changed: add more 'v' prefix support.
+
 ### [1.1.0] 2015-11-03
 
   * Changed: dropped redundant `test` namespace.
@@ -35,6 +40,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - Namespace: `Composer\Test\Package\LinkConstraint` -> `Composer\Test\Semver\Constraint`
   * Changed: code style using php-cs-fixer.
 
+[1.2.0]: https://github.com/composer/semver/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/composer/semver/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/composer/semver/compare/0.1.0...1.0.0
 [0.1.0]: https://github.com/composer/semver/compare/5e0b9a4da...0.1.0
