@@ -274,7 +274,7 @@ class VersionParser
             }
         }
 
-        if (preg_match('{^[xX*](\.[xX*])*$}i', $constraint)) {
+        if (preg_match('{^v?[xX*](\.[xX*])*$}i', $constraint)) {
             return array(new EmptyConstraint());
         }
 
@@ -372,7 +372,7 @@ class VersionParser
         //
         // Any of X, x, or * may be used to "stand in" for one of the numeric values in the [major, minor, patch] tuple.
         // A partial version range is treated as an X-Range, so the special character is in fact optional.
-        if (preg_match('{^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.[xX*])+$}', $constraint, $matches)) {
+        if (preg_match('{^v?(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.[xX*])+$}', $constraint, $matches)) {
             if (isset($matches[3]) && '' !== $matches[3]) {
                 $position = 3;
             } elseif (isset($matches[2]) && '' !== $matches[2]) {
