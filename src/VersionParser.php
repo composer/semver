@@ -259,6 +259,21 @@ class VersionParser
 
         if (1 === count($orGroups)) {
             $constraint = $orGroups[0];
+        } elseif (2 === count($orGroups)
+            // parse the two OR groups and if they are contiguous we collapse
+            // them into one constraint
+            && $orGroups[0] instanceof MultiConstraint
+            && $orGroups[1] instanceof MultiConstraint
+            && ($a = (string) $orGroups[0])
+            && substr($a, 0, 3) === '[>=' && (false !== ($posA = strpos($a, '<', 4)))
+            && ($b = (string) $orGroups[1])
+            && substr($b, 0, 3) === '[>=' && (false !== ($posB = strpos($b, '<', 4)))
+            && substr($a, $posA + 2, -1) === substr($b, 4, $posB - 5)
+        ) {
+            $constraint = new MultiConstraint(array(
+                new Constraint('>=', substr($a, 4, $posA - 5)),
+                new Constraint('<', substr($b, $posB + 2, -1)),
+            ));
         } else {
             $constraint = new MultiConstraint($orGroups, false);
         }
