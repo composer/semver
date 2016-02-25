@@ -390,6 +390,15 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testParseConstraintsMultiCollapsesContiguous()
+    {
+        $parser = new VersionParser();
+        $first = new Constraint('>=', '2.5.0.0-dev');
+        $second = new Constraint('<', '4.0.0.0-dev');
+        $multi = new MultiConstraint(array($first, $second));
+        $this->assertSame((string) $multi, (string) $parser->parseConstraints('^2.5 || ^3.0'));
+    }
+
     /**
      * @dataProvider multiConstraintProvider
      */
