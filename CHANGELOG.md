@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [1.3.0] 2016-02-25
+
+  * Fixed: stability parsing - [composer/composer#1234](https://github.com/composer/composer/issues/4889).
+  * Changed: collapse contiguous constraints when possible.
+
 ### [1.2.0] 2015-11-10
 
   * Changed: allow multiple numerical identifiers in 'pre-release' version part.
@@ -40,6 +45,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - Namespace: `Composer\Test\Package\LinkConstraint` -> `Composer\Test\Semver\Constraint`
   * Changed: code style using php-cs-fixer.
 
+[1.3.0]: https://github.com/composer/semver/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/composer/semver/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/composer/semver/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/composer/semver/compare/0.1.0...1.0.0
