@@ -56,7 +56,7 @@ class VersionParser
             return 'dev';
         }
 
-        preg_match('{' . self::$modifierRegex . '$}i', strtolower($version), $match);
+        preg_match('{' . self::$modifierRegex . '(?:\+.*)?$}i', strtolower($version), $match);
         if (!empty($match[3])) {
             return 'dev';
         }
