@@ -36,6 +36,30 @@ class MultiConstraint implements ConstraintInterface
     }
 
     /**
+     * @return ConstraintInterface[]
+     */
+    public function getConstraints()
+    {
+        return $this->constraints;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isConjunctive()
+    {
+        return $this->conjunctive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDisjunctive()
+    {
+        return !$this->conjunctive;
+    }
+
+    /**
      * @param ConstraintInterface $provider
      *
      * @return bool
