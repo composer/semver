@@ -86,7 +86,6 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
             'parses arbitrary/3' => array('dev-feature/foo', 'dev-feature/foo'),
             'parses arbitrary/4' => array('dev-feature+issue-1', 'dev-feature+issue-1'),
             'ignores aliases' => array('dev-master as 1.0.0', '9999999-dev'),
-            'semver metadata' => array('dev-master+foo.bar', '9999999-dev'),
             'semver metadata/2' => array('1.0.0-beta.5+foo', '1.0.0.0-beta5'),
             'semver metadata/3' => array('1.0.0+foo', '1.0.0.0'),
             'semver metadata/4' => array('1.0.0-alpha.3.1+foo', '1.0.0.0-alpha3.1'),
