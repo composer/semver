@@ -84,6 +84,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
             'parses arbitrary' => array('dev-feature-foo', 'dev-feature-foo'),
             'parses arbitrary/2' => array('DEV-FOOBAR', 'dev-FOOBAR'),
             'parses arbitrary/3' => array('dev-feature/foo', 'dev-feature/foo'),
+            'parses arbitrary/4' => array('dev-feature+issue-1', 'dev-feature+issue-1'),
             'ignores aliases' => array('dev-master as 1.0.0', '9999999-dev'),
             'semver metadata' => array('dev-master+foo.bar', '9999999-dev'),
             'semver metadata/2' => array('1.0.0-beta.5+foo', '1.0.0.0-beta5'),
@@ -143,6 +144,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
             'parses trunk' => array('trunk', '9999999-dev'),
             'parses arbitrary' => array('feature-a', 'dev-feature-a'),
             'parses arbitrary/2' => array('FOOBAR', 'dev-FOOBAR'),
+            'parses arbitrary/3' => array('feature+issue-1', 'dev-feature+issue-1'),
         );
     }
 
@@ -534,6 +536,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
             array('RC', '3.0-RC2'),
             array('dev', 'dev-master'),
             array('dev', '3.1.2-dev'),
+            array('dev', 'dev-feature+issue-1'),
             array('stable', '3.1.2-p1'),
             array('stable', '3.1.2-pl2'),
             array('stable', '3.1.2-patch'),
