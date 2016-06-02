@@ -110,18 +110,19 @@ class VersionParser
             $version = $match[1];
         }
 
-        // strip off build metadata
-        if (preg_match('{^([^,\s+]++)\+[^\s]++$}', $version, $match)) {
-            $version = $match[1];
-        }
-
         // match master-like branches
         if (preg_match('{^(?:dev-)?(?:master|trunk|default)$}i', $version)) {
             return '9999999-dev';
         }
 
+        // if requirement is branch-like, use full name
         if ('dev-' === strtolower(substr($version, 0, 4))) {
             return 'dev-' . substr($version, 4);
+        }
+
+        // strip off build metadata
+        if (preg_match('{^([^,\s+]++)\+[^\s]++$}', $version, $match)) {
+            $version = $match[1];
         }
 
         // match classical versioning
