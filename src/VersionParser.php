@@ -115,6 +115,7 @@ class VersionParser
             return '9999999-dev';
         }
 
+        // if requirement is branch-like, use full name
         if ('dev-' === strtolower(substr($version, 0, 4))) {
             return 'dev-' . substr($version, 4);
         }
