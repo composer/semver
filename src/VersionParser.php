@@ -265,6 +265,8 @@ class VersionParser
             // them into one constraint
             && $orGroups[0] instanceof MultiConstraint
             && $orGroups[1] instanceof MultiConstraint
+            && 2 === count($orGroups[0]->getConstraints())
+            && 2 === count($orGroups[1]->getConstraints())
             && ($a = (string) $orGroups[0])
             && substr($a, 0, 3) === '[>=' && (false !== ($posA = strpos($a, '<', 4)))
             && ($b = (string) $orGroups[1])

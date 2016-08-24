@@ -400,6 +400,46 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame((string) $multi, (string) $parser->parseConstraints('^2.5 || ^3.0'));
     }
 
+    public function testParseCaretConstraintsMultiDoesNotCollapseNonContiguousRange()
+    {
+        $parser = new VersionParser();
+        $first = new MultiConstraint(array(
+            new Constraint('>=', '0.2.0.0-dev'),
+            new Constraint('<', '0.3.0.0-dev'),
+        ));
+        $second = new MultiConstraint(array(
+            new Constraint('>=', '1.0.0.0-dev'),
+            new Constraint('<', '2.0.0.0-dev'),
+        ));
+        $multi = new MultiConstraint(array($first, $second), false);
+        $parsed = $parser->parseConstraints('^0.2 || ^1.0');
+        $this->assertSame((string) $multi, (string) $parsed);
+    }
+
+    public function testDoNotCollapseContiguousRangeIfOtherConstraintsAlsoApply()
+    {
+        $parser = new VersionParser();
+
+        $first = new MultiConstraint(array(
+            new Constraint('>=', '0.1.0.0-dev'),
+            new Constraint('<', '1.0.0.0-dev'),
+        ));
+        $second = new MultiConstraint(array(
+            new Constraint('>=', '1.0.0.0-dev'),
+            new Constraint('<', '2.0.0.0-dev'),
+            new Constraint('!=', '1.0.1.0'),
+        ));
+        $multi = new MultiConstraint(array($first, $second), false);
+
+        $version = new Constraint('=', '1.0.1.0');
+        $this->assertFalse($multi->matches($version), 'Generated expectation should not allow version "1.0.1.0"');
+
+        $parsed = $parser->parseConstraints('~0.1 || ~1.0 !=1.0.1');
+        $this->assertFalse($parsed->matches($version), '"~0.1 || ~1.0 !=1.0.1" should not allow version "1.0.1.0"');
+
+        $this->assertSame((string) $multi, (string) $parsed);
+    }
+
     /**
      * @dataProvider multiConstraintProvider
      */
