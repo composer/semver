@@ -153,6 +153,7 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
             array('1.25.0', '1.24.0', false),
             array('1.25.0', '1.25.0', false),
             array('1.25.0', '1.26.0', true),
+            array('1.0.0', '1.2-dev', true),
         );
     }
 
