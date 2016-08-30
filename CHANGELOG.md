@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [1.4.2] 2016-08-30
+
+  * Fixed: collapsing of complex constraints lead to buggy constraints
+
 ### [1.4.1] 2016-06-02
 
   * Changed: branch-like requirements no longer strip build metadata - [composer/semver#38](https://github.com/composer/semver/pull/38).
