@@ -76,6 +76,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
             'parses numbers' => array('2010-01-02.5', '2010.01.02.5'),
             'parses dates y.m.Y' => array('2010.1.555', '2010.1.555.0'),
             'parses datetime' => array('20100102-203040', '20100102.203040'),
+            'parses dates Ymd.minor.patch' => array('20150920.0.0', '20150920.0.0'),
             'parses dt+number' => array('20100102203040-10', '20100102203040.10'),
             'parses dt+patch' => array('20100102-203040-p1', '20100102.203040-patch1'),
             'parses master' => array('dev-master', '9999999-dev'),
