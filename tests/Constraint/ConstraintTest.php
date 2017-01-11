@@ -13,6 +13,44 @@ namespace Composer\Semver\Constraint;
 
 class ConstraintTest extends \PHPUnit_Framework_TestCase
 {
+    protected $constraint;
+    protected $versionProvide;
+
+    protected function setUp()
+    {
+        $this->constraint = new Constraint('==', '1');
+        $this->versionProvide = new Constraint('==', 'dev-foo');
+    }
+
+    protected function tearDown()
+    {
+        unset($this->constraint);
+        unset($this->versionProvide);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testVersionCompareInvalidArgumentException()
+    {
+        $result = $this->constraint->versionCompare('1.1', '1.2', null);
+    }
+
+    public function testGetPrettyString()
+    {
+        $expectedString = 'pretty-string';
+        $this->constraint->setPrettyString($expectedString);
+        $result = $this->constraint->getPrettyString();
+        
+        $this->assertSame($expectedString, $result);
+        
+        $expectedVersion = '== 1';
+        $this->constraint->setPrettyString(null);
+        $result = $this->constraint->getPrettyString();
+        
+        $this->assertSame($expectedVersion, $result);
+    }
+
     public static function successfulVersionMatches()
     {
         return array(
@@ -119,16 +157,14 @@ class ConstraintTest extends \PHPUnit_Framework_TestCase
     public function testComparableBranches()
     {
         $versionRequire = new Constraint('>', '0.12');
-        $versionProvide = new Constraint('==', 'dev-foo');
 
-        $this->assertFalse($versionRequire->matches($versionProvide));
-        $this->assertFalse($versionRequire->matchSpecific($versionProvide, true));
+        $this->assertFalse($versionRequire->matches($this->versionProvide));
+        $this->assertFalse($versionRequire->matchSpecific($this->versionProvide, true));
 
         $versionRequire = new Constraint('<', '0.12');
-        $versionProvide = new Constraint('==', 'dev-foo');
 
-        $this->assertFalse($versionRequire->matches($versionProvide));
-        $this->assertTrue($versionRequire->matchSpecific($versionProvide, true));
+        $this->assertFalse($versionRequire->matches($this->versionProvide));
+        $this->assertTrue($versionRequire->matchSpecific($this->versionProvide, true));
     }
 
     /**

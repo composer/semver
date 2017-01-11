@@ -58,6 +58,22 @@ class SemverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($rsorted, Semver::rsort($versions));
     }
 
+    public function testUsortShouldInitialVersionParserClass()
+    {
+        $versions = array('1.0', '2.0', '2.1');
+        $semver = new \ReflectionClass('\Composer\Semver\Semver');
+        $versionParserProperty = $semver->getProperty('versionParser');
+        $versionParserProperty->setAccessible(true);
+        $versionParserProperty = $versionParserProperty->setValue(null);
+        
+        $manipulateVersionStringMethod = $semver->getMethod('usort');
+        $manipulateVersionStringMethod->setAccessible(true);
+        $result = $manipulateVersionStringMethod->invoke(new Semver(), $versions, 1);
+        
+        $this->assertInternalType('array', $result);
+        $this->assertCount(3, $versions);
+    }
+
     /**
      * @return array
      */
