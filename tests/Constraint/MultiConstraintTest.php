@@ -17,7 +17,6 @@ class MultiConstraintTest extends \PHPUnit_Framework_TestCase
     protected $versionRequireStart;
     protected $versionRequireEnd;
 
-
     protected function setUp()
     {
         $this->multiConstraint = new MultiConstraint(array());
