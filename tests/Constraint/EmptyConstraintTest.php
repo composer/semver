@@ -22,12 +22,6 @@ class EmptyConstraintTest extends \PHPUnit_Framework_TestCase
         $this->emptyConstraint = new EmptyConstraint();
     }
 
-    protected function tearDown()
-    {
-        unset($this->versionProvide);
-        unset($this->emptyConstraint);
-    }
-
     public function testMatches()
     {
         $result = $this->emptyConstraint->matches($this->versionProvide);

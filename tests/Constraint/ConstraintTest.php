@@ -22,12 +22,6 @@ class ConstraintTest extends \PHPUnit_Framework_TestCase
         $this->versionProvide = new Constraint('==', 'dev-foo');
     }
 
-    protected function tearDown()
-    {
-        unset($this->constraint);
-        unset($this->versionProvide);
-    }
-
     /**
      * @expectedException \InvalidArgumentException
      */

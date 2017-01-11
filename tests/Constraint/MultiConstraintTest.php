@@ -24,13 +24,6 @@ class MultiConstraintTest extends \PHPUnit_Framework_TestCase
         $this->versionRequireEnd = new Constraint('<', '1.2');
     }
 
-    protected function tearDown()
-    {
-        unset($this->multiConstraint);
-        unset($this->versionRequireStart);
-        unset($this->versionRequireEnd);
-    }
-
     public function testIsConjunctive()
     {
         $result = $this->multiConstraint->isConjunctive();
