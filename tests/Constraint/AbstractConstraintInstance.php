@@ -13,4 +13,8 @@ namespace Composer\Semver\Constraint;
 
 class AbstractConstraintInstance extends AbstractConstraint
 {
+    public function __toString()
+    {
+        return $this->prettyString;
+    }
 }
