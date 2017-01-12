@@ -20,10 +20,5 @@ class AbstractConstraintTest extends \PHPUnit_Framework_TestCase
     {
         $expectedString = 'pretty string';
         $constraint = new AbstractConstraintInstance();
-
-        $constraint->setPrettyString('pretty-string');
-        $result = $constraint->getPrettyString();
-        
-        $this->assertSame($expectedString, $result);
     }
 }
