@@ -25,4 +25,4 @@ before_script:
   - composer install --no-interaction --no-progress --prefer-dist
 
 script:
-  - vendor/bin/phpunit
+  - vendor/bin/phpunit -d error_reporting=16384
