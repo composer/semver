@@ -18,8 +18,6 @@ php:
 
 matrix:
   fast_finish: true
-  allow_failures:
-    - php: hhvm
 
 before_script:
   - composer install --no-interaction --no-progress --prefer-dist
