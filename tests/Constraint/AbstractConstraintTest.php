@@ -19,14 +19,10 @@ class AbstractConstraintTest extends \PHPUnit_Framework_TestCase
     public function testAbstractConstraintWithDeprecated()
     {
         $expectedString = 'pretty string';
-        $constraint = new \ReflectionClass('\Composer\Semver\Constraint\AbstractConstraint');
-        $setPrettyString = $constraint->getMethod('setPrettyString');
-        $setPrettyString->setAccessible(true);
-        $setPrettyString->invoke($constraint, 'pretty string');
-        
-        $getPrettyString = $constraint->getMethod('getPrettyString');
-        $getPrettyString->setAccessible(true);
-        $result = $setPrettyString->invoke($constraint);
+        $constraint = new AbstractConstraintInstance();
+
+        $constraint->setPrettyString('pretty-string');
+        $result = $constraint->getPrettyString();
         
         $this->assertSame($expectedString, $result);
     }
