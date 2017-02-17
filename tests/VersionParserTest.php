@@ -116,6 +116,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
             'too many bits' => array('1.0.0.0.0'),
             'non-dev arbitrary' => array('feature-foo'),
             'metadata w/ space' => array('1.0.0+foo bar'),
+            'maven style release' => array('1.0.1-SNAPSHOT'),
         );
     }
 
