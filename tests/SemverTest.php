@@ -69,6 +69,11 @@ class SemverTest extends \PHPUnit_Framework_TestCase
                 array('0.1', '0.1', '1.0', '2.4.0-alpha', '2.4.0', '3.2.1'),
                 array('3.2.1', '2.4.0', '2.4.0-alpha', '1.0', '0.1', '0.1'),
             ),
+            array(
+                array('2.2.8-devphp7', '2.2.8', '2.2.7'),
+                array('2.2.7', '2.2.8-devphp7', '2.2.8'),
+                array('2.2.8', '2.2.8-devphp7', '2.2.7'),
+            ),
         );
     }
 
@@ -171,6 +176,7 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('1.4.2', '^1.2'),
             array('1.4.2', '^1.2 ^1'),
             array('0.0.1-beta', '^0.0.1-alpha'),
+            array('2.2.8-devphp7', '>=2.2.7'),
         );
     }
 
@@ -225,6 +231,7 @@ class SemverTest extends \PHPUnit_Framework_TestCase
             array('2.0.0-alpha', '^1.2.3'),
             array('1.2.2', '^1.2.3'),
             array('1.1.9', '^1.2'),
+            array('2.2.8-devphp7', '>=2.2.9'),
         );
     }
 
