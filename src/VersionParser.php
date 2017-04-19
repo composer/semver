@@ -125,6 +125,11 @@ class VersionParser
             $version = $match[1];
         }
 
+        // parse PHP versions in format of "7.0.8-1~dotdeb"
+        if(preg_match('{([^,\\s+]+[0-9])-[0-9]~}', $version, $match)){
+            $version = $match[1];
+        }
+
         // match classical versioning
         if (preg_match('{^v?(\d{1,5})(\.\d++)?(\.\d++)?(\.\d++)?' . self::$modifierRegex . '$}i', $version, $matches)) {
             $version = $matches[1]

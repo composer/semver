@@ -94,6 +94,7 @@ class VersionParserTest extends \PHPUnit_Framework_TestCase
             // not supported for BC 'semver metadata/7' => array('1.0.0-0.3.7', '1.0.0.0-0.3.7'),
             // not supported for BC 'semver metadata/8' => array('1.0.0-x.7.z.92', '1.0.0.0-x.7.z.92'),
             'metadata w/ alias' => array('1.0.0+foo as 2.0', '1.0.0.0'),
+            'parses PHP version' => array('7.0.8-1~dotdeb', '7.0.8.0')
         );
     }
 
