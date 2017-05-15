@@ -17,6 +17,7 @@ php:
   - 7.0
   - 7.1
   - hhvm
+  - nightly
 
 matrix:
   fast_finish: true
