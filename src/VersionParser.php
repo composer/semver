@@ -322,11 +322,11 @@ class VersionParser
             }
 
             // Work out which position in the version we are operating at
-            if (isset($matches[4]) && '' !== $matches[4]) {
+            if (isset($matches[4]) && '' !== $matches[4] && null !== $matches[4]) {
                 $position = 4;
-            } elseif (isset($matches[3]) && '' !== $matches[3]) {
+            } elseif (isset($matches[3]) && '' !== $matches[3] && null !== $matches[3]) {
                 $position = 3;
-            } elseif (isset($matches[2]) && '' !== $matches[2]) {
+            } elseif (isset($matches[2]) && '' !== $matches[2] && null !== $matches[2]) {
                 $position = 2;
             } else {
                 $position = 1;
@@ -368,9 +368,9 @@ class VersionParser
         // versions 0.X >=0.1.0, and no updates for versions 0.0.X
         if (preg_match('{^\^' . $versionRegex . '($)}i', $constraint, $matches)) {
             // Work out which position in the version we are operating at
-            if ('0' !== $matches[1] || '' === $matches[2]) {
+            if ('0' !== $matches[1] || '' === $matches[2] || null === $matches[2]) {
                 $position = 1;
-            } elseif ('0' !== $matches[2] || '' === $matches[3]) {
+            } elseif ('0' !== $matches[2] || '' === $matches[3] || null === $matches[3]) {
                 $position = 2;
             } else {
                 $position = 3;
