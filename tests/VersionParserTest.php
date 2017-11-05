@@ -14,8 +14,9 @@ namespace Composer\Semver;
 use Composer\Semver\Constraint\EmptyConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
 use Composer\Semver\Constraint\Constraint;
+use PHPUnit\Framework\TestCase;
 
-class VersionParserTest extends \PHPUnit_Framework_TestCase
+class VersionParserTest extends TestCase
 {
     /**
      * @dataProvider numericAliasVersions

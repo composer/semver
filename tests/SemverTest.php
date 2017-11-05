@@ -11,10 +11,12 @@
 
 namespace Composer\Semver;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @coversDefaultClass \Composer\Semver\Semver
  */
-class SemverTest extends \PHPUnit_Framework_TestCase
+class SemverTest extends TestCase
 {
     /**
      * @covers ::satisfies
