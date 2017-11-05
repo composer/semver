@@ -11,7 +11,9 @@
 
 namespace Composer\Semver\Constraint;
 
-class MultiConstraintTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class MultiConstraintTest extends TestCase
 {
     public function testMultiVersionMatchSucceeds()
     {

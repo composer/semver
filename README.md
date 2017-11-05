@@ -22,7 +22,7 @@ $ composer require composer/semver
 Requirements
 ------------
 
-* PHP 5.3.2 is required but using the latest version of PHP is highly recommended.
+* PHP 5.6 is required but using the latest version of PHP is highly recommended.
 
 
 Version Comparison
