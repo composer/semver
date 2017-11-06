@@ -11,10 +11,12 @@
 
 namespace Composer\Semver;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @coversDefaultClass \Composer\Semver\Comparator
  */
-class ComparatorTest extends \PHPUnit_Framework_TestCase
+class ComparatorTest extends TestCase
 {
     /**
      * @covers ::greaterThan
