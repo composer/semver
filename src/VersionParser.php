@@ -334,19 +334,11 @@ class VersionParser
 
             // Calculate the stability suffix
             $stabilitySuffix = '';
-            if (!empty($matches[5])) {
-                $stabilitySuffix .= '-' . $this->expandStability($matches[5]) . (!empty($matches[6]) ? $matches[6] : '');
-            }
-
-            if (!empty($matches[7])) {
+            if (empty($matches[5]) && empty($matches[7])) {
                 $stabilitySuffix .= '-dev';
             }
 
-            if (!$stabilitySuffix) {
-                $stabilitySuffix = '-dev';
-            }
-
-            $lowVersion = $this->manipulateVersionString($matches, $position, 0) . $stabilitySuffix;
+            $lowVersion = $this->normalize(substr($constraint . $stabilitySuffix, 1));
             $lowerBound = new Constraint('>=', $lowVersion);
 
             // For upper bound, we increment the position of one more significance,

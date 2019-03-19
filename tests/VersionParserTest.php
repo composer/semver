@@ -77,8 +77,13 @@ class VersionParserTest extends TestCase
             'parses numbers' => array('2010-01-02.5', '2010.01.02.5'),
             'parses dates y.m.Y' => array('2010.1.555', '2010.1.555.0'),
             'parses datetime' => array('20100102-203040', '20100102.203040'),
+            'parses date dev' => array('20100102.x-dev', '20100102.9999999.9999999.9999999-dev'),
+            'parses datetime dev' => array('20100102.203040.x-dev', '20100102.203040.9999999.9999999-dev'),
             'parses dt+number' => array('20100102203040-10', '20100102203040.10'),
             'parses dt+patch' => array('20100102-203040-p1', '20100102.203040-patch1'),
+            'parses dt Ym' => array('201903.0', '201903.0'),
+            'parses dt Ym dev' => array('201903.x-dev', '201903.9999999.9999999.9999999-dev'),
+            'parses dt Ym+patch' => array('201903.0-p2', '201903.0-patch2'),
             'parses master' => array('dev-master', '9999999-dev'),
             'parses trunk' => array('dev-trunk', '9999999-dev'),
             'parses branches' => array('1.x-dev', '1.9999999.9999999.9999999-dev'),
@@ -310,7 +315,11 @@ class VersionParserTest extends TestCase
             array('~1.2-b2', new Constraint('>=', '1.2.0.0-beta2'), new Constraint('<', '2.0.0.0-dev')),
             array('~1.2-BETA2', new Constraint('>=', '1.2.0.0-beta2'), new Constraint('<', '2.0.0.0-dev')),
             array('~1.2.2-dev', new Constraint('>=', '1.2.2.0-dev'), new Constraint('<', '1.3.0.0-dev')),
-            array('~1.2.2-stable', new Constraint('>=', '1.2.2.0-stable'), new Constraint('<', '1.3.0.0-dev')),
+            array('~1.2.2-stable', new Constraint('>=', '1.2.2.0'), new Constraint('<', '1.3.0.0-dev')),
+            array('~201903.0', new Constraint('>=', '201903.0-dev'), new Constraint('<', '201904.0.0.0-dev')),
+            array('~201903.0-beta', new Constraint('>=', '201903.0-beta'), new Constraint('<', '201904.0.0.0-dev')),
+            array('~201903.0-stable', new Constraint('>=', '201903.0'), new Constraint('<', '201904.0.0.0-dev')),
+            array('~201903.205830.1-stable', new Constraint('>=', '201903.205830.1'), new Constraint('<', '201903.205831.0.0-dev')),
         );
     }
 
@@ -352,6 +361,10 @@ class VersionParserTest extends TestCase
             array('^0.0.3', new Constraint('>=', '0.0.3.0-dev'), new Constraint('<', '0.0.4.0-dev')),
             array('^0.0.3-alpha', new Constraint('>=', '0.0.3.0-alpha'), new Constraint('<', '0.0.4.0-dev')),
             array('^0.0.3-dev', new Constraint('>=', '0.0.3.0-dev'), new Constraint('<', '0.0.4.0-dev')),
+            array('^0.0.3-stable', new Constraint('>=', '0.0.3.0'), new Constraint('<', '0.0.4.0-dev')),
+            array('^201903.0', new Constraint('>=', '201903.0-dev'), new Constraint('<', '201904.0.0.0-dev')),
+            array('^201903.0-beta', new Constraint('>=', '201903.0-beta'), new Constraint('<', '201904.0.0.0-dev')),
+            array('^201903.205830.1-stable', new Constraint('>=', '201903.205830.1'), new Constraint('<', '201904.0.0.0-dev')),
         );
     }
 
