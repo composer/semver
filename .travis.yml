@@ -17,10 +17,14 @@ php:
   - 7.0
   - 7.1
   - 7.2
-  - hhvm
+  - 7.3
+  - hhvm-3.18
   - nightly
 
 matrix:
+  include:
+    - dist: precise
+      php: 5.3
   fast_finish: true
   allow_failures:
     - php: nightly
