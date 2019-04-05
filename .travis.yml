@@ -18,7 +18,7 @@ php:
   - 7.1
   - 7.2
   - 7.3
-  - hhvm-3.18
+  - 7.4snapshot
   - nightly
 
 matrix:
