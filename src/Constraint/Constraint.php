@@ -197,13 +197,9 @@ class Constraint implements ConstraintInterface
         if ($this->versionCompare($provider->version, $this->version, self::$transOpInt[$this->operator], $compareBranches)) {
             // special case, e.g. require >= 1.0 and provide < 1.0
             // 1.0 >= 1.0 but 1.0 is outside of the provided interval
-            if ($provider->version === $this->version
+            return !($provider->version === $this->version
                 && self::$transOpInt[$provider->operator] === $providerNoEqualOp
-                && self::$transOpInt[$this->operator] !== $noEqualOp) {
-                return false;
-            }
-
-            return true;
+                && self::$transOpInt[$this->operator] !== $noEqualOp);
         }
 
         return false;

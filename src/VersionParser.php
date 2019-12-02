@@ -503,7 +503,7 @@ class VersionParser
 
                     // Return null on a carry overflow
                     if ($i === 1) {
-                        return;
+                        return null;
                     }
                 }
             }
