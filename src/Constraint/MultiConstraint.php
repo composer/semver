@@ -102,7 +102,7 @@ class MultiConstraint implements ConstraintInterface
             return $this->prettyString;
         }
 
-        return $this->__toString();
+        return (string) $this;
     }
 
     /**
