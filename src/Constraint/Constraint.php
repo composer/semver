@@ -184,7 +184,7 @@ class Constraint implements ConstraintInterface
         // '!=' operator is match when other operator is not '==' operator or version is not match
         // these kinds of comparisons always have a solution
         if ($isNonEqualOp || $isProviderNonEqualOp) {
-            return !$isEqualOp && !$isProviderEqualOp
+            return (!$isEqualOp && !$isProviderEqualOp)
                 || $this->versionCompare($provider->version, $this->version, '!=', $compareBranches);
         }
 
