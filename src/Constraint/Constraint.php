@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a constraint.
  */
-class Constraint implements ConstraintInterface
+class Constraint implements ConstraintInterface, BoundsProvidingInterface
 {
     /* operator integer values */
     const OP_EQ = 0;
@@ -62,6 +62,9 @@ class Constraint implements ConstraintInterface
 
     /** @var string */
     protected $prettyString;
+
+    /** @var array */
+    protected $bounds;
 
     /**
      * @param ConstraintInterface $provider
@@ -211,5 +214,111 @@ class Constraint implements ConstraintInterface
     public function __toString()
     {
         return self::$transOpInt[$this->operator] . ' ' . $this->version;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBounds()
+    {
+        $this->extractBounds();
+
+        return $this->bounds;
+    }
+
+    private function extractBounds()
+    {
+        if (null !== $this->bounds) {
+            return;
+        }
+
+        $this->bounds = array(array('lower' => array(), 'upper' => array()));
+
+        // Branches have no bounds
+        if (strpos($this->version, 'dev-') === 0) {
+            return;
+        }
+
+        // Canonicalize version as done internally by PHP for version_compare()
+        $version = preg_replace(
+            array('/[-_+]/', '/([^\d\.])([^\D\.])/', '/([^\D\.])([^\d\.])/'),
+            array('.', '$1.$2', '$1.$2'),
+            $this->version
+        );
+
+        $versionChunks = array_reverse(explode('.', $version));
+
+        if (count($versionChunks) > 5) {
+            throw new \LogicException('Version cannot contain more than 5 parts. Use the VersionParser to normalize the version first.');
+        }
+
+        switch ($this->operator) {
+            case self::OP_EQ:
+                $this->bounds[0]['lower'] = implode('.', array_reverse($versionChunks));
+                $this->bounds[0]['upper'] = implode('.', array_reverse($versionChunks));
+                break;
+            case self::OP_LT:
+                $this->bounds[0]['lower'] = '0';
+                $this->bounds[0]['upper'] = implode('.', array_reverse($this->decreaseVersion($versionChunks)));
+                break;
+            case self::OP_LE:
+                $this->bounds[0]['lower'] = '0';
+                $this->bounds[0]['upper'] = implode('.', array_reverse($versionChunks));
+                break;
+            case self::OP_GT:
+                $this->bounds[0]['lower'] = implode('.', array_reverse($this->increaseVersion($versionChunks)));
+                $this->bounds[0]['upper'] = '9999999.9999999.9999999.9999999.9999999';
+                break;
+            case self::OP_GE:
+                $this->bounds[0]['lower'] = implode('.', array_reverse($versionChunks));
+                $this->bounds[0]['upper'] = '9999999.9999999.9999999.9999999.9999999';
+                break;
+            case self::OP_NE:
+                $this->bounds[0]['lower'] = '0';
+                $this->bounds[0]['upper'] = implode('.', array_reverse($this->decreaseVersion($versionChunks)));
+                $this->bounds[1]['lower'] = implode('.', array_reverse($this->increaseVersion($versionChunks)));
+                $this->bounds[1]['upper'] = '9999999.9999999.9999999.9999999.9999999';
+                break;
+        }
+    }
+
+    private function decreaseVersion(array $versionChunks)
+    {
+        foreach ($versionChunks as &$v) {
+            $v = $v - 1;
+
+            if ($v < 0) {
+                $v = 9999999;
+                continue;
+            }
+
+            break;
+        }
+
+        if (end($versionChunks) < 0) {
+            return array(0); // TODO: throw exception?
+        }
+
+        return $versionChunks;
+    }
+
+    private function increaseVersion(array $versionChunks)
+    {
+        foreach ($versionChunks as &$v) {
+            $v = $v + 1;
+
+            if ($v > 9999999) {
+                $v = 0;
+                continue;
+            }
+
+            break;
+        }
+
+        if (end($versionChunks) > 9999999) {
+            return array(9999999, 9999999, 9999999, 9999999, 9999999); // TODO: throw exception?
+        }
+
+        return $versionChunks;
     }
 }

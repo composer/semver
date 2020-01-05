@@ -188,4 +188,60 @@ class ConstraintTest extends TestCase
             array('1.2.3', 'equals', 'InvalidArgumentException'),
         );
     }
+
+    /**
+     * @dataProvider bounds
+     *
+     * @param string $operator
+     * @param string $normalizedVersion
+     * @param array $expectedBounds
+     */
+    public function testBounds($operator, $normalizedVersion, array $expectedBounds)
+    {
+        $constraint = new Constraint($operator, $normalizedVersion);
+
+        $this->assertSame($expectedBounds, $constraint->getBounds());
+    }
+
+    /**
+     * @return array
+     */
+    public function bounds()
+    {
+        return array(
+            'equal to 1.0.0.0' => array('==', '1.0.0.0', array(array('lower' => '1.0.0.0', 'upper' => '1.0.0.0'))),
+
+            'lower than 0.0.4.0' => array('<', '0.0.4.0', array(array('lower' => '0', 'upper' => '0.0.3.9999999'))),
+            'lower than 1.0.0.0' => array('<', '1.0.0.0', array(array('lower' => '0', 'upper' => '0.9999999.9999999.9999999'))),
+            'lower than 2.0.0.0' => array('<', '2.0.0.0', array(array('lower' => '0', 'upper' => '1.9999999.9999999.9999999'))),
+            'lower than 3.0.3.0' => array('<', '3.0.3.0', array(array('lower' => '0', 'upper' => '3.0.2.9999999'))),
+
+            'greater than 0.0.4.0' => array('>', '0.0.4.0', array(array('lower' => '0.0.4.1', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+            'greater than 1.0.0.0' => array('>', '1.0.0.0', array(array('lower' => '1.0.0.1', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+            'greater than 2.0.0.0' => array('>', '2.0.0.0', array(array('lower' => '2.0.0.1', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+            'greater than 3.0.3.0' => array('>', '3.0.3.0', array(array('lower' => '3.0.3.1', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+
+            'lower than or equal to 0.0.4.0' => array('<=', '0.0.4.0', array(array('lower' => '0', 'upper' => '0.0.4.0'))),
+            'lower than or equal to 1.0.0.0' => array('<=', '1.0.0.0', array(array('lower' => '0', 'upper' => '1.0.0.0'))),
+            'lower than or equal to 2.0.0.0' => array('<=', '2.0.0.0', array(array('lower' => '0', 'upper' => '2.0.0.0'))),
+            'lower than or equal to 3.0.3.0' => array('<=', '3.0.3.0', array(array('lower' => '0', 'upper' => '3.0.3.0'))),
+
+            'greater than or equal to 0.0.4.0' => array('>=', '0.0.4.0', array(array('lower' => '0.0.4.0', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+            'greater than or equal to 1.0.0.0' => array('>=', '1.0.0.0', array(array('lower' => '1.0.0.0', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+            'greater than or equal to 2.0.0.0' => array('>=', '2.0.0.0', array(array('lower' => '2.0.0.0', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+            'greater than or equal to 3.0.3.0' => array('>=', '3.0.3.0', array(array('lower' => '3.0.3.0', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+
+            'not equal to 0.0.4.0' => array('<>', '0.0.4.0', array(array('lower' => '0', 'upper' => '0.0.3.9999999'), array('lower' => '0.0.4.1', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+            'not equal to 1.0.0.0' => array('<>', '1.0.0.0', array(array('lower' => '0', 'upper' => '0.9999999.9999999.9999999'), array('lower' => '1.0.0.1', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+            'not equal to 2.0.0.0' => array('<>', '2.0.0.0', array(array('lower' => '0', 'upper' => '1.9999999.9999999.9999999'), array('lower' => '2.0.0.1', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+            'not equal to 3.0.3.0' => array('<>', '3.0.3.0', array(array('lower' => '0', 'upper' => '3.0.2.9999999'), array('lower' => '3.0.3.1', 'upper' => '9999999.9999999.9999999.9999999.9999999'))),
+
+
+            // TODO: should lower than 0 throw an exception?
+            // TODO: should greater than 9999999.9999999.9999999.9999999.9999999 throw an exception?
+
+            // TODO: dev version handling (-beta, -rc, -dev, etc.)
+            // TODO: branch handling (dev-*)
+        );
+    }
 }
