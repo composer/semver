@@ -106,15 +106,10 @@ class VersionParser
             $fullVersion = $version;
         }
 
-	    if (preg_match('{^(\^[^,\s]++) ++as ++([^,\s\^]++)$}', $version, $match) ||
-	        preg_match('{^([^,\s]++) ++as ++(\^[^,\s\^]++)$}', $version, $match) ||
-	        preg_match('{^([^,\s]++) ++as ++(\~[^,\s\^]++)$}', $version, $match) ||
-	        preg_match('{^(\~[^,\s]++) ++as ++([^,\s\^]++)$}', $version, $match)) {
-		    throw new \UnexpectedValueException('the alias must be an exact version');
-	    }
-
         // strip off aliasing
         if (preg_match('{^([^,\s]++) ++as ++([^,\s]++)$}', $version, $match)) {
+	        $this->normalize( $match[2] );
+
             $version = $match[1];
         }
 
