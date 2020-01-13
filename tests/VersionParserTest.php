@@ -123,6 +123,10 @@ class VersionParserTest extends TestCase
             'non-dev arbitrary' => array('feature-foo'),
             'metadata w/ space' => array('1.0.0+foo bar'),
             'maven style release' => array('1.0.1-SNAPSHOT'),
+            'Alias and caret' => array('1.0.0+foo as ^2.0'),
+            'Alias and tilde' => array('1.0.0+foo as ~2.0'),
+            'Alias and greater than' => array('1.0.0+foo as >2.0'),
+            'Alias and less than' => array('1.0.0+foo as <2.0'),
         );
     }
 
