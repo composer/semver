@@ -108,7 +108,8 @@ class VersionParser
 
         // strip off aliasing
         if (preg_match('{^([^,\s]++) ++as ++([^,\s]++)$}', $version, $match)) {
-	        $this->normalize( $match[2] );
+            // verify that the alias is a version without constraint
+            $this->normalize($match[2]);
 
             $version = $match[1];
         }
