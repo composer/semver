@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [1.5.1] 2020-01-13
+
+  * Fixed: Parsing of aliased version was not validating the alias to be a valid version
+
 ### [1.5.0] 2019-03-19
 
   * Added: some support for date versions (e.g. 201903) in `~` operator
@@ -62,6 +66,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - Namespace: `Composer\Test\Package\LinkConstraint` -> `Composer\Test\Semver\Constraint`
   * Changed: code style using php-cs-fixer.
 
+[1.5.1]: https://github.com/composer/semver/compare/1.5.0...1.5.1
+[1.5.0]: https://github.com/composer/semver/compare/1.4.2...1.5.0
 [1.4.2]: https://github.com/composer/semver/compare/1.4.1...1.4.2
 [1.4.1]: https://github.com/composer/semver/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/composer/semver/compare/1.3.0...1.4.0
