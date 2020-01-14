@@ -24,6 +24,7 @@ class VersionParserTest extends TestCase
     public function testParseNumericAliasPrefix($input, $expected)
     {
         $parser = new VersionParser();
+
         $this->assertSame($expected, $parser->parseNumericAliasPrefix($input));
     }
 
@@ -47,6 +48,7 @@ class VersionParserTest extends TestCase
     public function testNormalizeSucceeds($input, $expected)
     {
         $parser = new VersionParser();
+
         $this->assertSame($expected, $parser->normalize($input));
     }
 
@@ -131,11 +133,30 @@ class VersionParserTest extends TestCase
     }
 
     /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testNormalizeFailsWithExtraMessage()
+    {
+        $parser = new VersionParser();
+        $parser->normalize('', '  as ');
+    }
+
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testNormalizeFailsWithOtherExtraMessage()
+    {
+        $parser = new VersionParser();
+        $parser->normalize('', '  as  123');
+    }
+
+    /**
      * @dataProvider successfulNormalizedBranches
      */
     public function testNormalizeBranch($input, $expected)
     {
         $parser = new VersionParser();
+
         $this->assertSame((string) $expected, (string) $parser->normalizeBranch($input));
     }
 
@@ -161,12 +182,14 @@ class VersionParserTest extends TestCase
     public function testParseConstraintsIgnoresStabilityFlag()
     {
         $parser = new VersionParser();
+
         $this->assertSame((string) new Constraint('=', '1.0.0.0'), (string) $parser->parseConstraints('1.0@dev'));
     }
 
     public function testParseConstraintsIgnoresReferenceOnDevVersion()
     {
         $parser = new VersionParser();
+
         $this->assertSame((string) new Constraint('=', '1.0.9999999.9999999-dev'), (string) $parser->parseConstraints('1.0.x-dev#abcd123'));
         $this->assertSame((string) new Constraint('=', '1.0.9999999.9999999-dev'), (string) $parser->parseConstraints('1.0.x-dev#trunk/@123'));
     }
@@ -177,6 +200,7 @@ class VersionParserTest extends TestCase
     public function testParseConstraintsFailsOnBadReference()
     {
         $parser = new VersionParser();
+
         $this->assertSame((string) new Constraint('=', '1.0.0.0'), (string) $parser->parseConstraints('1.0#abcd123'));
         $this->assertSame((string) new Constraint('=', '1.0.0.0'), (string) $parser->parseConstraints('1.0#trunk/@123'));
     }
@@ -200,6 +224,7 @@ class VersionParserTest extends TestCase
     public function testParseConstraintsSimple($input, $expected)
     {
         $parser = new VersionParser();
+
         $this->assertSame((string) $expected, (string) $parser->parseConstraints($input));
     }
 
@@ -416,6 +441,7 @@ class VersionParserTest extends TestCase
         $first = new Constraint('>=', '2.5.0.0-dev');
         $second = new Constraint('<', '4.0.0.0-dev');
         $multi = new MultiConstraint(array($first, $second));
+
         $this->assertSame((string) $multi, (string) $parser->parseConstraints('^2.5 || ^3.0'));
     }
 
@@ -432,6 +458,7 @@ class VersionParserTest extends TestCase
         ));
         $multi = new MultiConstraint(array($first, $second), false);
         $parsed = $parser->parseConstraints('^0.2 || ^1.0');
+
         $this->assertSame((string) $multi, (string) $parsed);
     }
 
@@ -451,9 +478,11 @@ class VersionParserTest extends TestCase
         $multi = new MultiConstraint(array($first, $second), false);
 
         $version = new Constraint('=', '1.0.1.0');
+
         $this->assertFalse($multi->matches($version), 'Generated expectation should not allow version "1.0.1.0"');
 
         $parsed = $parser->parseConstraints('~0.1 || ~1.0 !=1.0.1');
+
         $this->assertFalse($parsed->matches($version), '"~0.1 || ~1.0 !=1.0.1" should not allow version "1.0.1.0"');
 
         $this->assertSame((string) $multi, (string) $parsed);
@@ -468,6 +497,7 @@ class VersionParserTest extends TestCase
         $first = new Constraint('>', '2.0.0.0');
         $second = new Constraint('<=', '3.0.0.0');
         $multi = new MultiConstraint(array($first, $second));
+
         $this->assertSame((string) $multi, (string) $parser->parseConstraints($constraint));
     }
 
@@ -496,11 +526,13 @@ class VersionParserTest extends TestCase
         $first = new Constraint('>=', '1.1.0.0-alpha4');
         $second = new Constraint('<', '1.2.9999999.9999999-dev');
         $multi = new MultiConstraint(array($first, $second));
+
         $this->assertSame((string) $multi, (string) $parser->parseConstraints('>=1.1.0-alpha4,<1.2.x-dev'));
 
         $first = new Constraint('>=', '1.1.0.0-alpha4');
         $second = new Constraint('<', '1.2.0.0-beta2');
         $multi = new MultiConstraint(array($first, $second));
+
         $this->assertSame((string) $multi, (string) $parser->parseConstraints('>=1.1.0-alpha4,<1.2-beta2'));
     }
 
@@ -517,6 +549,7 @@ class VersionParserTest extends TestCase
         $third = new Constraint('>', '2.0.6.0');
         $multi1 = new MultiConstraint(array($first, $second));
         $multi2 = new MultiConstraint(array($multi1, $third), false);
+
         $this->assertSame((string) $multi2, (string) $parser->parseConstraints($constraint));
     }
 
@@ -538,6 +571,7 @@ class VersionParserTest extends TestCase
         $first = new Constraint('>', '2.0.0.0');
         $second = new Constraint('<=', '3.0.0.0-dev');
         $multi = new MultiConstraint(array($first, $second));
+
         $this->assertSame((string) $multi, (string) $parser->parseConstraints('>2.0@stable,<=3.0@dev'));
     }
 
@@ -605,6 +639,36 @@ class VersionParserTest extends TestCase
             array('alpha', '1.2_a1'),
             array('RC', '2.0.0rc1'),
             array('alpha', '1.0.0-alpha11+cs-1.1.0'),
+            array('dev', '1-2_dev'),
         );
+    }
+
+    public function testNormalizeStability()
+    {
+        $parser = new VersionParser();
+        $stability = 'rc';
+        $expectedValue = 'RC';
+        $result = $parser->normalizeStability($stability);
+
+        $this->assertSame($expectedValue, $result);
+
+        $stability = 'no-rc';
+        $expectedValue = $stability;
+        $result = $parser->normalizeStability($stability);
+
+        $this->assertSame($expectedValue, $result);
+    }
+
+    public function testManipulateVersionStringWithReturnNull()
+    {
+        $position = 1;
+        $increment = 2;
+        $matches = array(-1, -3, -2, -5, -9);
+        $parser = new \ReflectionClass('\Composer\Semver\VersionParser');
+        $manipulateVersionStringMethod = $parser->getMethod('manipulateVersionString');
+        $manipulateVersionStringMethod->setAccessible(true);
+        $result = $manipulateVersionStringMethod->invoke(new VersionParser(), $matches, $position, $increment);
+
+        $this->assertNull($result);
     }
 }
