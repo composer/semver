@@ -168,7 +168,7 @@ class ConstraintTest extends TestCase
      *
      * @param string $version
      * @param string $operator
-     * @param bool $expected
+     * @param bool   $expected
      */
     public function testInvalidOperators($version, $operator, $expected)
     {

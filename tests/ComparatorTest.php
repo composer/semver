@@ -26,7 +26,7 @@ class ComparatorTest extends TestCase
      *
      * @param string $version1
      * @param string $version2
-     * @param bool $expected
+     * @param bool   $expected
      */
     public function testGreaterThan($version1, $version2, $expected)
     {
@@ -41,7 +41,7 @@ class ComparatorTest extends TestCase
      *
      * @param string $version1
      * @param string $version2
-     * @param bool $expected
+     * @param bool   $expected
      */
     public function testGreaterThanOrEqualTo($version1, $version2, $expected)
     {
@@ -56,7 +56,7 @@ class ComparatorTest extends TestCase
      *
      * @param string $version1
      * @param string $version2
-     * @param bool $expected
+     * @param bool   $expected
      */
     public function testLessThan($version1, $version2, $expected)
     {
@@ -71,7 +71,7 @@ class ComparatorTest extends TestCase
      *
      * @param string $version1
      * @param string $version2
-     * @param bool $expected
+     * @param bool   $expected
      */
     public function testLessThanOrEqualTo($version1, $version2, $expected)
     {
@@ -86,7 +86,7 @@ class ComparatorTest extends TestCase
      *
      * @param string $version1
      * @param string $version2
-     * @param bool $expected
+     * @param bool   $expected
      */
     public function testEqualTo($version1, $version2, $expected)
     {
@@ -101,7 +101,7 @@ class ComparatorTest extends TestCase
      *
      * @param string $version1
      * @param string $version2
-     * @param bool $expected
+     * @param bool   $expected
      */
     public function testNotEqualTo($version1, $version2, $expected)
     {
@@ -115,7 +115,7 @@ class ComparatorTest extends TestCase
      * @param string $version1
      * @param string $operator
      * @param string $version2
-     * @param bool $expected
+     * @param bool   $expected
      */
     public function testCompare($version1, $operator, $version2, $expected)
     {

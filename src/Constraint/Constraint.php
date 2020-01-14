@@ -134,7 +134,7 @@ class Constraint implements ConstraintInterface
      * @param string $a
      * @param string $b
      * @param string $operator
-     * @param bool $compareBranches
+     * @param bool   $compareBranches
      *
      * @throws \InvalidArgumentException if invalid operator is given.
      *
@@ -167,7 +167,7 @@ class Constraint implements ConstraintInterface
 
     /**
      * @param Constraint $provider
-     * @param bool $compareBranches
+     * @param bool       $compareBranches
      *
      * @return bool
      */

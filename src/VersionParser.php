@@ -487,10 +487,10 @@ class VersionParser
      *
      * Support function for {@link parseConstraint()}
      *
-     * @param array $matches Array with version parts in array indexes 1,2,3,4
-     * @param int $position 1,2,3,4 - which segment of the version to increment/decrement
-     * @param int $increment
-     * @param string $pad The string to pad version parts after $position
+     * @param array  $matches   Array with version parts in array indexes 1,2,3,4
+     * @param int    $position  1,2,3,4 - which segment of the version to increment/decrement
+     * @param int    $increment
+     * @param string $pad       The string to pad version parts after $position
      *
      * @return string The new version
      */

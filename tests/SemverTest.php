@@ -22,7 +22,7 @@ class SemverTest extends TestCase
      * @covers ::satisfies
      * @dataProvider satisfiesProvider
      *
-     * @param bool $expected
+     * @param bool   $expected
      * @param string $version
      * @param string $constraint
      */
@@ -36,8 +36,8 @@ class SemverTest extends TestCase
      * @dataProvider satisfiedByProvider
      *
      * @param string $constraint
-     * @param array $versions
-     * @param array $expected
+     * @param array  $versions
+     * @param array  $expected
      */
     public function testSatisfiedBy($constraint, $versions, $expected)
     {
@@ -67,11 +67,11 @@ class SemverTest extends TestCase
         $versionParserProperty = $semver->getProperty('versionParser');
         $versionParserProperty->setAccessible(true);
         $versionParserProperty = $versionParserProperty->setValue(null);
-        
+
         $manipulateVersionStringMethod = $semver->getMethod('usort');
         $manipulateVersionStringMethod->setAccessible(true);
         $result = $manipulateVersionStringMethod->invoke(new Semver(), $versions, 1);
-        
+
         $this->assertInternalType('array', $result);
         $this->assertCount(3, $versions);
     }

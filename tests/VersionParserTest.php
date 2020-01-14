@@ -218,7 +218,7 @@ class VersionParserTest extends TestCase
     /**
      * @dataProvider simpleConstraints
      *
-     * @param string $input
+     * @param string     $input
      * @param Constraint $expected
      */
     public function testParseConstraintsSimple($input, $expected)
@@ -270,7 +270,7 @@ class VersionParserTest extends TestCase
     /**
      * @dataProvider wildcardConstraints
      *
-     * @param string $input
+     * @param string     $input
      * @param Constraint $min
      * @param Constraint $max
      */
@@ -312,7 +312,7 @@ class VersionParserTest extends TestCase
     /**
      * @dataProvider tildeConstraints
      *
-     * @param string $input
+     * @param string     $input
      * @param Constraint $min
      * @param Constraint $max
      */
@@ -355,7 +355,7 @@ class VersionParserTest extends TestCase
     /**
      * @dataProvider caretConstraints
      *
-     * @param string $input
+     * @param string     $input
      * @param Constraint $min
      * @param Constraint $max
      */
@@ -400,7 +400,7 @@ class VersionParserTest extends TestCase
     /**
      * @dataProvider hyphenConstraints
      *
-     * @param string $input
+     * @param string     $input
      * @param Constraint $min
      * @param Constraint $max
      */

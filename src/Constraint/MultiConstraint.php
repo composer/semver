@@ -27,7 +27,7 @@ class MultiConstraint implements ConstraintInterface
 
     /**
      * @param ConstraintInterface[] $constraints A set of constraints
-     * @param bool $conjunctive Whether the constraints should be treated as conjunctive or disjunctive
+     * @param bool                  $conjunctive Whether the constraints should be treated as conjunctive or disjunctive
      */
     public function __construct(array $constraints, $conjunctive = true)
     {
