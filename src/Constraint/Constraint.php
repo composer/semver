@@ -64,7 +64,10 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
     protected $prettyString;
 
     /** @var array */
-    protected $bounds;
+    protected $lowerBound;
+
+    /** @var array */
+    protected $upperBound;
 
     /**
      * @param ConstraintInterface $provider
@@ -223,7 +226,7 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
     {
         $this->extractBounds();
 
-        return $this->bounds['lower'];
+        return $this->lowerBound;
     }
 
     /**
@@ -233,21 +236,19 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
     {
         $this->extractBounds();
 
-        return $this->bounds['upper'];
+        return $this->upperBound;
     }
 
     private function extractBounds()
     {
-        if (null !== $this->bounds) {
+        if (null !== $this->lowerBound) {
             return;
         }
-
-        $this->bounds = array(array('lower' => array(), 'upper' => array()));
-
+        
         // Branches
         if (strpos($this->version, 'dev-') === 0) {
-            $this->bounds['lower'] = array('>=', '0');
-            $this->bounds['upper'] = array('<', BoundsProvidingInterface::UPPER_INFINITY);
+            $this->lowerBound = array('>=', '0');
+            $this->upperBound = array('<', BoundsProvidingInterface::UPPER_INFINITY);
             return;
         }
 
@@ -260,69 +261,29 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
 
         switch ($this->operator) {
             case self::OP_EQ:
-                $this->bounds['lower'] = array('==', $version);
-                $this->bounds['upper'] = array('==', $version);
+                $this->lowerBound = array('==', $version);
+                $this->upperBound = array('==', $version);
                 break;
             case self::OP_LT:
-                $this->bounds['lower'] = array('>=', '0');
-                $this->bounds['upper'] = array('<', $version);
+                $this->lowerBound = array('>=', '0');
+                $this->upperBound = array('<', $version);
                 break;
             case self::OP_LE:
-                $this->bounds['lower'] = array('>=', '0');
-                $this->bounds['upper'] = array('<=', $version);
+                $this->lowerBound = array('>=', '0');
+                $this->upperBound = array('<=', $version);
                 break;
             case self::OP_GT:
-                $this->bounds['lower'] = array('>', $version);
-                $this->bounds['upper'] = array('<', BoundsProvidingInterface::UPPER_INFINITY);
+                $this->lowerBound = array('>', $version);
+                $this->upperBound = array('<', BoundsProvidingInterface::UPPER_INFINITY);
                 break;
             case self::OP_GE:
-                $this->bounds['lower'] = array('>=', $version);
-                $this->bounds['upper'] = array('<', BoundsProvidingInterface::UPPER_INFINITY);
+                $this->lowerBound = array('>=', $version);
+                $this->upperBound = array('<', BoundsProvidingInterface::UPPER_INFINITY);
                 break;
             case self::OP_NE:
-                $this->bounds['lower'] = array('>=', '0');
-                $this->bounds['upper'] = array('<', BoundsProvidingInterface::UPPER_INFINITY);
+                $this->lowerBound = array('>=', '0');
+                $this->upperBound = array('<', BoundsProvidingInterface::UPPER_INFINITY);
                 break;
         }
-    }
-
-    private function decreaseVersion(array $versionChunks)
-    {
-        foreach ($versionChunks as &$v) {
-            $v = $v - 1;
-
-            if ($v < 0) {
-                $v = 9999999;
-                continue;
-            }
-
-            break;
-        }
-
-        if (end($versionChunks) < 0) {
-            return array(0);
-        }
-
-        return $versionChunks;
-    }
-
-    private function increaseVersion(array $versionChunks)
-    {
-        foreach ($versionChunks as &$v) {
-            $v = $v + 1;
-
-            if ($v > 9999999) {
-                $v = 0;
-                continue;
-            }
-
-            break;
-        }
-
-        if (end($versionChunks) > 9999999) {
-            return BoundsProvidingInterface::UPPER_INFINITY;
-        }
-
-        return $versionChunks;
     }
 }
