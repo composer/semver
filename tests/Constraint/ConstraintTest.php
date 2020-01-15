@@ -213,6 +213,7 @@ class ConstraintTest extends TestCase
         return array(
             'equal to 1.0.0.0' => array('==', '1.0.0.0', array('==', '1.0.0.0'), array('==', '1.0.0.0')),
             'equal to 1.0.0.0-rc3' => array('==', '1.0.0.0-rc3', array('==', '1.0.0.0.rc.3'), array('==', '1.0.0.0.rc.3')),
+            'equal to dev-feature-branch' => array('>=', 'dev-feature-branch', array('>=', '0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
 
             'lower than 0.0.4.0' => array('<', '0.0.4.0', array('>=', '0'), array('<', '0.0.4.0')),
             'lower than 1.0.0.0' => array('<', '1.0.0.0', array('>=', '0'), array('<', '1.0.0.0')),
