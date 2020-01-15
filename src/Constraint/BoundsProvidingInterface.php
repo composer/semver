@@ -13,19 +13,43 @@ namespace Composer\Semver\Constraint;
 
 interface BoundsProvidingInterface
 {
+    const UPPER_INFINITY = 'inf';
+
     /**
-     * Returns an array of bounds.
-     * The format is as follows:
-     * array(
-     *     array('lower' => '<version>', 'upper' => '<version>'),
-     *     array('lower' => '<version>', 'upper' => '<version>')
-     * )
+     * Returns the lower bound.
+     * The return value is an array so you can use it
+     * together with version_compare() right away.
+     * Examples:
      *
-     * If more than one bound is provided, the bounds are disjunctive (OR).
-     * Multiple conjunctive bounds have to be normalized into one so
-     * that only one bounds entry is returned upon this method call.
+     * Given the constraint "< 7.3" the return value will be:
+     *
+     * array('>=', '0')
+     *
+     * Given the constraint "> 7.3" the return value will be:
+     *
+     * array('>', '7.3')
      *
      * @return array
      */
-    public function getBounds();
+    public function getLowerBound();
+
+    /**
+     * Returns the upper bound.
+     * The return value is an array so you can use it
+     * together with version_compare() right away.
+     * Note that for infinite upper bounds, the constant BoundsProvidingInterface::UPPER_INFINITY
+     * must be used.
+     * Examples:
+     *
+     * Given the constraint "< 7.3" the return value will be:
+     *
+     * array('<', '7.3')
+     *
+     * Given the constraint "> 7.3" the return value will be:
+     *
+     * array('<', BoundsProvidingInterface::UPPER_INFINITY)
+     *
+     * @return array
+     */
+    public function getUpperBound();
 }

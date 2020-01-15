@@ -219,11 +219,21 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
     /**
      * @inheritDoc
      */
-    public function getBounds()
+    public function getLowerBound()
     {
         $this->extractBounds();
 
-        return $this->bounds;
+        return $this->bounds['lower'];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUpperBound()
+    {
+        $this->extractBounds();
+
+        return $this->bounds['upper'];
     }
 
     private function extractBounds()
@@ -234,8 +244,10 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
 
         $this->bounds = array(array('lower' => array(), 'upper' => array()));
 
-        // Branches have no bounds
+        // Branches
         if (strpos($this->version, 'dev-') === 0) {
+            $this->bounds['lower'] = array('>=', '0');
+            $this->bounds['upper'] = array('<', BoundsProvidingInterface::UPPER_INFINITY);
             return;
         }
 
@@ -246,38 +258,30 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
             $this->version
         );
 
-        $versionChunks = array_reverse(explode('.', $version));
-
-        if (count($versionChunks) > 5) {
-            throw new \LogicException('Version cannot contain more than 5 parts. Use the VersionParser to normalize the version first.');
-        }
-
         switch ($this->operator) {
             case self::OP_EQ:
-                $this->bounds[0]['lower'] = implode('.', array_reverse($versionChunks));
-                $this->bounds[0]['upper'] = implode('.', array_reverse($versionChunks));
+                $this->bounds['lower'] = array('==', $version);
+                $this->bounds['upper'] = array('==', $version);
                 break;
             case self::OP_LT:
-                $this->bounds[0]['lower'] = '0';
-                $this->bounds[0]['upper'] = implode('.', array_reverse($this->decreaseVersion($versionChunks)));
+                $this->bounds['lower'] = array('>=', '0');
+                $this->bounds['upper'] = array('<', $version);
                 break;
             case self::OP_LE:
-                $this->bounds[0]['lower'] = '0';
-                $this->bounds[0]['upper'] = implode('.', array_reverse($versionChunks));
+                $this->bounds['lower'] = array('>=', '0');
+                $this->bounds['upper'] = array('<=', $version);
                 break;
             case self::OP_GT:
-                $this->bounds[0]['lower'] = implode('.', array_reverse($this->increaseVersion($versionChunks)));
-                $this->bounds[0]['upper'] = '9999999.9999999.9999999.9999999.9999999';
+                $this->bounds['lower'] = array('>', $version);
+                $this->bounds['upper'] = array('<', BoundsProvidingInterface::UPPER_INFINITY);
                 break;
             case self::OP_GE:
-                $this->bounds[0]['lower'] = implode('.', array_reverse($versionChunks));
-                $this->bounds[0]['upper'] = '9999999.9999999.9999999.9999999.9999999';
+                $this->bounds['lower'] = array('>=', $version);
+                $this->bounds['upper'] = array('<', BoundsProvidingInterface::UPPER_INFINITY);
                 break;
             case self::OP_NE:
-                $this->bounds[0]['lower'] = '0';
-                $this->bounds[0]['upper'] = implode('.', array_reverse($this->decreaseVersion($versionChunks)));
-                $this->bounds[1]['lower'] = implode('.', array_reverse($this->increaseVersion($versionChunks)));
-                $this->bounds[1]['upper'] = '9999999.9999999.9999999.9999999.9999999';
+                $this->bounds['lower'] = array('>=', '0');
+                $this->bounds['upper'] = array('<', BoundsProvidingInterface::UPPER_INFINITY);
                 break;
         }
     }
@@ -296,7 +300,7 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
         }
 
         if (end($versionChunks) < 0) {
-            return array(0); // TODO: throw exception?
+            return array(0);
         }
 
         return $versionChunks;
@@ -316,7 +320,7 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
         }
 
         if (end($versionChunks) > 9999999) {
-            return array(9999999, 9999999, 9999999, 9999999, 9999999); // TODO: throw exception?
+            return BoundsProvidingInterface::UPPER_INFINITY;
         }
 
         return $versionChunks;
