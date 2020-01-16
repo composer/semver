@@ -11,6 +11,7 @@
 
 namespace Composer\Semver\Constraint;
 
+use Composer\Semver\VersionParser;
 use PHPUnit\Framework\TestCase;
 
 class MultiConstraintTest extends TestCase
@@ -92,5 +93,123 @@ class MultiConstraintTest extends TestCase
         $result = $multiConstraint->getPrettyString();
 
         $this->assertSame($expectedString, $result);
+    }
+
+    /**
+     * @dataProvider bounds
+     *
+     * @param array $constraints
+     * @param bool $constraints
+     * @param array $expectedLower
+     * @param array $expectedUpper
+     */
+    public function testBounds(array $constraints, $conjunctive, array $expectedLower, array $expectedUpper)
+    {
+        $constraint = new MultiConstraint($constraints, $conjunctive);
+
+        $this->assertSame($expectedLower, $constraint->getLowerBound(), 'Expected lower bound does not match');
+        $this->assertSame($expectedUpper, $constraint->getUpperBound(), 'Expected upper bound does not match');
+    }
+
+    /**
+     * @return array
+     */
+    public function bounds()
+    {
+        return array(
+            'all equal' => array(
+                array(
+                    new Constraint('==', '1.0.0.0'),
+                    new Constraint('==', '1.0.0.0'),
+                ),
+                true,
+                array('==', '1.0.0.0'),
+                array('==', '1.0.0.0')
+            ),
+            '">" should take precedence ">=" for lower bound when conjunctive' => array(
+                array(
+                    new Constraint('>', '1.0.0.0'),
+                    new Constraint('>=', '1.0.0.0'),
+                    new Constraint('>', '1.0.0.0'),
+                ),
+                true,
+                array('>', '1.0.0.0'),
+                array('<', BoundsProvidingInterface::UPPER_INFINITY)
+            ),
+            '">=" should take precedence ">" for lower bound when disjunctive' => array(
+                array(
+                    new Constraint('>', '1.0.0.0'),
+                    new Constraint('>=', '1.0.0.0'),
+                    new Constraint('>', '1.0.0.0'),
+                ),
+                false,
+                array('>=', '1.0.0.0'),
+                array('<', BoundsProvidingInterface::UPPER_INFINITY)
+            ),
+            'Bounds should be limited when conjunctive' => array(
+                array(
+                    new Constraint('>=', '7.0.0.0'),
+                    new Constraint('<', '8.0.0.0'),
+                ),
+                true,
+                array('>=', '7.0.0.0'),
+                array('<', '8.0.0.0')
+            ),
+            'Bounds should be unlimited when disjunctive' => array(
+                array(
+                    new Constraint('>=', '7.0.0.0'),
+                    new Constraint('<', '8.0.0.0'),
+                ),
+                false,
+                array('>=', '0'),
+                array('<', BoundsProvidingInterface::UPPER_INFINITY)
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider boundsIntegration
+     *
+     * @param string $constraints
+     * @param array $expectedLower
+     * @param array $expectedUpper
+     */
+    public function testBoundsIntegrationWithVersionParser($constraints, array $expectedLower, array $expectedUpper)
+    {
+        $versionParser = new VersionParser();
+        $constraint = $versionParser->parseConstraints($constraints);
+
+        $this->assertSame($expectedLower, $constraint->getLowerBound(), 'Expected lower bound does not match');
+        $this->assertSame($expectedUpper, $constraint->getUpperBound(), 'Expected upper bound does not match');
+    }
+
+
+    /**
+     * @return array
+     */
+    public function boundsIntegration()
+    {
+        return array(
+            '^7.0' => array(
+                '^7.0',
+                array('>=', '7.0.0.0.dev'),
+                array('<', '8.0.0.0.dev')
+            ),
+            '^7.2' => array(
+                '^7.2',
+                array('>=', '7.2.0.0.dev'),
+                array('<', '8.0.0.0.dev')
+            ),
+            '7.4.*' => array(
+                '7.4.*',
+                array('>=', '7.4.0.0.dev'),
+                array('<', '7.5.0.0.dev')
+            ),
+            '7.2.* || 7.4.*' => array(
+                '7.2.* || 7.4.*',
+                array('>=', '7.2.0.0.dev'),
+                array('<', '7.5.0.0.dev')
+            ),
+        );
     }
 }

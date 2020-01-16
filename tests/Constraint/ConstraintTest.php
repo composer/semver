@@ -201,8 +201,8 @@ class ConstraintTest extends TestCase
     {
         $constraint = new Constraint($operator, $normalizedVersion);
 
-        $this->assertSame($expectedLower, $constraint->getLowerBound());
-        $this->assertSame($expectedUpper, $constraint->getUpperBound());
+        $this->assertSame($expectedLower, $constraint->getLowerBound(), 'Expected lower bound does not match');
+        $this->assertSame($expectedUpper, $constraint->getUpperBound(), 'Expected upper bound does not match');
     }
 
     /**
