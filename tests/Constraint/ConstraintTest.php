@@ -246,34 +246,4 @@ class ConstraintTest extends TestCase
             'not equal to 1.0.0.0' => array('<>', '1.0.0.0', Bound::lowerMost(), Bound::upperMost()),
         );
     }
-
-    /**
-     * @dataProvider versionCompareCondition
-     *
-     * @param ConstraintInterface $constraint
-     * @param string              $version
-     * @param string              $expectedComparison
-     * @param $shouldEvaluateTrue bool
-     */
-    public function testGetVersionCompareCondition(ConstraintInterface $constraint, $version, $expectedComparison, $shouldEvaluateTrue)
-    {
-        $this->assertSame($expectedComparison, Constraint::getVersionCompareCondition($constraint, $version));
-
-        $evaluated = eval('return ' . Constraint::getVersionCompareCondition($constraint, $version) . ';');
-
-        $this->assertSame($shouldEvaluateTrue, $evaluated);
-    }
-
-    /**
-     * @return array
-     */
-    public function versionCompareCondition()
-    {
-        $inf = PHP_INT_MAX;
-
-        return array(
-            'Comparing 1.0 to a constraint of == 1.0.0.0' => array(new Constraint('==', '1.0.0.0'), '1.0', "version_compare('1.0.0.0', '1.0.0.0', '>=') && version_compare('1.0.0.0', '1.0.0.0', '<=')", true),
-            'Comparing 1.0 to a constraint of > 1.0.0.0' => array(new Constraint('>', '1.0.0.0'), '1.0', "version_compare('1.0.0.0', '1.0.0.0', '>') && version_compare('1.0.0.0', '$inf', '<')", false),
-        );
-    }
 }

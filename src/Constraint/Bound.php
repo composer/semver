@@ -49,6 +49,16 @@ class Bound
         return $this->isInclusive;
     }
 
+    public function isLowerMost()
+    {
+        return $this->getVersion() === '0' && $this->isInclusive();
+    }
+
+    public function isUpperMost()
+    {
+        return $this->getVersion() === (string) PHP_INT_MAX && !$this->isInclusive();
+    }
+
     /**
      * Compares a bound to another with a given operator.
      *

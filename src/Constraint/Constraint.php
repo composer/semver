@@ -11,8 +11,6 @@
 
 namespace Composer\Semver\Constraint;
 
-use Composer\Semver\VersionParser;
-
 /**
  * Defines a constraint.
  */
@@ -239,29 +237,6 @@ class Constraint implements ConstraintInterface
         $this->extractBounds();
 
         return $this->upperBound;
-    }
-
-    /**
-     * Takes a given constraint and a given version and creates
-     * the version_compare() statements required to evaluate
-     * whether a version matches upper and lower bounds.
-     *
-     * @param string $version
-     */
-    public static function getVersionCompareCondition(ConstraintInterface $constraint, $version)
-    {
-        $versionParser = new VersionParser();
-        $version = $versionParser->normalize($version);
-
-        return sprintf(
-            "version_compare('%s', '%s', '%s') && version_compare('%s', '%s', '%s')",
-            $version,
-            $constraint->getLowerBound()->getVersion(),
-            $constraint->getLowerBound()->isInclusive() ? '>=' : '>',
-            $version,
-            $constraint->getUpperBound()->getVersion(),
-            $constraint->getUpperBound()->isInclusive() ? '<=' : '<'
-        );
     }
 
     private function extractBounds()
