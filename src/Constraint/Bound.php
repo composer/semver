@@ -68,9 +68,11 @@ class Bound
             return false;
         }
 
-        // Not the same version means we can use regular version comparison and inclusive/exclusive doesn't matter
-        if (!version_compare($this->getVersion(), $other->getVersion(), '==')) {
-            return version_compare($this->getVersion(), $other->getVersion(), $operator);
+        $compareResult = version_compare($this->getVersion(), $other->getVersion());
+
+        // Not the same version means we don't need to check if the bounds are inclusive or not
+        if (0 !== $compareResult) {
+            return ('>' === $operator ? 1 : -1) === $compareResult;
         }
 
         // Question we're answering here is "am I higher than $other?"
