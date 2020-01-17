@@ -194,8 +194,8 @@ class ConstraintTest extends TestCase
      *
      * @param string $operator
      * @param string $normalizedVersion
-     * @param Bound $expectedLower
-     * @param Bound $expectedUpper
+     * @param Bound  $expectedLower
+     * @param Bound  $expectedUpper
      */
     public function testBounds($operator, $normalizedVersion, Bound $expectedLower, Bound $expectedUpper)
     {
@@ -212,7 +212,7 @@ class ConstraintTest extends TestCase
     {
         return array(
             'equal to 1.0.0.0' => array('==', '1.0.0.0', new Bound('1.0.0.0', true), new Bound('1.0.0.0', true)),
-            'equal to 1.0.0.0-rc3' => array('==', '1.0.0.0-rc3', new Bound( '1.0.0.0.rc.3', true), new Bound( '1.0.0.0.rc.3', true)),
+            'equal to 1.0.0.0-rc3' => array('==', '1.0.0.0-rc3', new Bound('1.0.0.0.rc.3', true), new Bound('1.0.0.0.rc.3', true)),
             'equal to dev-feature-branch' => array('>=', 'dev-feature-branch', Bound::lowerMost(), Bound::upperMost()),
 
             'lower than 0.0.4.0' => array('<', '0.0.4.0', Bound::lowerMost(), new Bound('0.0.4.0', false)),

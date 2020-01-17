@@ -244,11 +244,12 @@ class Constraint implements ConstraintInterface
         if (null !== $this->lowerBound) {
             return;
         }
-        
+
         // Branches
         if (strpos($this->version, 'dev-') === 0) {
             $this->lowerBound = Bound::lowerMost();
             $this->upperBound = Bound::upperMost();
+
             return;
         }
 

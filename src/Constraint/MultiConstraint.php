@@ -123,6 +123,7 @@ class MultiConstraint implements ConstraintInterface
 
         return '[' . implode($this->conjunctive ? ' ' : ' || ', $constraints) . ']';
     }
+
     /**
      * @inheritDoc
      */

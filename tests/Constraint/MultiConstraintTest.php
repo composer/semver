@@ -99,7 +99,7 @@ class MultiConstraintTest extends TestCase
      * @dataProvider bounds
      *
      * @param array $constraints
-     * @param bool $constraints
+     * @param bool  $constraints
      * @param Bound $expectedLower
      * @param Bound $expectedUpper
      */
@@ -124,7 +124,7 @@ class MultiConstraintTest extends TestCase
                 ),
                 true,
                 new Bound('1.0.0.0', true),
-                new Bound('1.0.0.0', true)
+                new Bound('1.0.0.0', true),
             ),
             '">" should take precedence ">=" for lower bound when conjunctive' => array(
                 array(
@@ -134,7 +134,7 @@ class MultiConstraintTest extends TestCase
                 ),
                 true,
                 new Bound('1.0.0.0', false),
-                Bound::upperMost()
+                Bound::upperMost(),
             ),
             '">=" should take precedence ">" for lower bound when disjunctive' => array(
                 array(
@@ -144,7 +144,7 @@ class MultiConstraintTest extends TestCase
                 ),
                 false,
                 new Bound('1.0.0.0', true),
-                Bound::upperMost()
+                Bound::upperMost(),
             ),
             'Bounds should be limited when conjunctive' => array(
                 array(
@@ -162,7 +162,7 @@ class MultiConstraintTest extends TestCase
                 ),
                 false,
                 Bound::lowerMost(),
-                Bound::upperMost()
+                Bound::upperMost(),
             ),
         );
     }
@@ -171,8 +171,8 @@ class MultiConstraintTest extends TestCase
      * @dataProvider boundsIntegration
      *
      * @param string $constraints
-     * @param Bound $expectedLower
-     * @param Bound $expectedUpper
+     * @param Bound  $expectedLower
+     * @param Bound  $expectedUpper
      */
     public function testBoundsIntegrationWithVersionParser($constraints, Bound $expectedLower, Bound $expectedUpper)
     {
@@ -183,7 +183,6 @@ class MultiConstraintTest extends TestCase
         $this->assertEquals($expectedUpper, $constraint->getUpperBound(), 'Expected upper bound does not match');
     }
 
-
     /**
      * @return array
      */
@@ -193,22 +192,22 @@ class MultiConstraintTest extends TestCase
             '^7.0' => array(
                 '^7.0',
                 new Bound('7.0.0.0.dev', true),
-                new Bound('8.0.0.0.dev', false)
+                new Bound('8.0.0.0.dev', false),
             ),
             '^7.2' => array(
                 '^7.2',
                 new Bound('7.2.0.0.dev', true),
-                new Bound('8.0.0.0.dev', false)
+                new Bound('8.0.0.0.dev', false),
             ),
             '7.4.*' => array(
                 '7.4.*',
                 new Bound('7.4.0.0.dev', true),
-                new Bound('7.5.0.0.dev', false)
+                new Bound('7.5.0.0.dev', false),
             ),
             '7.2.* || 7.4.*' => array(
                 '7.2.* || 7.4.*',
                 new Bound('7.2.0.0.dev', true),
-                new Bound('7.5.0.0.dev', false)
+                new Bound('7.5.0.0.dev', false),
             ),
         );
     }
@@ -238,7 +237,7 @@ class MultiConstraintTest extends TestCase
 
         $constraint = new MultiConstraint(array(
             $versionParser->parseConstraints('^7.1.15 || ^7.2.3'),
-            $versionParser->parseConstraints('^7.2.2')
+            $versionParser->parseConstraints('^7.2.2'),
         ));
 
         $this->assertEquals(new Bound('7.2.2.0.dev', true), $constraint->getLowerBound(), 'Expected lower bound does not match');
