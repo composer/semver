@@ -83,7 +83,7 @@ class Bound
      */
     public static function lowerMost()
     {
-        return new Bound('', true);
+        return new Bound('0', true);
     }
 
     /**
