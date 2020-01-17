@@ -56,4 +56,20 @@ class EmptyConstraint implements ConstraintInterface
     {
         return '[]';
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUpperBound()
+    {
+        return Bound::upperMost();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLowerBound()
+    {
+        return Bound::lowerMost();
+    }
 }

@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a constraint.
  */
-class Constraint implements ConstraintInterface, BoundsProvidingInterface
+class Constraint implements ConstraintInterface
 {
     /* operator integer values */
     const OP_EQ = 0;
@@ -63,10 +63,10 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
     /** @var string */
     protected $prettyString;
 
-    /** @var array */
+    /** @var Bound */
     protected $lowerBound;
 
-    /** @var array */
+    /** @var Bound */
     protected $upperBound;
 
     /**
@@ -247,8 +247,8 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
         
         // Branches
         if (strpos($this->version, 'dev-') === 0) {
-            $this->lowerBound = array('>=', '0');
-            $this->upperBound = array('<', BoundsProvidingInterface::UPPER_INFINITY);
+            $this->lowerBound = Bound::lowerMost();
+            $this->upperBound = Bound::upperMost();
             return;
         }
 
@@ -261,28 +261,28 @@ class Constraint implements ConstraintInterface, BoundsProvidingInterface
 
         switch ($this->operator) {
             case self::OP_EQ:
-                $this->lowerBound = array('==', $version);
-                $this->upperBound = array('==', $version);
+                $this->lowerBound = new Bound($version, true);
+                $this->upperBound = new Bound($version, true);
                 break;
             case self::OP_LT:
-                $this->lowerBound = array('>=', '0');
-                $this->upperBound = array('<', $version);
+                $this->lowerBound = Bound::lowerMost();
+                $this->upperBound = new Bound($version, false);
                 break;
             case self::OP_LE:
-                $this->lowerBound = array('>=', '0');
-                $this->upperBound = array('<=', $version);
+                $this->lowerBound = Bound::lowerMost();
+                $this->upperBound = new Bound($version, true);
                 break;
             case self::OP_GT:
-                $this->lowerBound = array('>', $version);
-                $this->upperBound = array('<', BoundsProvidingInterface::UPPER_INFINITY);
+                $this->lowerBound = new Bound($version, false);
+                $this->upperBound = Bound::upperMost();
                 break;
             case self::OP_GE:
-                $this->lowerBound = array('>=', $version);
-                $this->upperBound = array('<', BoundsProvidingInterface::UPPER_INFINITY);
+                $this->lowerBound = new Bound($version, true);
+                $this->upperBound = Bound::upperMost();
                 break;
             case self::OP_NE:
-                $this->lowerBound = array('>=', '0');
-                $this->upperBound = array('<', BoundsProvidingInterface::UPPER_INFINITY);
+                $this->lowerBound = Bound::lowerMost();
+                $this->upperBound = Bound::upperMost();
                 break;
         }
     }

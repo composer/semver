@@ -194,15 +194,15 @@ class ConstraintTest extends TestCase
      *
      * @param string $operator
      * @param string $normalizedVersion
-     * @param array $expectedLower
-     * @param array $expectedUpper
+     * @param Bound $expectedLower
+     * @param Bound $expectedUpper
      */
-    public function testBounds($operator, $normalizedVersion, array $expectedLower, array $expectedUpper)
+    public function testBounds($operator, $normalizedVersion, Bound $expectedLower, Bound $expectedUpper)
     {
         $constraint = new Constraint($operator, $normalizedVersion);
 
-        $this->assertSame($expectedLower, $constraint->getLowerBound(), 'Expected lower bound does not match');
-        $this->assertSame($expectedUpper, $constraint->getUpperBound(), 'Expected upper bound does not match');
+        $this->assertEquals($expectedLower, $constraint->getLowerBound(), 'Expected lower bound does not match');
+        $this->assertEquals($expectedUpper, $constraint->getUpperBound(), 'Expected upper bound does not match');
     }
 
     /**
@@ -211,39 +211,39 @@ class ConstraintTest extends TestCase
     public function bounds()
     {
         return array(
-            'equal to 1.0.0.0' => array('==', '1.0.0.0', array('==', '1.0.0.0'), array('==', '1.0.0.0')),
-            'equal to 1.0.0.0-rc3' => array('==', '1.0.0.0-rc3', array('==', '1.0.0.0.rc.3'), array('==', '1.0.0.0.rc.3')),
-            'equal to dev-feature-branch' => array('>=', 'dev-feature-branch', array('>=', '0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
+            'equal to 1.0.0.0' => array('==', '1.0.0.0', new Bound('1.0.0.0', true), new Bound('1.0.0.0', true)),
+            'equal to 1.0.0.0-rc3' => array('==', '1.0.0.0-rc3', new Bound( '1.0.0.0.rc.3', true), new Bound( '1.0.0.0.rc.3', true)),
+            'equal to dev-feature-branch' => array('>=', 'dev-feature-branch', Bound::lowerMost(), Bound::upperMost()),
 
-            'lower than 0.0.4.0' => array('<', '0.0.4.0', array('>=', '0'), array('<', '0.0.4.0')),
-            'lower than 1.0.0.0' => array('<', '1.0.0.0', array('>=', '0'), array('<', '1.0.0.0')),
-            'lower than 2.0.0.0' => array('<', '2.0.0.0', array('>=', '0'), array('<', '2.0.0.0')),
-            'lower than 3.0.3.0' => array('<', '3.0.3.0', array('>=', '0'), array('<', '3.0.3.0')),
-            'lower than 3.0.3.0-rc3' => array('<', '3.0.3.0-rc3', array('>=', '0'), array('<', '3.0.3.0.rc.3')),
-            'lower than dev-feature-branch' => array('<', 'dev-feature-branch', array('>=', '0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
+            'lower than 0.0.4.0' => array('<', '0.0.4.0', Bound::lowerMost(), new Bound('0.0.4.0', false)),
+            'lower than 1.0.0.0' => array('<', '1.0.0.0', Bound::lowerMost(), new Bound('1.0.0.0', false)),
+            'lower than 2.0.0.0' => array('<', '2.0.0.0', Bound::lowerMost(), new Bound('2.0.0.0', false)),
+            'lower than 3.0.3.0' => array('<', '3.0.3.0', Bound::lowerMost(), new Bound('3.0.3.0', false)),
+            'lower than 3.0.3.0-rc3' => array('<', '3.0.3.0-rc3', Bound::lowerMost(), new Bound('3.0.3.0.rc.3', false)),
+            'lower than dev-feature-branch' => array('<', 'dev-feature-branch', Bound::lowerMost(), Bound::upperMost()),
 
-            'greater than 0.0.4.0' => array('>', '0.0.4.0', array('>', '0.0.4.0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than 1.0.0.0' => array('>', '1.0.0.0', array('>', '1.0.0.0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than 2.0.0.0' => array('>', '2.0.0.0', array('>', '2.0.0.0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than 3.0.3.0' => array('>', '3.0.3.0', array('>', '3.0.3.0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than 3.0.3.0-rc3' => array('>', '3.0.3.0-rc3', array('>', '3.0.3.0.rc.3'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than dev-feature-branch' => array('>', 'dev-feature-branch', array('>=', '0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
+            'greater than 0.0.4.0' => array('>', '0.0.4.0', new Bound('0.0.4.0', false), Bound::upperMost()),
+            'greater than 1.0.0.0' => array('>', '1.0.0.0', new Bound('1.0.0.0', false), Bound::upperMost()),
+            'greater than 2.0.0.0' => array('>', '2.0.0.0', new Bound('2.0.0.0', false), Bound::upperMost()),
+            'greater than 3.0.3.0' => array('>', '3.0.3.0', new Bound('3.0.3.0', false), Bound::upperMost()),
+            'greater than 3.0.3.0-rc3' => array('>', '3.0.3.0-rc3', new Bound('3.0.3.0.rc.3', false), Bound::upperMost()),
+            'greater than dev-feature-branch' => array('>', 'dev-feature-branch', Bound::lowerMost(), Bound::upperMost()),
 
-            'lower than or equal to 0.0.4.0' => array('<=', '0.0.4.0', array('>=', '0'), array('<=', '0.0.4.0')),
-            'lower than or equal to 1.0.0.0' => array('<=', '1.0.0.0', array('>=', '0'), array('<=', '1.0.0.0')),
-            'lower than or equal to 2.0.0.0' => array('<=', '2.0.0.0', array('>=', '0'), array('<=', '2.0.0.0')),
-            'lower than or equal to 3.0.3.0' => array('<=', '3.0.3.0', array('>=', '0'), array('<=', '3.0.3.0')),
-            'lower than or equal to 3.0.3.0-rc3' => array('<=', '3.0.3.0-rc3', array('>=', '0'), array('<=', '3.0.3.0.rc.3')),
-            'lower than or equal to dev-feature-branch' => array('<=', 'dev-feature-branch', array('>=', '0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
+            'lower than or equal to 0.0.4.0' => array('<=', '0.0.4.0', Bound::lowerMost(), new Bound('0.0.4.0', true)),
+            'lower than or equal to 1.0.0.0' => array('<=', '1.0.0.0', Bound::lowerMost(), new Bound('1.0.0.0', true)),
+            'lower than or equal to 2.0.0.0' => array('<=', '2.0.0.0', Bound::lowerMost(), new Bound('2.0.0.0', true)),
+            'lower than or equal to 3.0.3.0' => array('<=', '3.0.3.0', Bound::lowerMost(), new Bound('3.0.3.0', true)),
+            'lower than or equal to 3.0.3.0-rc3' => array('<=', '3.0.3.0-rc3', Bound::lowerMost(), new Bound('3.0.3.0.rc.3', true)),
+            'lower than or equal to dev-feature-branch' => array('<=', 'dev-feature-branch', Bound::lowerMost(), Bound::upperMost()),
 
-            'greater than or equal to 0.0.4.0' => array('>=', '0.0.4.0', array('>=', '0.0.4.0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than or equal to 1.0.0.0' => array('>=', '1.0.0.0', array('>=', '1.0.0.0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than or equal to 2.0.0.0' => array('>=', '2.0.0.0', array('>=', '2.0.0.0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than or equal to 3.0.3.0' => array('>=', '3.0.3.0', array('>=', '3.0.3.0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than or equal to 3.0.3.0-rc3' => array('>=', '3.0.3.0-rc3', array('>=', '3.0.3.0.rc.3'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
-            'greater than or equal to dev-feature-branch' => array('>=', 'dev-feature-branch', array('>=', '0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
+            'greater than or equal to 0.0.4.0' => array('>=', '0.0.4.0', new Bound('0.0.4.0', true), Bound::upperMost()),
+            'greater than or equal to 1.0.0.0' => array('>=', '1.0.0.0', new Bound('1.0.0.0', true), Bound::upperMost()),
+            'greater than or equal to 2.0.0.0' => array('>=', '2.0.0.0', new Bound('2.0.0.0', true), Bound::upperMost()),
+            'greater than or equal to 3.0.3.0' => array('>=', '3.0.3.0', new Bound('3.0.3.0', true), Bound::upperMost()),
+            'greater than or equal to 3.0.3.0-rc3' => array('>=', '3.0.3.0-rc3', new Bound('3.0.3.0.rc.3', true), Bound::upperMost()),
+            'greater than or equal to dev-feature-branch' => array('>=', 'dev-feature-branch', Bound::lowerMost(), Bound::upperMost()),
 
-            'not equal to 1.0.0.0' => array('<>', '1.0.0.0', array('>=', '0'), array('<', BoundsProvidingInterface::UPPER_INFINITY)),
+            'not equal to 1.0.0.0' => array('<>', '1.0.0.0', Bound::lowerMost(), Bound::upperMost()),
         );
     }
 }

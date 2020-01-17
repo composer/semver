@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a conjunctive or disjunctive set of constraints.
  */
-class MultiConstraint implements ConstraintInterface, BoundsProvidingInterface
+class MultiConstraint implements ConstraintInterface
 {
     /** @var ConstraintInterface[] */
     protected $constraints;
@@ -25,10 +25,10 @@ class MultiConstraint implements ConstraintInterface, BoundsProvidingInterface
     /** @var bool */
     protected $conjunctive;
 
-    /** @var array */
+    /** @var Bound */
     protected $lowerBound;
 
-    /** @var array */
+    /** @var Bound */
     protected $upperBound;
 
     /**
@@ -150,57 +150,19 @@ class MultiConstraint implements ConstraintInterface, BoundsProvidingInterface
         }
 
         foreach ($this->constraints as $constraint) {
-            if (!$constraint instanceof BoundsProvidingInterface) {
-                continue; // TODO: or exception? Is it better to ignore those or not?
-            }
-
-            $constraintLower = $constraint->getLowerBound();
-            $constraintUpper = $constraint->getUpperBound();
-
             if (null === $this->lowerBound && null === $this->upperBound) {
-                $this->lowerBound = $constraintLower;
-                $this->upperBound = $constraintUpper;
+                $this->lowerBound = $constraint->getLowerBound();
+                $this->upperBound = $constraint->getUpperBound();
                 continue;
             }
 
-            if ($this->versionCompare($constraintLower, $this->lowerBound, $this->isConjunctive() ? '>' : '<')) {
-                $this->lowerBound = $constraintLower;
+            if ($constraint->getLowerBound()->compareTo($this->lowerBound, $this->isConjunctive() ? '>' : '<')) {
+                $this->lowerBound = $constraint->getLowerBound();
             }
 
-            if ($this->versionCompare($constraintUpper, $this->upperBound, $this->isConjunctive() ? '<' : '>')) {
-                $this->upperBound = $constraintUpper;
+            if ($constraint->getUpperBound()->compareTo($this->upperBound, $this->isConjunctive() ? '<' : '>')) {
+                $this->upperBound = $constraint->getUpperBound();
             }
         }
-    }
-
-    private function versionCompare(array $boundA, array $boundB, $operator)
-    {
-        return version_compare(
-            $this->prepareBoundForVersionCompare($boundA),
-            $this->prepareBoundForVersionCompare($boundB),
-            $operator
-        );
-    }
-
-    private function prepareBoundForVersionCompare(array $bound)
-    {
-        $version = str_replace(BoundsProvidingInterface::UPPER_INFINITY, (string) PHP_INT_MAX, $bound[1]);
-
-        switch ($bound[0]) {
-            case '>=':
-                $version .= '.6';
-                break;
-            case '>':
-                $version .= '.7';
-                break;
-            case '<=':
-                $version .= '.4';
-                break;
-            case '<':
-                $version .= '.3';
-                break;
-        }
-
-        return $version;
     }
 }
