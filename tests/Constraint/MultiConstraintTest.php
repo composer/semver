@@ -212,4 +212,28 @@ class MultiConstraintTest extends TestCase
             ),
         );
     }
+
+    /**
+     * @param string $constraints
+     * @param array $expectedLower
+     * @param array $expectedUpper
+     */
+    public function testMultipleMultiConstraintsMerging()
+    {
+        $versionParser = new VersionParser();
+        $constraints = [
+            '^7.0',
+            '^7.2',
+            '7.4.*',
+            '7.2.* || 7.4.*',
+        ];
+        foreach ($constraints as &$constraint) {
+            $constraint = $versionParser->parseConstraints($constraint);
+        }
+
+        $constraint = new MultiConstraint($constraints);
+
+        $this->assertSame(array('>=', '7.4.0.0.dev'), $constraint->getLowerBound(), 'Expected lower bound does not match');
+        $this->assertSame(array('<', '7.5.0.0.dev'), $constraint->getUpperBound(), 'Expected upper bound does not match');
+    }
 }
