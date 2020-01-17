@@ -278,32 +278,25 @@ class Constraint implements ConstraintInterface
             return;
         }
 
-        // Canonicalize version as done internally by PHP for version_compare()
-        $version = preg_replace(
-            array('/[-_+]/', '/([^\d\.])([^\D\.])/', '/([^\D\.])([^\d\.])/'),
-            array('.', '$1.$2', '$1.$2'),
-            $this->version
-        );
-
         switch ($this->operator) {
             case self::OP_EQ:
-                $this->lowerBound = new Bound($version, true);
-                $this->upperBound = new Bound($version, true);
+                $this->lowerBound = new Bound($this->version, true);
+                $this->upperBound = new Bound($this->version, true);
                 break;
             case self::OP_LT:
                 $this->lowerBound = Bound::lowerMost();
-                $this->upperBound = new Bound($version, false);
+                $this->upperBound = new Bound($this->version, false);
                 break;
             case self::OP_LE:
                 $this->lowerBound = Bound::lowerMost();
-                $this->upperBound = new Bound($version, true);
+                $this->upperBound = new Bound($this->version, true);
                 break;
             case self::OP_GT:
-                $this->lowerBound = new Bound($version, false);
+                $this->lowerBound = new Bound($this->version, false);
                 $this->upperBound = Bound::upperMost();
                 break;
             case self::OP_GE:
-                $this->lowerBound = new Bound($version, true);
+                $this->lowerBound = new Bound($this->version, true);
                 $this->upperBound = Bound::upperMost();
                 break;
             case self::OP_NE:

@@ -191,23 +191,23 @@ class MultiConstraintTest extends TestCase
         return array(
             '^7.0' => array(
                 '^7.0',
-                new Bound('7.0.0.0.dev', true),
-                new Bound('8.0.0.0.dev', false),
+                new Bound('7.0.0.0-dev', true),
+                new Bound('8.0.0.0-dev', false),
             ),
             '^7.2' => array(
                 '^7.2',
-                new Bound('7.2.0.0.dev', true),
-                new Bound('8.0.0.0.dev', false),
+                new Bound('7.2.0.0-dev', true),
+                new Bound('8.0.0.0-dev', false),
             ),
             '7.4.*' => array(
                 '7.4.*',
-                new Bound('7.4.0.0.dev', true),
-                new Bound('7.5.0.0.dev', false),
+                new Bound('7.4.0.0-dev', true),
+                new Bound('7.5.0.0-dev', false),
             ),
             '7.2.* || 7.4.*' => array(
                 '7.2.* || 7.4.*',
-                new Bound('7.2.0.0.dev', true),
-                new Bound('7.5.0.0.dev', false),
+                new Bound('7.2.0.0-dev', true),
+                new Bound('7.5.0.0-dev', false),
             ),
         );
     }
@@ -227,8 +227,8 @@ class MultiConstraintTest extends TestCase
 
         $constraint = new MultiConstraint($constraints);
 
-        $this->assertEquals(new Bound('7.4.0.0.dev', true), $constraint->getLowerBound(), 'Expected lower bound does not match');
-        $this->assertEquals(new Bound('7.5.0.0.dev', false), $constraint->getUpperBound(), 'Expected upper bound does not match');
+        $this->assertEquals(new Bound('7.4.0.0-dev', true), $constraint->getLowerBound(), 'Expected lower bound does not match');
+        $this->assertEquals(new Bound('7.5.0.0-dev', false), $constraint->getUpperBound(), 'Expected upper bound does not match');
     }
 
     public function testMultipleMultiConstraintsMergingWithGaps()
@@ -240,7 +240,7 @@ class MultiConstraintTest extends TestCase
             $versionParser->parseConstraints('^7.2.2'),
         ));
 
-        $this->assertEquals(new Bound('7.2.2.0.dev', true), $constraint->getLowerBound(), 'Expected lower bound does not match');
-        $this->assertEquals(new Bound('8.0.0.0.dev', false), $constraint->getUpperBound(), 'Expected upper bound does not match');
+        $this->assertEquals(new Bound('7.2.2.0-dev', true), $constraint->getLowerBound(), 'Expected lower bound does not match');
+        $this->assertEquals(new Bound('8.0.0.0-dev', false), $constraint->getUpperBound(), 'Expected upper bound does not match');
     }
 }
