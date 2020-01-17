@@ -72,7 +72,7 @@ class Bound
 
         // Not the same version means we don't need to check if the bounds are inclusive or not
         if (0 !== $compareResult) {
-            return ('>' === $operator ? 1 : -1) === $compareResult;
+            return (('>' === $operator) ? 1 : -1) === $compareResult;
         }
 
         // Question we're answering here is "am I higher than $other?"
