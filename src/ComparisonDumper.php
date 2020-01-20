@@ -19,10 +19,10 @@ class ComparisonDumper
      * Takes a given constraint and creates the version_compare()
      * statements required to evaluate whether a version matches
      * upper and lower bounds.
-     * Uses %version% as placeholder to replace at runtime.
-     * Note that %version% is not dumped within '' so you
-     * can also replace it with a constant. If you want to dump
-     * a string, make sure to wrap it yourself.
+     * Uses '%version%' as placeholder by default so you can replace
+     * it at runtime.
+     * It can be configured by passing the second argument to e.g. allow
+     * for a constant (without the wrapping quotes).
      *
      * It returns a string that can be evaluated at runtime
      * which means it is a return value so you can e.g.
@@ -34,16 +34,17 @@ class ComparisonDumper
      * method dumps "return true;".
      *
      * @param ConstraintInterface $constraint
+     * @param string              $versionPlaceholder The placeholder used for the version
      *
      * @return string
      */
-    public function dump(ConstraintInterface $constraint)
+    public function dump(ConstraintInterface $constraint, $versionPlaceholder = "'%version%'")
     {
         if ($constraint->getLowerBound()->isLowerMost() && $constraint->getUpperBound()->isUpperMost()) {
             return 'return true;';
         }
 
-        $comparison = $this->getInit($constraint) . "\n" . 'return ';
+        $comparison = $this->getInit($constraint, $versionPlaceholder) . "\n" . 'return ';
 
         if (!$constraint->getLowerBound()->isLowerMost()) {
             $comparison .= sprintf(
@@ -66,9 +67,9 @@ class ComparisonDumper
         return $comparison . ';';
     }
 
-    private function getInit(ConstraintInterface $constraint)
+    private function getInit(ConstraintInterface $constraint, $versionPlaceholder)
     {
-        $init = '$version = %version%;' . "\n";
+        $init = '$version = ' . $versionPlaceholder . ';' . "\n";
         $init .= '$version = preg_replace(array(\'/[-_+]/\', \'/([^\d\.])([^\D\.])/\', \'/([^\D\.])([^\d\.])/\'), array(\'.\', \'$1.$2\', \'$1.$2\'), $version);' . "\n";
         $init .= '$versionChunks = explode(\'.\', $version);' . "\n";
         $init .= '$versionLengths = array(count($versionChunks));' . "\n";

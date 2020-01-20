@@ -1,4 +1,4 @@
-$version = %version%;
+$version = '%version%';
 $version = preg_replace(array('/[-_+]/', '/([^\d\.])([^\D\.])/', '/([^\D\.])([^\d\.])/'), array('.', '$1.$2', '$1.$2'), $version);
 $versionChunks = explode('.', $version);
 $versionLengths = array(count($versionChunks));
