@@ -21,19 +21,18 @@ class ComparisonDumperTest extends TestCase
      *
      * @param string $constraint
      * @param string $version
-     * @param string $expectedDump
+     * @param string $expectedDumpComparisonFile
      * @param $shouldEvaluateTrue bool
      */
-    public function testDump($constraint, $version, $expectedDump, $shouldEvaluateTrue)
+    public function testDump($constraint, $version, $expectedDumpComparisonFile, $shouldEvaluateTrue)
     {
         $versionParser = new VersionParser();
-        $dumper = new ComparisonDumper($versionParser);
-        $dumped = $dumper->dump($versionParser->parseConstraints($constraint), $version);
+        $dumper = new ComparisonDumper();
+        $dumped = $dumper->dump($versionParser->parseConstraints($constraint));
 
-        $this->assertSame($expectedDump, $dumped);
+        $this->assertStringEqualsFile(__DIR__ . '/../Fixtures/' . $expectedDumpComparisonFile, $dumped);
 
-        $evaluated = eval('return ' . $expectedDump . ';');
-
+        $evaluated = eval(str_replace('%version%', $version, $dumped));
         $this->assertSame($shouldEvaluateTrue, $evaluated);
     }
 
@@ -43,14 +42,14 @@ class ComparisonDumperTest extends TestCase
     public function dump()
     {
         return array(
-            array('1.0', '1.0', "version_compare('1.0.0.0', '1.0.0.0', '>=') && version_compare('1.0.0.0', '1.0.0.0', '<=')", true),
-            array('>1.0', '1.0', "version_compare('1.0.0.0', '1.0.0.0', '>')", false),
-            array('>1.0', '1.1', "version_compare('1.1.0.0', '1.0.0.0', '>')", true),
-            array('<1.0', '0.8', "version_compare('0.8.0.0', '1.0.0.0-dev', '<')", true),
-            array('<1.0', '1.1', "version_compare('1.1.0.0', '1.0.0.0-dev', '<')", false),
-            array('^7.2', '7.0', "version_compare('7.0.0.0', '7.2.0.0-dev', '>=') && version_compare('7.0.0.0', '8.0.0.0-dev', '<')", false),
-            array('^7.2', '7.3.1', "version_compare('7.3.1.0', '7.2.0.0-dev', '>=') && version_compare('7.3.1.0', '8.0.0.0-dev', '<')", true),
-            array('<1.0 || >1.0', '1.0.0', "true", true),
+            array('1.0', '1.0', 'comparison_dump_1.txt', true),
+            array('>1.0', '1.0', 'comparison_dump_2.txt', false),
+            array('>1.0', '1.1', 'comparison_dump_3.txt', true),
+            array('<1.0', '0.8', 'comparison_dump_4.txt', true),
+            array('<1.0', '1.1', 'comparison_dump_5.txt', false),
+            array('^7.2', '7.0', 'comparison_dump_6.txt', false),
+            array('^7.2', '7.3.1', 'comparison_dump_7.txt', true),
+            array('<1.0 || >1.0', '1.0.0', 'comparison_dump_8.txt', true),
         );
     }
 }

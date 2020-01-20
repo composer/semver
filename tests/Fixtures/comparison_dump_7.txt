@@ -1,0 +1,16 @@
+$version = '%version%';
+$version = preg_replace(array('/[-_+]/', '/([^\d\.])([^\D\.])/', '/([^\D\.])([^\d\.])/'), array('.', '$1.$2', '$1.$2'), $version);
+$versionChunks = explode('.', $version);
+$versionLengths = array(count($versionChunks));
+$lowerVersion = '7.2.0.0.dev';
+$lowerVersionChunks = explode('.', $lowerVersion);
+$versionLengths[] = count($lowerVersionChunks);
+$upperVersion = '8.0.0.0.dev';
+$upperVersionChunks = explode('.', $upperVersion);
+$versionLengths[] = count($upperVersionChunks);
+$max = max($versionLengths);
+$version = implode('.', array_pad($versionChunks, $max, '0'));
+$lowerVersion = implode('.', array_pad($lowerVersionChunks, $max, '0'));
+$upperVersion = implode('.', array_pad($upperVersionChunks, $max, '0'));
+
+return version_compare($version, $lowerVersion, '>=') && version_compare($version, $upperVersion, '<');

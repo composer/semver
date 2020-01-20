@@ -11,68 +11,97 @@
 
 namespace Composer\Semver\Constraint;
 
-use Composer\Semver\VersionParser;
-
 class ComparisonDumper
 {
     /**
-     * @var VersionParser
-     */
-    private $versionParser;
-
-    /**
-     * @param VersionParser $versionParser
-     */
-    public function __construct(VersionParser $versionParser = null)
-    {
-        if (null === $versionParser) {
-            $versionParser = new VersionParser();
-        }
-
-        $this->versionParser = $versionParser;
-    }
-
-    /**
-     * Takes a given constraint and a given version and creates
-     * the version_compare() statements required to evaluate
-     * whether a version matches upper and lower bounds.
+     * Takes a given constraint and creates the version_compare()
+     * statements required to evaluate whether a version matches
+     * upper and lower bounds.
+     * Uses %version% as placeholder to replace at runtime.
+     *
+     * It returns a string that can be evaluated at runtime
+     * which means it is a return value so you can e.g.
+     * assign it to a variable like so:
+     *
+     * $result = eval(str_replace('%version%', PHP_VERSION, $comparisionDumperResult));
+     *
+     * If there are no bounds (lowermost and uppermost) this
+     * method dumps "return true;".
      *
      * @param ConstraintInterface $constraint
-     * @param string              $version
      *
      * @return string
      */
-    public function dump(ConstraintInterface $constraint, $version)
+    public function dump(ConstraintInterface $constraint)
     {
-        $version = $this->versionParser->normalize($version);
-        $comparison = '';
+        if ($constraint->getLowerBound()->isLowerMost() && $constraint->getUpperBound()->isUpperMost()) {
+            return 'return true;';
+        }
+
+        $comparison = $this->getInit($constraint) . "\n" . 'return ';
 
         if (!$constraint->getLowerBound()->isLowerMost()) {
             $comparison .= sprintf(
-                "version_compare('%s', '%s', '%s')",
-                $version,
-                $constraint->getLowerBound()->getVersion(),
+                'version_compare($version, $lowerVersion, \'%s\')',
                 $constraint->getLowerBound()->isInclusive() ? '>=' : '>'
             );
         }
 
         if (!$constraint->getUpperBound()->isUpperMost()) {
-            if ('' !== $comparison) {
+            if (!$constraint->getLowerBound()->isLowerMost()) {
                 $comparison .= ' && ';
             }
 
             $comparison .= sprintf(
-                "version_compare('%s', '%s', '%s')",
-                $version,
-                $constraint->getUpperBound()->getVersion(),
+                'version_compare($version, $upperVersion, \'%s\')',
                 $constraint->getUpperBound()->isInclusive() ? '<=' : '<'
             );
         }
 
-        if ('' === $comparison) {
-            $comparison .= 'true';
+        return $comparison . ';';
+    }
+
+    private function getInit(ConstraintInterface $constraint)
+    {
+        $init = '$version = \'%version%\';' . "\n";
+        $init .= '$version = preg_replace(array(\'/[-_+]/\', \'/([^\d\.])([^\D\.])/\', \'/([^\D\.])([^\d\.])/\'), array(\'.\', \'$1.$2\', \'$1.$2\'), $version);' . "\n";
+        $init .= '$versionChunks = explode(\'.\', $version);' . "\n";
+        $init .= '$versionLengths = array(count($versionChunks));' . "\n";
+
+        if (!$constraint->getLowerBound()->isLowerMost()) {
+            $init .= sprintf(
+                '$lowerVersion = \'%s\';' . "\n" . '$lowerVersionChunks = explode(\'.\', $lowerVersion);' . "\n" . '$versionLengths[] = count($lowerVersionChunks);' . "\n",
+                $this->canonicalizeVersion($constraint->getLowerBound()->getVersion())
+            );
         }
 
-        return $comparison;
+        if (!$constraint->getUpperBound()->isUpperMost()) {
+            $init .= sprintf(
+                '$upperVersion = \'%s\';' . "\n" . '$upperVersionChunks = explode(\'.\', $upperVersion);' . "\n" . '$versionLengths[] = count($upperVersionChunks);' . "\n",
+                $this->canonicalizeVersion($constraint->getUpperBound()->getVersion())
+            );
+        }
+
+        $init .= '$max = max($versionLengths);'. "\n";
+        $init .= '$version = implode(\'.\', array_pad($versionChunks, $max, \'0\'));'. "\n";
+
+        if (!$constraint->getLowerBound()->isLowerMost()) {
+            $init .= '$lowerVersion = implode(\'.\', array_pad($lowerVersionChunks, $max, \'0\'));'. "\n";
+        }
+
+        if (!$constraint->getUpperBound()->isUpperMost()) {
+            $init .= '$upperVersion = implode(\'.\', array_pad($upperVersionChunks, $max, \'0\'));'. "\n";
+        }
+
+        return $init;
+    }
+
+    private function canonicalizeVersion($version)
+    {
+        return preg_replace(
+            array('/[-_+]/', '/([^\d\.])([^\D\.])/', '/([^\D\.])([^\d\.])/'),
+            array('.', '$1.$2', '$1.$2'),
+            $version
+        );
     }
 }
