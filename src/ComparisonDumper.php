@@ -20,6 +20,9 @@ class ComparisonDumper
      * statements required to evaluate whether a version matches
      * upper and lower bounds.
      * Uses %version% as placeholder to replace at runtime.
+     * Note that %version% is not dumped within '' so you
+     * can also replace it with a constant. If you want to dump
+     * a string, make sure to wrap it yourself.
      *
      * It returns a string that can be evaluated at runtime
      * which means it is a return value so you can e.g.
@@ -65,7 +68,7 @@ class ComparisonDumper
 
     private function getInit(ConstraintInterface $constraint)
     {
-        $init = '$version = \'%version%\';' . "\n";
+        $init = '$version = %version%;' . "\n";
         $init .= '$version = preg_replace(array(\'/[-_+]/\', \'/([^\d\.])([^\D\.])/\', \'/([^\D\.])([^\d\.])/\'), array(\'.\', \'$1.$2\', \'$1.$2\'), $version);' . "\n";
         $init .= '$versionChunks = explode(\'.\', $version);' . "\n";
         $init .= '$versionLengths = array(count($versionChunks));' . "\n";

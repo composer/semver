@@ -41,14 +41,15 @@ class ComparisonDumperTest extends TestCase
     public function dump()
     {
         return array(
-            array('1.0', '1.0', 'comparison_dump_1.txt', true),
-            array('>1.0', '1.0', 'comparison_dump_2.txt', false),
-            array('>1.0', '1.1', 'comparison_dump_3.txt', true),
-            array('<1.0', '0.8', 'comparison_dump_4.txt', true),
-            array('<1.0', '1.1', 'comparison_dump_5.txt', false),
-            array('^7.2', '7.0', 'comparison_dump_6.txt', false),
-            array('^7.2', '7.3.1', 'comparison_dump_7.txt', true),
-            array('<1.0 || >1.0', '1.0.0', 'comparison_dump_8.txt', true),
+            array('1.0', "'1.0'", 'comparison_dump_1.txt', true),
+            array('>1.0', "'1.0'", 'comparison_dump_2.txt', false),
+            array('>1.0', "'1.1'", 'comparison_dump_3.txt', true),
+            array('<1.0', "'0.8'", 'comparison_dump_4.txt', true),
+            array('<1.0', "'1.1'", 'comparison_dump_5.txt', false),
+            array('^7.2', "'7.0'", 'comparison_dump_6.txt', false),
+            array('^7.2', "'7.3.1'", 'comparison_dump_7.txt', true),
+            array('<1.0 || >1.0', "'1.0.0'", 'comparison_dump_8.txt', true),
+            array('^5.3 || ^7.0', 'PHP_VERSION', 'comparison_dump_9.txt', true), // This test will need to be adjusted with future PHP versions as it tests if setting a constant works (PHP_VERSION)
         );
     }
 }
