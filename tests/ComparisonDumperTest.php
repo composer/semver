@@ -9,9 +9,8 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Semver\Constraint;
+namespace Composer\Semver;
 
-use Composer\Semver\VersionParser;
 use PHPUnit\Framework\TestCase;
 
 class ComparisonDumperTest extends TestCase
@@ -30,7 +29,7 @@ class ComparisonDumperTest extends TestCase
         $dumper = new ComparisonDumper();
         $dumped = $dumper->dump($versionParser->parseConstraints($constraint));
 
-        $this->assertStringEqualsFile(__DIR__ . '/../Fixtures/' . $expectedDumpComparisonFile, $dumped);
+        $this->assertStringEqualsFile(__DIR__ . '/Fixtures/' . $expectedDumpComparisonFile, $dumped);
 
         $evaluated = eval(str_replace('%version%', $version, $dumped));
         $this->assertSame($shouldEvaluateTrue, $evaluated);

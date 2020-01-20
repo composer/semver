@@ -9,7 +9,9 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Semver\Constraint;
+namespace Composer\Semver;
+
+use Composer\Semver\Constraint\ConstraintInterface;
 
 class ComparisonDumper
 {
