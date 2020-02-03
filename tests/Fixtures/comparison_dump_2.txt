@@ -1,12 +1,22 @@
-$version = '%version%';
-$version = preg_replace(array('/[-_+]/', '/([^\d\.])([^\D\.])/', '/([^\D\.])([^\d\.])/'), array('.', '$1.$2', '$1.$2'), $version);
-$versionChunks = explode('.', $version);
-$versionLengths = array(count($versionChunks));
-$lowerVersion = '1.0.0.0';
-$lowerVersionChunks = explode('.', $lowerVersion);
-$versionLengths[] = count($lowerVersionChunks);
-$max = max($versionLengths);
-$version = implode('.', array_pad($versionChunks, $max, '0'));
-$lowerVersion = implode('.', array_pad($lowerVersionChunks, $max, '0'));
+$statements = array();
+$statements['packageA'] = function() {
+    $version = '%version%';
+    $version = preg_replace(array('/[-_+]/', '/([^\d\.])([^\D\.])/', '/([^\D\.])([^\d\.])/'), array('.', '$1.$2', '$1.$2'), $version);
+    $versionChunks = explode('.', $version);
+    $versionLengths = array(count($versionChunks));
+    $lowerVersion = '1.0.0.0';
+    $lowerVersionChunks = explode('.', $lowerVersion);
+    $versionLengths[] = count($lowerVersionChunks);
+    $max = max($versionLengths);
+    $version = implode('.', array_pad($versionChunks, $max, '0'));
+    $lowerVersion = implode('.', array_pad($lowerVersionChunks, $max, '0'));
+    return version_compare($version, $lowerVersion, '>');
+};
 
-return version_compare($version, $lowerVersion, '>');
+foreach ($statements as $k => $statement) {
+   if (!$statement()) {
+       return $k;
+   }
+}
+
+return true;

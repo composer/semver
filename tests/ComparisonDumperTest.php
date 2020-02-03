@@ -18,22 +18,24 @@ class ComparisonDumperTest extends TestCase
     /**
      * @dataProvider dump
      *
-     * @param string $constraint
-     * @param string $version
+     * @param array  $dumpConfigs
+     * @param array  $versionsPerPackage
      * @param string $expectedDumpComparisonFile
-     * @param bool   $shouldEvaluateTrue
-     * @param string $versionPlaceholder
+     * @param mixed  $expectedResult
      */
-    public function testDump($constraint, $version, $expectedDumpComparisonFile, $shouldEvaluateTrue, $versionPlaceholder = "'%version%'")
+    public function testDump(array $dumpConfigs, array $versionPlaceholdersAndValues, $expectedDumpComparisonFile, $expectedResult)
     {
-        $versionParser = new VersionParser();
         $dumper = new ComparisonDumper();
-        $dumped = $dumper->dump($versionParser->parseConstraints($constraint), $versionPlaceholder);
+        $dumped = $dumper->dump($dumpConfigs);
 
         $this->assertStringEqualsFile(__DIR__ . '/Fixtures/' . $expectedDumpComparisonFile, $dumped);
 
-        $evaluated = eval(str_replace('%version%', $version, $dumped));
-        $this->assertSame($shouldEvaluateTrue, $evaluated);
+        foreach ($versionPlaceholdersAndValues as $placeholder => $value) {
+            $dumped = str_replace($placeholder, $value, $dumped);
+        }
+
+        $evaluated = eval($dumped);
+        $this->assertSame($expectedResult, $evaluated);
     }
 
     /**
@@ -41,16 +43,75 @@ class ComparisonDumperTest extends TestCase
      */
     public function dump()
     {
+        $versionParser = new VersionParser();
+
         return array(
-            array('1.0', '1.0', 'comparison_dump_1.txt', true),
-            array('>1.0', '1.0', 'comparison_dump_2.txt', false),
-            array('>1.0', '1.1', 'comparison_dump_3.txt', true),
-            array('<1.0', '0.8', 'comparison_dump_4.txt', true),
-            array('<1.0', '1.1', 'comparison_dump_5.txt', false),
-            array('^7.2', '7.0', 'comparison_dump_6.txt', false),
-            array('^7.2', '7.3.1', 'comparison_dump_7.txt', true),
-            array('<1.0 || >1.0', '1.0.0', 'comparison_dump_8.txt', true),
-            array('^5.3 || ^7.0', 'PHP_VERSION', 'comparison_dump_9.txt', true, '%version%'), // This test will need to be adjusted with future PHP versions as it tests if setting a constant works (PHP_VERSION)
+            '== 1.0 (true)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('1.0'))),
+                array('%version%' => '1.0'),
+                'comparison_dump_1.txt',
+                true,
+            ),
+            '> 1.0 (false)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('> 1.0'))),
+                array('%version%' => '1.0'),
+                'comparison_dump_2.txt',
+                'packageA',
+            ),
+            '> 1.0 (true)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('> 1.0'))),
+                array('%version%' => '1.1'),
+                'comparison_dump_3.txt',
+                true,
+            ),
+            '< 1.0 (true)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('< 1.0'))),
+                array('%version%' => '0.8'),
+                'comparison_dump_4.txt',
+                true,
+            ),
+            '< 1.0 (false)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('< 1.0'))),
+                array('%version%' => '1.1'),
+                'comparison_dump_5.txt',
+                'packageA', // This test will need to be adjusted with future PHP versions as it tests if setting a constant works (PHP_VERSION)
+            ),
+            '^7.2 (false)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('^7.2'))),
+                array('%version%' => '7.0'),
+                'comparison_dump_6.txt',
+                'packageA',
+            ),
+            '^7.2 (true)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('^7.2'))),
+                array('%version%' => '7.3.1'),
+                'comparison_dump_7.txt',
+                true,
+            ),
+            '<1.0 || >1.0 (true)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('<1.0 || >1.0'))),
+                array('%version%' => '1.0.0'),
+                'comparison_dump_8.txt',
+                true,
+            ),
+            '^5.3 || ^7.0 (true)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('^5.3 || ^7.0'), '%version%')),
+                array('%version%' => 'PHP_VERSION'),
+                'comparison_dump_9.txt',
+                true,
+            ),
+            'Multiple constraints (true)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('^1.0'), "'%version_packageA%'"), new ComparisonDumpConfig('packageB', $versionParser->parseConstraints('^2.0'), "'%version_packageB%'")),
+                array('%version_packageA%' => '1.0.0', '%version_packageB%' => '2.0.0'),
+                'comparison_dump_10.txt',
+                true,
+            ),
+            'Multiple constraints (false)' => array(
+                array(new ComparisonDumpConfig('packageA', $versionParser->parseConstraints('^1.0'), "'%version_packageA%'"), new ComparisonDumpConfig('packageB', $versionParser->parseConstraints('^2.0'), "'%version_packageB%'")),
+                array('%version_packageA%' => '1.0.0', '%version_packageB%' => '1.8.0'),
+                'comparison_dump_11.txt',
+                'packageB',
+            ),
         );
     }
 }
