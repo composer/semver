@@ -87,6 +87,11 @@ class SemverTest extends TestCase
                 array('0.1', '0.1', '1.0', '2.4.0-alpha', '2.4.0', '3.2.1'),
                 array('3.2.1', '2.4.0', '2.4.0-alpha', '1.0', '0.1', '0.1'),
             ),
+            array(
+                array('dev-foo', 'dev-master', '1.0', '50.2'),
+                array('1.0', '50.2', 'dev-master', 'dev-foo'),
+                array('dev-foo', 'dev-master', '50.2', '1.0'),
+            )
         );
     }
 

@@ -211,6 +211,22 @@ class VersionParser
     }
 
     /**
+     * Normalizes a default branch name (i.e. master on git) to 9999999-dev.
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    public function normalizeDefaultBranch($name)
+    {
+        if ($name === 'dev-master' || $name === 'dev-default' || $name === 'dev-trunk') {
+            return '9999999-dev';
+        }
+
+        return $name;
+    }
+
+    /**
      * Parses a constraint string into MultiConstraint and/or Constraint objects.
      *
      * @param string $constraints
