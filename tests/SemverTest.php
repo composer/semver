@@ -89,8 +89,8 @@ class SemverTest extends TestCase
             ),
             array(
                 array('dev-foo', 'dev-master', '1.0', '50.2'),
-                array('1.0', '50.2', 'dev-master', 'dev-foo'),
-                array('dev-foo', 'dev-master', '50.2', '1.0'),
+                array('dev-foo', '1.0', '50.2', 'dev-master'),
+                array('dev-master', '50.2', '1.0', 'dev-foo'),
             )
         );
     }

@@ -106,6 +106,6 @@ class Comparator
     {
         $constraint = new Constraint($operator, $version2);
 
-        return $constraint->matches(new Constraint('==', $version1));
+        return $constraint->matchSpecific(new Constraint('==', $version1), true);
     }
 }

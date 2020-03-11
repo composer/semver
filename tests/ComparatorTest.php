@@ -131,6 +131,9 @@ class ComparatorTest extends TestCase
             array('1.25.0', '1.24.0', true),
             array('1.25.0', '1.25.0', false),
             array('1.25.0', '1.26.0', false),
+            array('1.26.0', 'dev-foo', true),
+            array('dev-foo', 'dev-master', false),
+            array('dev-foo', 'dev-bar', false),
         );
     }
 
@@ -156,6 +159,9 @@ class ComparatorTest extends TestCase
             array('1.25.0', '1.25.0', false),
             array('1.25.0', '1.26.0', true),
             array('1.0.0', '1.2-dev', true),
+            array('dev-foo', '1.26.0', true),
+            array('dev-foo', 'dev-master', false),
+            array('dev-foo', 'dev-bar', false),
         );
     }
 
@@ -180,6 +186,9 @@ class ComparatorTest extends TestCase
             array('1.25.0', '1.24.0', false),
             array('1.25.0', '1.25.0', true),
             array('1.25.0', '1.26.0', false),
+            array('dev-foo', '1.26.0', false),
+            array('dev-foo', 'dev-master', false),
+            array('dev-foo', 'dev-bar', false),
         );
     }
 
