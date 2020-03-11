@@ -114,11 +114,6 @@ class VersionParser
             $version = $match[1];
         }
 
-        // match master-like branches
-        if (preg_match('{^(?:dev-)?(?:master|trunk|default)$}i', $version)) {
-            return '9999999-dev';
-        }
-
         // if requirement is branch-like, use full name
         if (stripos($version, 'dev-') === 0) {
             return 'dev-' . substr($version, 4);
@@ -202,10 +197,6 @@ class VersionParser
     public function normalizeBranch($name)
     {
         $name = trim($name);
-
-        if (in_array($name, array('master', 'trunk', 'default'))) {
-            return $this->normalize($name);
-        }
 
         if (preg_match('{^v?(\d++)(\.(?:\d++|[xX*]))?(\.(?:\d++|[xX*]))?(\.(?:\d++|[xX*]))?$}i', $name, $matches)) {
             $version = '';
