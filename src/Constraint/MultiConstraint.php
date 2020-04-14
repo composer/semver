@@ -86,7 +86,7 @@ class MultiConstraint implements ConstraintInterface
     }
 
     /**
-     * @param string $prettyString
+     * @param string|null $prettyString
      */
     public function setPrettyString($prettyString)
     {

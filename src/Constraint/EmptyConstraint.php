@@ -30,7 +30,7 @@ class EmptyConstraint implements ConstraintInterface
     }
 
     /**
-     * @param $prettyString
+     * @param string $prettyString
      */
     public function setPrettyString($prettyString)
     {
