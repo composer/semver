@@ -40,7 +40,7 @@ script:
       bin/composer update phpstan/* phpunit/* sebastian/* --with-all-dependencies &&
       vendor/bin/phpstan analyse;
     else
-      vendor/bin/phpunit --coverage-clover=coverage.xml
+      vendor/bin/phpunit --coverage-clover=coverage.xml;
     fi
 
 after_success:
