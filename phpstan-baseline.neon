@@ -1,0 +1,12 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^The Composer\\\\Semver\\\\Constraint\\\\AbstractConstraint abstract class is deprecated, there is no replacement for it, it will be removed in the next major version\\.$#"
+			count: 1
+			path: src/Constraint/AbstractConstraint.php
+
+		-
+			message: "#^Call to an undefined method Composer\\\\Semver\\\\Constraint\\\\AbstractConstraint\\:\\:matchSpecific\\(\\)\\.$#"
+			count: 1
+			path: src/Constraint/AbstractConstraint.php
+
