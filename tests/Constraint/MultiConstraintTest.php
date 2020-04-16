@@ -243,4 +243,64 @@ class MultiConstraintTest extends TestCase
         $this->assertEquals(new Bound('7.2.2.0-dev', true), $constraint->getLowerBound(), 'Expected lower bound does not match');
         $this->assertEquals(new Bound('8.0.0.0-dev', false), $constraint->getUpperBound(), 'Expected upper bound does not match');
     }
+
+    /**
+     * @dataProvider multiConstraintOptimizations
+     *
+     * @param string $constraints
+     */
+    public function testMultiConstraintOptimizations($constraints, ConstraintInterface $expectedConstraint)
+    {
+        // We're using the version parser here because that uses MultiConstraint::create() internally and
+        // thus tests our optimizations. It's just easier to write complex multi constraint instances
+        // using the string notation.
+        $parser = new VersionParser();
+        $this->assertSame((string) $expectedConstraint, (string) $parser->parseConstraints($constraints));
+    }
+
+    public function multiConstraintOptimizations()
+    {
+        return array(
+            'Test collapses contiguous' => array(
+                '^2.5 || ^3.0',
+                new MultiConstraint(array(
+                        new Constraint('>=', '2.5.0.0-dev'),
+                        new Constraint('<', '4.0.0.0-dev')
+                    ),
+                    true // conjunctive
+                )
+            ),
+            'Parse caret constraints must not collapse if non contiguous range' => array(
+                '^0.2 || ^1.0',
+                new MultiConstraint(array(
+                        new MultiConstraint(array(
+                            new Constraint('>=', '0.2.0.0-dev'),
+                            new Constraint('<', '0.3.0.0-dev'),
+                        )),
+                        new MultiConstraint(array(
+                            new Constraint('>=', '1.0.0.0-dev'),
+                            new Constraint('<', '2.0.0.0-dev'),
+                        ))
+                    ),
+                    false // disjunctive
+                )
+            ),
+            'Must not collapse if contiguous range if other constraints also apply' => array(
+                '~0.1 || ~1.0 !=1.0.1',
+                new MultiConstraint(array(
+                        new MultiConstraint(array(
+                            new Constraint('>=', '0.1.0.0-dev'),
+                            new Constraint('<', '1.0.0.0-dev'),
+                        )),
+                        new MultiConstraint(array(
+                            new Constraint('>=', '1.0.0.0-dev'),
+                            new Constraint('<', '2.0.0.0-dev'),
+                            new Constraint('!=', '1.0.1.0'),
+                        ))
+                    ),
+                    false // disjunctive
+                )
+            ),
+        );
+    }
 }
