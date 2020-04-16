@@ -144,6 +144,57 @@ class MultiConstraint implements ConstraintInterface
         return $this->upperBound;
     }
 
+    /**
+     * Tries to optimize the constraints as much as possible, meaning
+     * reducing/collapsing congruent constraints etc.
+     * Does not necessarily return a MultiConstraint instance if
+     * things can be reduced to a simple constraint
+     *
+     * @param ConstraintInterface[] $constraints A set of constraints
+     * @param bool                  $conjunctive Whether the constraints should be treated as conjunctive or disjunctive
+     *
+     * @return ConstraintInterface
+     */
+    public static function create(array $constraints, $conjunctive = true)
+    {
+        if (0 === count($constraints)) {
+            return new self($constraints, $conjunctive);
+        }
+
+        if (1 === count($constraints)) {
+            // Recursive optimization for multiconstraints consisting of just one mulitconstraint
+            if ($constraints[0] instanceof MultiConstraint) {
+                return self::create($constraints[0]->getConstraints(), $constraints[0]->isConjunctive());
+            }
+
+            return $constraints[0];
+        }
+
+        // parse the two OR groups and if they are contiguous we collapse
+        // them into one constraint
+        if (!$conjunctive
+            && 2 === count($constraints)
+            && $constraints[0] instanceof MultiConstraint
+            && $constraints[1] instanceof MultiConstraint
+            && 2 === count($constraints[0]->getConstraints())
+            && 2 === count($constraints[1]->getConstraints())
+            && ($a = (string) $constraints[0])
+            && strpos($a, '[>=') === 0 && (false !== ($posA = strpos($a, '<', 4)))
+            && ($b = (string) $constraints[1])
+            && strpos($b, '[>=') === 0 && (false !== ($posB = strpos($b, '<', 4)))
+            && substr($a, $posA + 2, -1) === substr($b, 4, $posB - 5)
+        ) {
+            return new self(array(
+                new Constraint('>=', substr($a, 4, $posA - 5)),
+                new Constraint('<', substr($b, $posB + 2, -1)),
+            ));
+        }
+
+        // TODO: Here's the place to put more optimizations
+
+        return new self($constraints, $conjunctive);
+    }
+
     private function extractBounds()
     {
         if (null !== $this->lowerBound) {
