@@ -62,7 +62,7 @@ class EmptyConstraint implements ConstraintInterface
      */
     public function getUpperBound()
     {
-        return Bound::upperMost();
+        return Bound::positiveInfinity();
     }
 
     /**
@@ -70,6 +70,6 @@ class EmptyConstraint implements ConstraintInterface
      */
     public function getLowerBound()
     {
-        return Bound::lowerMost();
+        return Bound::zero();
     }
 }

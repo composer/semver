@@ -247,8 +247,8 @@ class Constraint implements ConstraintInterface
 
         // Branches
         if (strpos($this->version, 'dev-') === 0) {
-            $this->lowerBound = Bound::lowerMost();
-            $this->upperBound = Bound::upperMost();
+            $this->lowerBound = Bound::zero();
+            $this->upperBound = Bound::positiveInfinity();
 
             return;
         }
@@ -259,24 +259,24 @@ class Constraint implements ConstraintInterface
                 $this->upperBound = new Bound($this->version, true);
                 break;
             case self::OP_LT:
-                $this->lowerBound = Bound::lowerMost();
+                $this->lowerBound = Bound::zero();
                 $this->upperBound = new Bound($this->version, false);
                 break;
             case self::OP_LE:
-                $this->lowerBound = Bound::lowerMost();
+                $this->lowerBound = Bound::zero();
                 $this->upperBound = new Bound($this->version, true);
                 break;
             case self::OP_GT:
                 $this->lowerBound = new Bound($this->version, false);
-                $this->upperBound = Bound::upperMost();
+                $this->upperBound = Bound::positiveInfinity();
                 break;
             case self::OP_GE:
                 $this->lowerBound = new Bound($this->version, true);
-                $this->upperBound = Bound::upperMost();
+                $this->upperBound = Bound::positiveInfinity();
                 break;
             case self::OP_NE:
-                $this->lowerBound = Bound::lowerMost();
-                $this->upperBound = Bound::upperMost();
+                $this->lowerBound = Bound::zero();
+                $this->upperBound = Bound::positiveInfinity();
                 break;
         }
     }

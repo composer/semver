@@ -49,12 +49,12 @@ class Bound
         return $this->isInclusive;
     }
 
-    public function isLowerMost()
+    public function isZero()
     {
         return $this->getVersion() === '0' && $this->isInclusive();
     }
 
-    public function isUpperMost()
+    public function isPositiveInfinity()
     {
         return $this->getVersion() === (string) PHP_INT_MAX && !$this->isInclusive();
     }
@@ -101,7 +101,7 @@ class Bound
     /**
      * @return self
      */
-    public static function lowerMost()
+    public static function zero()
     {
         return new Bound('0', true);
     }
@@ -109,7 +109,7 @@ class Bound
     /**
      * @return self
      */
-    public static function upperMost()
+    public static function positiveInfinity()
     {
         return new Bound((string) PHP_INT_MAX, false);
     }

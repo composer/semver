@@ -134,7 +134,7 @@ class MultiConstraintTest extends TestCase
                 ),
                 true,
                 new Bound('1.0.0.0', false),
-                Bound::upperMost(),
+                Bound::positiveInfinity(),
             ),
             '">=" should take precedence ">" for lower bound when disjunctive' => array(
                 array(
@@ -144,7 +144,7 @@ class MultiConstraintTest extends TestCase
                 ),
                 false,
                 new Bound('1.0.0.0', true),
-                Bound::upperMost(),
+                Bound::positiveInfinity(),
             ),
             'Bounds should be limited when conjunctive' => array(
                 array(
@@ -161,8 +161,8 @@ class MultiConstraintTest extends TestCase
                     new Constraint('<', '8.0.0.0'),
                 ),
                 false,
-                Bound::lowerMost(),
-                Bound::upperMost(),
+                Bound::zero(),
+                Bound::positiveInfinity(),
             ),
         );
     }
