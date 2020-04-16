@@ -25,6 +25,12 @@ class MultiConstraint implements ConstraintInterface
     /** @var bool */
     protected $conjunctive;
 
+    /** @var Bound */
+    protected $lowerBound;
+
+    /** @var Bound */
+    protected $upperBound;
+
     /**
      * @param ConstraintInterface[] $constraints A set of constraints
      * @param bool                  $conjunctive Whether the constraints should be treated as conjunctive or disjunctive
@@ -116,5 +122,48 @@ class MultiConstraint implements ConstraintInterface
         }
 
         return '[' . implode($this->conjunctive ? ' ' : ' || ', $constraints) . ']';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLowerBound()
+    {
+        $this->extractBounds();
+
+        return $this->lowerBound;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUpperBound()
+    {
+        $this->extractBounds();
+
+        return $this->upperBound;
+    }
+
+    private function extractBounds()
+    {
+        if (null !== $this->lowerBound) {
+            return;
+        }
+
+        foreach ($this->constraints as $constraint) {
+            if (null === $this->lowerBound && null === $this->upperBound) {
+                $this->lowerBound = $constraint->getLowerBound();
+                $this->upperBound = $constraint->getUpperBound();
+                continue;
+            }
+
+            if ($constraint->getLowerBound()->compareTo($this->lowerBound, $this->isConjunctive() ? '>' : '<')) {
+                $this->lowerBound = $constraint->getLowerBound();
+            }
+
+            if ($constraint->getUpperBound()->compareTo($this->upperBound, $this->isConjunctive() ? '<' : '>')) {
+                $this->upperBound = $constraint->getUpperBound();
+            }
+        }
     }
 }

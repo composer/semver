@@ -63,6 +63,12 @@ class Constraint implements ConstraintInterface
     /** @var string */
     protected $prettyString;
 
+    /** @var Bound */
+    protected $lowerBound;
+
+    /** @var Bound */
+    protected $upperBound;
+
     /**
      * @param ConstraintInterface $provider
      *
@@ -211,5 +217,67 @@ class Constraint implements ConstraintInterface
     public function __toString()
     {
         return self::$transOpInt[$this->operator] . ' ' . $this->version;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLowerBound()
+    {
+        $this->extractBounds();
+
+        return $this->lowerBound;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUpperBound()
+    {
+        $this->extractBounds();
+
+        return $this->upperBound;
+    }
+
+    private function extractBounds()
+    {
+        if (null !== $this->lowerBound) {
+            return;
+        }
+
+        // Branches
+        if (strpos($this->version, 'dev-') === 0) {
+            $this->lowerBound = Bound::zero();
+            $this->upperBound = Bound::positiveInfinity();
+
+            return;
+        }
+
+        switch ($this->operator) {
+            case self::OP_EQ:
+                $this->lowerBound = new Bound($this->version, true);
+                $this->upperBound = new Bound($this->version, true);
+                break;
+            case self::OP_LT:
+                $this->lowerBound = Bound::zero();
+                $this->upperBound = new Bound($this->version, false);
+                break;
+            case self::OP_LE:
+                $this->lowerBound = Bound::zero();
+                $this->upperBound = new Bound($this->version, true);
+                break;
+            case self::OP_GT:
+                $this->lowerBound = new Bound($this->version, false);
+                $this->upperBound = Bound::positiveInfinity();
+                break;
+            case self::OP_GE:
+                $this->lowerBound = new Bound($this->version, true);
+                $this->upperBound = Bound::positiveInfinity();
+                break;
+            case self::OP_NE:
+                $this->lowerBound = Bound::zero();
+                $this->upperBound = Bound::positiveInfinity();
+                break;
+        }
     }
 }

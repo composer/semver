@@ -188,4 +188,62 @@ class ConstraintTest extends TestCase
             array('1.2.3', 'equals', 'InvalidArgumentException'),
         );
     }
+
+    /**
+     * @dataProvider bounds
+     *
+     * @param string $operator
+     * @param string $normalizedVersion
+     * @param Bound  $expectedLower
+     * @param Bound  $expectedUpper
+     */
+    public function testBounds($operator, $normalizedVersion, Bound $expectedLower, Bound $expectedUpper)
+    {
+        $constraint = new Constraint($operator, $normalizedVersion);
+
+        $this->assertEquals($expectedLower, $constraint->getLowerBound(), 'Expected lower bound does not match');
+        $this->assertEquals($expectedUpper, $constraint->getUpperBound(), 'Expected upper bound does not match');
+    }
+
+    /**
+     * @return array
+     */
+    public function bounds()
+    {
+        return array(
+            'equal to 1.0.0.0' => array('==', '1.0.0.0', new Bound('1.0.0.0', true), new Bound('1.0.0.0', true)),
+            'equal to 1.0.0.0-rc3' => array('==', '1.0.0.0-rc3', new Bound('1.0.0.0-rc3', true), new Bound('1.0.0.0-rc3', true)),
+            'equal to dev-feature-branch' => array('>=', 'dev-feature-branch', Bound::zero(), Bound::positiveInfinity()),
+
+            'lower than 0.0.4.0' => array('<', '0.0.4.0', Bound::zero(), new Bound('0.0.4.0', false)),
+            'lower than 1.0.0.0' => array('<', '1.0.0.0', Bound::zero(), new Bound('1.0.0.0', false)),
+            'lower than 2.0.0.0' => array('<', '2.0.0.0', Bound::zero(), new Bound('2.0.0.0', false)),
+            'lower than 3.0.3.0' => array('<', '3.0.3.0', Bound::zero(), new Bound('3.0.3.0', false)),
+            'lower than 3.0.3.0-rc3' => array('<', '3.0.3.0-rc3', Bound::zero(), new Bound('3.0.3.0-rc3', false)),
+            'lower than dev-feature-branch' => array('<', 'dev-feature-branch', Bound::zero(), Bound::positiveInfinity()),
+
+            'greater than 0.0.4.0' => array('>', '0.0.4.0', new Bound('0.0.4.0', false), Bound::positiveInfinity()),
+            'greater than 1.0.0.0' => array('>', '1.0.0.0', new Bound('1.0.0.0', false), Bound::positiveInfinity()),
+            'greater than 2.0.0.0' => array('>', '2.0.0.0', new Bound('2.0.0.0', false), Bound::positiveInfinity()),
+            'greater than 3.0.3.0' => array('>', '3.0.3.0', new Bound('3.0.3.0', false), Bound::positiveInfinity()),
+            'greater than 3.0.3.0-rc3' => array('>', '3.0.3.0-rc3', new Bound('3.0.3.0-rc3', false), Bound::positiveInfinity()),
+            'greater than dev-feature-branch' => array('>', 'dev-feature-branch', Bound::zero(), Bound::positiveInfinity()),
+
+            'lower than or equal to 0.0.4.0' => array('<=', '0.0.4.0', Bound::zero(), new Bound('0.0.4.0', true)),
+            'lower than or equal to 1.0.0.0' => array('<=', '1.0.0.0', Bound::zero(), new Bound('1.0.0.0', true)),
+            'lower than or equal to 2.0.0.0' => array('<=', '2.0.0.0', Bound::zero(), new Bound('2.0.0.0', true)),
+            'lower than or equal to 3.0.3.0' => array('<=', '3.0.3.0', Bound::zero(), new Bound('3.0.3.0', true)),
+            'lower than or equal to 3.0.3.0-rc3' => array('<=', '3.0.3.0-rc3', Bound::zero(), new Bound('3.0.3.0-rc3', true)),
+            'lower than or equal to dev-feature-branch' => array('<=', 'dev-feature-branch', Bound::zero(), Bound::positiveInfinity()),
+
+            'greater than or equal to 0.0.4.0' => array('>=', '0.0.4.0', new Bound('0.0.4.0', true), Bound::positiveInfinity()),
+            'greater than or equal to 1.0.0.0' => array('>=', '1.0.0.0', new Bound('1.0.0.0', true), Bound::positiveInfinity()),
+            'greater than or equal to 2.0.0.0' => array('>=', '2.0.0.0', new Bound('2.0.0.0', true), Bound::positiveInfinity()),
+            'greater than or equal to 3.0.3.0' => array('>=', '3.0.3.0', new Bound('3.0.3.0', true), Bound::positiveInfinity()),
+            'greater than or equal to 3.0.3.0-rc3' => array('>=', '3.0.3.0-rc3', new Bound('3.0.3.0-rc3', true), Bound::positiveInfinity()),
+            'greater than or equal to dev-feature-branch' => array('>=', 'dev-feature-branch', Bound::zero(), Bound::positiveInfinity()),
+
+            'not equal to 1.0.0.0' => array('<>', '1.0.0.0', Bound::zero(), Bound::positiveInfinity()),
+        );
+    }
 }
