@@ -492,7 +492,7 @@ class VersionParser
      * @param int    $increment
      * @param string $pad       The string to pad version parts after $position
      *
-     * @return string The new version
+     * @return string|null The new version
      */
     private function manipulateVersionString($matches, $position, $increment = 0, $pad = '0')
     {

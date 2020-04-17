@@ -11,7 +11,10 @@
 
 namespace Composer\Semver\Constraint;
 
-class EmptyConstraintTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+
+class EmptyConstraintTest extends TestCase
 {
     protected $versionProvide;
     protected $emptyConstraint;
