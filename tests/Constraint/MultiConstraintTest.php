@@ -16,7 +16,13 @@ use PHPUnit\Framework\TestCase;
 
 class MultiConstraintTest extends TestCase
 {
+    /**
+     * @var Constraint
+     */
     protected $versionRequireStart;
+    /**
+     * @var Constraint
+     */
     protected $versionRequireEnd;
 
     protected function setUp()
