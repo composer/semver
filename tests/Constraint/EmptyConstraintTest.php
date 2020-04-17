@@ -13,7 +13,13 @@ namespace Composer\Semver\Constraint;
 
 class EmptyConstraintTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Constraint
+     */
     protected $versionProvide;
+    /**
+     * @var EmptyConstraint
+     */
     protected $emptyConstraint;
 
     protected function setUp()

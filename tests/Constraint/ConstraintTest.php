@@ -15,7 +15,13 @@ use PHPUnit\Framework\TestCase;
 
 class ConstraintTest extends TestCase
 {
+    /**
+     * @var Constraint
+     */
     protected $constraint;
+    /**
+     * @var Constraint
+     */
     protected $versionProvide;
 
     protected function setUp()
