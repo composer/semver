@@ -10,13 +10,3 @@ parameters:
 			count: 1
 			path: tests/Constraint/ConstraintTest.php
 
-		-
-			message: "#^PHPDoc tag @param for parameter \\$constraints with type bool is incompatible with native type array\\.$#"
-			count: 1
-			path: tests/Constraint/MultiConstraintTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$constraints of class Composer\\\\Semver\\\\Constraint\\\\MultiConstraint constructor expects array\\<Composer\\\\Semver\\\\Constraint\\\\ConstraintInterface\\>, array\\<int, string\\> given\\.$#"
-			count: 1
-			path: tests/Constraint/MultiConstraintTest.php
-

@@ -99,7 +99,7 @@ class MultiConstraintTest extends TestCase
      * @dataProvider bounds
      *
      * @param array $constraints
-     * @param bool  $constraints
+     * @param bool  $conjunctive
      * @param Bound $expectedLower
      * @param Bound $expectedUpper
      */
@@ -215,14 +215,15 @@ class MultiConstraintTest extends TestCase
     public function testMultipleMultiConstraintsMerging()
     {
         $versionParser = new VersionParser();
-        $constraints = array(
+        $strConstraints = array(
             '^7.0',
             '^7.2',
             '7.4.*',
             '7.2.* || 7.4.*',
         );
-        foreach ($constraints as &$constraint) {
-            $constraint = $versionParser->parseConstraints($constraint);
+        $constraints = array();
+        foreach ($strConstraints as $str) {
+            $constraints[] = $versionParser->parseConstraints($str);
         }
 
         $constraint = new MultiConstraint($constraints);
