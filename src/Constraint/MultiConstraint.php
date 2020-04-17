@@ -19,7 +19,7 @@ class MultiConstraint implements ConstraintInterface
     /** @var ConstraintInterface[] */
     protected $constraints;
 
-    /** @var string */
+    /** @var string|null */
     protected $prettyString;
 
     /** @var bool */
