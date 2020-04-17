@@ -20,8 +20,3 @@ parameters:
 			count: 1
 			path: tests/Constraint/ConstraintTest.php
 
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 4
-			path: tests/VersionParserTest.php
-
