@@ -263,7 +263,8 @@ class MultiConstraintTest extends TestCase
         return array(
             'Test collapses contiguous' => array(
                 '^2.5 || ^3.0',
-                new MultiConstraint(array(
+                new MultiConstraint(
+                    array(
                         new Constraint('>=', '2.5.0.0-dev'),
                         new Constraint('<', '4.0.0.0-dev')
                     ),
@@ -273,30 +274,39 @@ class MultiConstraintTest extends TestCase
             'Parse caret constraints must not collapse if non contiguous range' => array(
                 '^0.2 || ^1.0',
                 new MultiConstraint(array(
-                        new MultiConstraint(array(
-                            new Constraint('>=', '0.2.0.0-dev'),
-                            new Constraint('<', '0.3.0.0-dev'),
-                        )),
-                        new MultiConstraint(array(
-                            new Constraint('>=', '1.0.0.0-dev'),
-                            new Constraint('<', '2.0.0.0-dev'),
-                        ))
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '0.2.0.0-dev'),
+                                new Constraint('<', '0.3.0.0-dev'),
+                            )
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '1.0.0.0-dev'),
+                                new Constraint('<', '2.0.0.0-dev'),
+                            )
+                        )
                     ),
                     false // disjunctive
                 )
             ),
             'Must not collapse if contiguous range if other constraints also apply' => array(
                 '~0.1 || ~1.0 !=1.0.1',
-                new MultiConstraint(array(
-                        new MultiConstraint(array(
-                            new Constraint('>=', '0.1.0.0-dev'),
-                            new Constraint('<', '1.0.0.0-dev'),
-                        )),
-                        new MultiConstraint(array(
-                            new Constraint('>=', '1.0.0.0-dev'),
-                            new Constraint('<', '2.0.0.0-dev'),
-                            new Constraint('!=', '1.0.1.0'),
-                        ))
+                new MultiConstraint(
+                    array(
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '0.1.0.0-dev'),
+                                new Constraint('<', '1.0.0.0-dev'),
+                            )
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '1.0.0.0-dev'),
+                                new Constraint('<', '2.0.0.0-dev'),
+                                new Constraint('!=', '1.0.1.0'),
+                            )
+                        )
                     ),
                     false // disjunctive
                 )
