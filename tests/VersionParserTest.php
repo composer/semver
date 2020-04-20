@@ -618,4 +618,14 @@ class VersionParserTest extends TestCase
 
         $this->assertNull($result);
     }
+
+    public function testComplexConjunctive()
+    {
+        $parser = new VersionParser();
+        $version = new Constraint('=', '1.0.1.0');
+
+        $parsed = $parser->parseConstraints('~0.1 || ~1.0 !=1.0.1');
+
+        $this->assertFalse($parsed->matches($version), '"~0.1 || ~1.0 !=1.0.1" should not allow version "1.0.1.0"');
+    }
 }
