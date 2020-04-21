@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [2.0.0] 2020-04-21
+
+  * Break: `dev-master`, `dev-trunk` and `dev-default` now normalize to `dev-master`, `dev-trunk` and `dev-default` instead of `9999999-dev` in 1.x
+  * Break: Removed the deprecated `AbstractConstraint`
+  * Added `getUpperBound` and `getLowerBound` to ConstraintInterface. They return `Composer\Semver\Constraint\Bound` instances
+  * Added `MultiConstraint::create` to create the most-optimal form of ConstraintInterface from an array of constraint strings
+
 ### [1.5.1] 2020-01-13
 
   * Fixed: Parsing of aliased version was not validating the alias to be a valid version
@@ -66,6 +73,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - Namespace: `Composer\Test\Package\LinkConstraint` -> `Composer\Test\Semver\Constraint`
   * Changed: code style using php-cs-fixer.
 
+[2.0.0]: https://github.com/composer/semver/compare/1.5.1...2.0.0
 [1.5.1]: https://github.com/composer/semver/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/composer/semver/compare/1.4.2...1.5.0
 [1.4.2]: https://github.com/composer/semver/compare/1.4.1...1.4.2
