@@ -27,14 +27,14 @@ class MultiConstraintTest extends TestCase
 
     public function testIsConjunctive()
     {
-        $multiConstraint = new MultiConstraint(array(), true);
+        $multiConstraint = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd), true);
         $this->assertTrue($multiConstraint->isConjunctive());
         $this->assertFalse($multiConstraint->isDisjunctive());
     }
 
     public function testIsDisjunctive()
     {
-        $multiConstraint = new MultiConstraint(array(), false);
+        $multiConstraint = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd), false);
         $this->assertFalse($multiConstraint->isConjunctive());
         $this->assertTrue($multiConstraint->isDisjunctive());
     }
@@ -81,14 +81,14 @@ class MultiConstraintTest extends TestCase
 
     public function testGetPrettyString()
     {
-        $multiConstraint = new MultiConstraint(array());
+        $multiConstraint = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd));
         $expectedString = 'pretty-string';
         $multiConstraint->setPrettyString($expectedString);
         $result = $multiConstraint->getPrettyString();
 
         $this->assertSame($expectedString, $result);
 
-        $expectedString = '[]';
+        $expectedString = '[> 1.0 < 1.2]';
         $multiConstraint->setPrettyString(null);
         $result = $multiConstraint->getPrettyString();
 
@@ -242,6 +242,11 @@ class MultiConstraintTest extends TestCase
 
         $this->assertEquals(new Bound('7.2.2.0-dev', true), $constraint->getLowerBound(), 'Expected lower bound does not match');
         $this->assertEquals(new Bound('8.0.0.0-dev', false), $constraint->getUpperBound(), 'Expected upper bound does not match');
+    }
+
+    public function testCreatesEmptyConstraintIfNoneGiven()
+    {
+        $this->assertInstanceOf('Composer\Semver\Constraint\EmptyConstraint', MultiConstraint::create(array()));
     }
 
     /**
