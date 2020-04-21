@@ -13,7 +13,6 @@ namespace Composer\Semver\Constraint;
 
 use PHPUnit\Framework\TestCase;
 
-
 class EmptyConstraintTest extends TestCase
 {
     /**

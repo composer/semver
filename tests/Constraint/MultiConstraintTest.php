@@ -288,14 +288,15 @@ class MultiConstraintTest extends TestCase
                 new MultiConstraint(
                     array(
                         new Constraint('>=', '2.5.0.0-dev'),
-                        new Constraint('<', '4.0.0.0-dev')
+                        new Constraint('<', '4.0.0.0-dev'),
                     ),
                     true // conjunctive
-                )
+                ),
             ),
             'Parse caret constraints must not collapse if non contiguous range' => array(
                 '^0.2 || ^1.0',
-                new MultiConstraint(array(
+                new MultiConstraint(
+                    array(
                         new MultiConstraint(
                             array(
                                 new Constraint('>=', '0.2.0.0-dev'),
@@ -307,10 +308,10 @@ class MultiConstraintTest extends TestCase
                                 new Constraint('>=', '1.0.0.0-dev'),
                                 new Constraint('<', '2.0.0.0-dev'),
                             )
-                        )
+                        ),
                     ),
                     false // disjunctive
-                )
+                ),
             ),
             'Must not collapse if contiguous range if other constraints also apply' => array(
                 '~0.1 || ~1.0 !=1.0.1',
@@ -328,10 +329,10 @@ class MultiConstraintTest extends TestCase
                                 new Constraint('<', '2.0.0.0-dev'),
                                 new Constraint('!=', '1.0.1.0'),
                             )
-                        )
+                        ),
                     ),
                     false // disjunctive
-                )
+                ),
             ),
         );
     }
@@ -344,5 +345,4 @@ class MultiConstraintTest extends TestCase
         $multiConstraint->addConstraint(new MultiConstraint(array(new Constraint('>=', '1.2.0.0-dev'), new Constraint('<', '1.4.0.0-dev'))));
         $this->assertSame('[>= 1.0.0.0-dev < 1.4.0.0-dev]', $multiConstraint->getPrettyString());
     }
-
 }
