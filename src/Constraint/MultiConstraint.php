@@ -25,10 +25,10 @@ class MultiConstraint implements ConstraintInterface
     /** @var bool */
     protected $conjunctive;
 
-    /** @var Bound */
+    /** @var Bound|null */
     protected $lowerBound;
 
-    /** @var Bound */
+    /** @var Bound|null */
     protected $upperBound;
 
     /**
@@ -135,7 +135,7 @@ class MultiConstraint implements ConstraintInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getLowerBound()
     {
@@ -145,7 +145,7 @@ class MultiConstraint implements ConstraintInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getUpperBound()
     {

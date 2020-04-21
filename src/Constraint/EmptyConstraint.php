@@ -58,7 +58,7 @@ class EmptyConstraint implements ConstraintInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getUpperBound()
     {
@@ -66,7 +66,7 @@ class EmptyConstraint implements ConstraintInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getLowerBound()
     {

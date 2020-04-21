@@ -220,7 +220,7 @@ class Constraint implements ConstraintInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getLowerBound()
     {
@@ -230,7 +230,7 @@ class Constraint implements ConstraintInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getUpperBound()
     {

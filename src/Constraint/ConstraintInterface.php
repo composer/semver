@@ -36,6 +36,11 @@ interface ConstraintInterface
     public function getPrettyString();
 
     /**
+     * @param string|null $prettyString
+     */
+    public function setPrettyString($prettyString);
+
+    /**
      * @return string
      */
     public function __toString();
