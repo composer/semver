@@ -59,6 +59,15 @@ class MultiConstraint implements ConstraintInterface
         return $this->constraints;
     }
 
+    /**
+     * Adds a constraint and optimizes the MultiConstraint range
+     *
+     * Warning: Due to the optimization, calling this can result in the instance
+     * changing from disjunctive to conjunctive or vice versa. Always check that
+     * an instance has the conjunctivity you expect before calling addConstraint on it.
+     *
+     * @return void
+     */
     public function addConstraint(ConstraintInterface $constraint)
     {
         if ($constraint instanceof EmptyConstraint) {
