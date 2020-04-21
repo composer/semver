@@ -65,8 +65,6 @@ class MultiConstraint implements ConstraintInterface
             return;
         }
 
-        $this->lowerBound = $this->upperBound = null;
-
         if ($constraint instanceof MultiConstraint && !$this->conjunctive) {
             $optimized = self::optimizeConstraints(array($this, $constraint), $this->conjunctive);
             if ($optimized !== null) {
@@ -76,8 +74,8 @@ class MultiConstraint implements ConstraintInterface
             }
         }
 
-        $this->lowerBound = $this->upperBound = null;
         $this->constraints[] = $constraint;
+        $this->lowerBound = $this->upperBound = null;
     }
 
     /**
