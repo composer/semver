@@ -34,9 +34,19 @@ class MultiConstraint implements ConstraintInterface
     /**
      * @param ConstraintInterface[] $constraints A set of constraints
      * @param bool                  $conjunctive Whether the constraints should be treated as conjunctive or disjunctive
+     *
+     * @throws \InvalidArgumentException If less than 2 constraints are passed
      */
     public function __construct(array $constraints, $conjunctive = true)
     {
+        if (count($constraints) < 2) {
+            throw new \InvalidArgumentException('
+                Must provide at least two constraints for a MultiConstraint. Use
+                the regular Constraint class for one constraint only or EmptyConstraint for none. You may use
+                MultiConstraint::create() which optimizes and handles those cases automatically.'
+            );
+        }
+
         $this->constraints = $constraints;
         $this->conjunctive = $conjunctive;
     }
@@ -142,6 +152,52 @@ class MultiConstraint implements ConstraintInterface
         $this->extractBounds();
 
         return $this->upperBound;
+    }
+
+    /**
+     * Tries to optimize the constraints as much as possible, meaning
+     * reducing/collapsing congruent constraints etc.
+     * Does not necessarily return a MultiConstraint instance if
+     * things can be reduced to a simple constraint
+     *
+     * @param ConstraintInterface[] $constraints A set of constraints
+     * @param bool                  $conjunctive Whether the constraints should be treated as conjunctive or disjunctive
+     *
+     * @return ConstraintInterface
+     */
+    public static function create(array $constraints, $conjunctive = true)
+    {
+        if (0 === count($constraints)) {
+            return new EmptyConstraint();
+        }
+
+        if (1 === count($constraints)) {
+            return $constraints[0];
+        }
+
+        // parse the two OR groups and if they are contiguous we collapse
+        // them into one constraint
+        if (!$conjunctive
+            && 2 === count($constraints)
+            && $constraints[0] instanceof MultiConstraint
+            && $constraints[1] instanceof MultiConstraint
+            && 2 === count($constraints[0]->getConstraints())
+            && 2 === count($constraints[1]->getConstraints())
+            && ($a = (string) $constraints[0])
+            && strpos($a, '[>=') === 0 && (false !== ($posA = strpos($a, '<', 4)))
+            && ($b = (string) $constraints[1])
+            && strpos($b, '[>=') === 0 && (false !== ($posB = strpos($b, '<', 4)))
+            && substr($a, $posA + 2, -1) === substr($b, 4, $posB - 5)
+        ) {
+            return new self(array(
+                new Constraint('>=', substr($a, 4, $posA - 5)),
+                new Constraint('<', substr($b, $posB + 2, -1)),
+            ));
+        }
+
+        // TODO: Here's the place to put more optimizations
+
+        return new self($constraints, $conjunctive);
     }
 
     private function extractBounds()
