@@ -101,16 +101,6 @@ class MultiConstraintTest extends TestCase
         $this->assertSame($expectedString, $result);
     }
 
-    public function testAddConstraint()
-    {
-        $multiConstraint = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd));
-
-        $this->assertSame('[> 1.0 < 1.2]', $multiConstraint->getPrettyString());
-
-        $multiConstraint->addConstraint(new Constraint('==', '1.3'));
-        $this->assertSame('[> 1.0 < 1.2 == 1.3]', $multiConstraint->getPrettyString());
-    }
-
     /**
      * @dataProvider bounds
      *
@@ -335,14 +325,5 @@ class MultiConstraintTest extends TestCase
                 ),
             ),
         );
-    }
-
-    public function testAddConstraintOptimizesConstraints()
-    {
-        $multiConstraint = new MultiConstraint(array(new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '1.2.0.0-dev')), false);
-        $this->assertSame('[>= 1.0.0.0-dev || < 1.2.0.0-dev]', $multiConstraint->getPrettyString());
-
-        $multiConstraint->addConstraint(new MultiConstraint(array(new Constraint('>=', '1.2.0.0-dev'), new Constraint('<', '1.4.0.0-dev'))));
-        $this->assertSame('[>= 1.0.0.0-dev < 1.4.0.0-dev]', $multiConstraint->getPrettyString());
     }
 }

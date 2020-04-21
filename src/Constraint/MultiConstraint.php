@@ -39,6 +39,14 @@ class MultiConstraint implements ConstraintInterface
      */
     public function __construct(array $constraints, $conjunctive = true)
     {
+        if (count($constraints) < 2) {
+            throw new \InvalidArgumentException(
+                'Must provide at least two constraints for a MultiConstraint. Use '.
+                'the regular Constraint class for one constraint only or EmptyConstraint for none. You may use '.
+                'MultiConstraint::create() which optimizes and handles those cases automatically.'
+            );
+        }
+
         $this->constraints = $constraints;
         $this->conjunctive = $conjunctive;
     }
