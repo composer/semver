@@ -152,7 +152,9 @@ class ConstraintTest extends TestCase
             ;
         }
 
+        // @phpstan-ignore-next-line
         $this->assertTrue($constraint->matches($multiConstraint));
+        // @phpstan-ignore-next-line
         $this->assertTrue($constraint->matches($emptyConstraint));
     }
 
@@ -179,8 +181,10 @@ class ConstraintTest extends TestCase
     public function testInvalidOperators($version, $operator, $expected)
     {
         if (method_exists($this, 'expectException')) {
+            // @phpstan-ignore-next-line
             $this->expectException($expected);
         } else {
+            // @phpstan-ignore-next-line
             $this->setExpectedException($expected);
         }
 
