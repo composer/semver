@@ -178,7 +178,11 @@ class ConstraintTest extends TestCase
      */
     public function testInvalidOperators($version, $operator, $expected)
     {
-        $this->setExpectedException($expected);
+        if (method_exists($this, 'expectException')) {
+            $this->expectException($expected);
+        } else {
+            $this->setExpectedException($expected);
+        }
 
         new Constraint($operator, $version);
     }
