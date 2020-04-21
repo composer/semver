@@ -54,7 +54,7 @@ class Constraint implements ConstraintInterface
         self::OP_NE => '!=',
     );
 
-    /** @var string */
+    /** @var int */
     protected $operator;
 
     /** @var string */
