@@ -342,7 +342,7 @@ class MultiConstraintTest extends TestCase
         $this->assertSame('[>= 1.0.0.0-dev || < 1.2.0.0-dev]', $multiConstraint->getPrettyString());
 
         $multiConstraint->addConstraint(new MultiConstraint(array(new Constraint('>=', '1.2.0.0-dev'), new Constraint('<', '1.4.0.0-dev'))));
-        $this->assertSame('[>= 1.0.0.0-dev || < 1.4.0.0-dev]', $multiConstraint->getPrettyString());
+        $this->assertSame('[>= 1.0.0.0-dev < 1.4.0.0-dev]', $multiConstraint->getPrettyString());
     }
 
 }

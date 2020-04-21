@@ -223,7 +223,7 @@ class MultiConstraint implements ConstraintInterface
         ) {
             return array(
                 array(
-                    new Constraint('>=', substr($a, 4, $posA - 5)),
+                    new Constraint('>=', substr($a, 4, $posB - 5)),
                     new Constraint('<', substr($b, $posB + 2, -1)),
                 ),
                 true
