@@ -60,35 +60,6 @@ class MultiConstraint implements ConstraintInterface
     }
 
     /**
-     * Adds a constraint and optimizes the MultiConstraint range
-     *
-     * Warning: Due to the optimization, calling this can result in the instance
-     * changing from disjunctive to conjunctive or vice versa. Always check that
-     * an instance has the conjunctivity you expect before calling addConstraint on it.
-     *
-     * @return void
-     */
-    public function addConstraint(ConstraintInterface $constraint)
-    {
-        if ($constraint instanceof EmptyConstraint) {
-            return;
-        }
-
-        if ($constraint instanceof MultiConstraint && !$this->conjunctive) {
-            $optimized = self::optimizeConstraints(array($this, $constraint), $this->conjunctive);
-            if ($optimized !== null) {
-                list($this->constraints, $this->conjunctive) = $optimized;
-                $this->lowerBound = $this->upperBound = null;
-
-                return;
-            }
-        }
-
-        $this->constraints[] = $constraint;
-        $this->lowerBound = $this->upperBound = null;
-    }
-
-    /**
      * @return bool
      */
     public function isConjunctive()
