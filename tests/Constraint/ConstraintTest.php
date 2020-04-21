@@ -35,7 +35,7 @@ class ConstraintTest extends TestCase
      */
     public function testVersionCompareInvalidArgumentException()
     {
-        $result = $this->constraint->versionCompare('1.1', '1.2', null);
+        $result = $this->constraint->versionCompare('1.1', '1.2', '!==');
     }
 
     public function testGetPrettyString()

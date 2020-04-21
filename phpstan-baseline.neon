@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$provider of method Composer\\\\Semver\\\\Constraint\\\\Constraint\\:\\:matches\\(\\) expects Composer\\\\Semver\\\\Constraint\\\\ConstraintInterface, PHPUnit_Framework_MockObject_MockObject given\\.$#"
+			count: 2
+			path: tests/Constraint/ConstraintTest.php
+

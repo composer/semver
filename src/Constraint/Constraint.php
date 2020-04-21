@@ -60,7 +60,7 @@ class Constraint implements ConstraintInterface
     /** @var string */
     protected $version;
 
-    /** @var string */
+    /** @var string|null */
     protected $prettyString;
 
     /** @var Bound */
@@ -85,7 +85,7 @@ class Constraint implements ConstraintInterface
     }
 
     /**
-     * @param string $prettyString
+     * @param string|null $prettyString
      */
     public function setPrettyString($prettyString)
     {
