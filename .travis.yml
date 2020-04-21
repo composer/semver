@@ -38,7 +38,7 @@ matrix:
     - php: nightly
 
 before_script:
-  - if [[ $REMOVE_PHPSTAN = '1' ]]; then composer remove phpstan/phpstan --no-update; fi
+  - if [[ $REMOVE_PHPSTAN = '1' ]]; then composer remove phpstan/phpstan --dev --no-update; fi
   - composer update --no-interaction --no-progress --prefer-dist --ansi
 
 script:
