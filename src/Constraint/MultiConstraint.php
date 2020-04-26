@@ -216,10 +216,10 @@ class MultiConstraint implements ConstraintInterface
                     && substr($c01, 2) === substr($c10, 3)
                 ) {
                     $optimized = true;
-                    $lc = new MultiConstraint([
+                    $lc = new MultiConstraint(array(
                         $lc->constraints[0],
                         $rc->constraints[1],
-                    ], true);
+                    ), true);
                 } else {
                     $mergedConstraints[] = $lc;
                     $lc = $rc;
@@ -227,7 +227,7 @@ class MultiConstraint implements ConstraintInterface
             }
             if ($optimized) {
                 $mergedConstraints[] = $lc;
-                return [$mergedConstraints, false];
+                return array($mergedConstraints, false);
             }
         }
 
