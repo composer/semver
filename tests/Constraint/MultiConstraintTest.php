@@ -361,6 +361,26 @@ class MultiConstraintTest extends TestCase
                     false // disjunctive
                 ),
             ),
+            'Must not collapse contiguous range but merge following constraints' => array(
+                '^0.1 || ^1.0 || ^2.0',
+                new MultiConstraint(
+                    array(
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '0.1.0.0-dev'),
+                                new Constraint('<', '0.2.0.0-dev'),
+                            )
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '1.0.0.0-dev'),
+                                new Constraint('<', '3.0.0.0-dev'),
+                            )
+                        ),
+                    ),
+                    false // disjunctive
+                ),
+            ),
             'Must not collapse if other constraints also apply in one of intermediate range' => array(
                 '^1.0 || ^2.0 !=2.0.1 || ^3.0',
                 new MultiConstraint(
