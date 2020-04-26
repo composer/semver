@@ -31,6 +31,9 @@ class MultiConstraint implements ConstraintInterface
     /** @var Bound|null */
     protected $upperBound;
 
+    /** @var array */
+    private $matchCache = array();
+
     /**
      * @param ConstraintInterface[] $constraints A set of constraints
      * @param bool                  $conjunctive Whether the constraints should be treated as conjunctive or disjunctive
@@ -82,23 +85,28 @@ class MultiConstraint implements ConstraintInterface
      */
     public function matches(ConstraintInterface $provider)
     {
+        $cacheKey = (string) $provider;
+        if (isset($this->matchCache[$cacheKey])) {
+            return $this->matchCache[$cacheKey];
+        }
+
         if (false === $this->conjunctive) {
             foreach ($this->constraints as $constraint) {
                 if ($constraint->matches($provider)) {
-                    return true;
+                    return $this->matchCache[$cacheKey] = true;
                 }
             }
 
-            return false;
+            return $this->matchCache[$cacheKey] = false;
         }
 
         foreach ($this->constraints as $constraint) {
             if (!$constraint->matches($provider)) {
-                return false;
+                return $this->matchCache[$cacheKey] = false;
             }
         }
 
-        return true;
+        return $this->matchCache[$cacheKey] = true;
     }
 
     /**

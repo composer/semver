@@ -11,10 +11,10 @@
 
 namespace Composer\Semver;
 
+use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Semver\Constraint\EmptyConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
-use Composer\Semver\Constraint\Constraint;
 
 /**
  * Version parser.
@@ -40,6 +40,9 @@ class VersionParser
 
     /** @var array */
     private static $stabilities = array('stable', 'RC', 'beta', 'alpha', 'dev');
+
+    /** @var array  */
+    private static $constraintCache = array();
 
     /**
      * Returns the stability of a version.
@@ -245,6 +248,11 @@ class VersionParser
             $constraints = $match[1];
         }
 
+        $constraintsKey = '/'.$constraints;
+        if (isset(self::$constraintCache[$constraintsKey])) {
+            return self::$constraintCache[$constraintsKey];
+        }
+
         $orConstraints = preg_split('{\s*\|\|?\s*}', trim($constraints));
         $orGroups = array();
 
@@ -261,20 +269,14 @@ class VersionParser
                 $constraintObjects = $this->parseConstraint($andConstraints[0]);
             }
 
-            if (1 === count($constraintObjects)) {
-                $constraint = $constraintObjects[0];
-            } else {
-                $constraint = new MultiConstraint($constraintObjects);
-            }
-
-            $orGroups[] = $constraint;
+            $orGroups[] = MultiConstraint::create($constraintObjects);
         }
 
         $constraint = MultiConstraint::create($orGroups, false);
 
         $constraint->setPrettyString($prettyConstraint);
 
-        return $constraint;
+        return self::$constraintCache[$constraintsKey] = $constraint;
     }
 
     /**
@@ -286,6 +288,11 @@ class VersionParser
      */
     private function parseConstraint($constraint)
     {
+        $prettyConstraint = $constraint;
+        if (isset(self::$constraintCache[$prettyConstraint])) {
+            return self::$constraintCache[$prettyConstraint];
+        }
+
         if (preg_match('{^([^,\s]+?)@(' . implode('|', self::$stabilities) . ')$}i', $constraint, $match)) {
             $constraint = $match[1];
             if ($match[2] !== 'stable') {
@@ -294,7 +301,7 @@ class VersionParser
         }
 
         if (preg_match('{^v?[xX*](\.[xX*])*$}i', $constraint)) {
-            return array(new EmptyConstraint());
+            return self::$constraintCache[$prettyConstraint] = array(new EmptyConstraint());
         }
 
         $versionRegex = 'v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?' . self::$modifierRegex . '(?:\+[^\s]+)?';
@@ -338,7 +345,7 @@ class VersionParser
             $highVersion = $this->manipulateVersionString($matches, $highPosition, 1) . '-dev';
             $upperBound = new Constraint('<', $highVersion);
 
-            return array(
+            return self::$constraintCache[$prettyConstraint] = array(
                 $lowerBound,
                 $upperBound,
             );
@@ -373,7 +380,7 @@ class VersionParser
             $highVersion = $this->manipulateVersionString($matches, $position, 1) . '-dev';
             $upperBound = new Constraint('<', $highVersion);
 
-            return array(
+            return self::$constraintCache[$prettyConstraint] = array(
                 $lowerBound,
                 $upperBound,
             );
@@ -396,10 +403,10 @@ class VersionParser
             $highVersion = $this->manipulateVersionString($matches, $position, 1) . '-dev';
 
             if ($lowVersion === '0.0.0.0-dev') {
-                return array(new Constraint('<', $highVersion));
+                return self::$constraintCache[$prettyConstraint] = array(new Constraint('<', $highVersion));
             }
 
-            return array(
+            return self::$constraintCache[$prettyConstraint] = array(
                 new Constraint('>=', $lowVersion),
                 new Constraint('<', $highVersion),
             );
@@ -434,7 +441,7 @@ class VersionParser
                 $upperBound = new Constraint('<', $highVersion);
             }
 
-            return array(
+            return self::$constraintCache[$prettyConstraint] = array(
                 $lowerBound,
                 $upperBound,
             );
@@ -455,7 +462,7 @@ class VersionParser
                     }
                 }
 
-                return array(new Constraint($matches[1] ?: '=', $version));
+                return self::$constraintCache[$prettyConstraint] = array(new Constraint($matches[1] ?: '=', $version));
             } catch (\Exception $e) {
             }
         }

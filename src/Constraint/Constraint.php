@@ -69,6 +69,9 @@ class Constraint implements ConstraintInterface
     /** @var Bound */
     protected $upperBound;
 
+    /** @var array */
+    private $matchCache = array();
+
     /**
      * @param ConstraintInterface $provider
      *
@@ -179,6 +182,10 @@ class Constraint implements ConstraintInterface
      */
     public function matchSpecific(Constraint $provider, $compareBranches = false)
     {
+        $cacheKey = $this->operator.(int)$compareBranches.$provider->version;
+        if (isset($this->matchCache[$cacheKey])) {
+            return $this->matchCache[$cacheKey];
+        }
         $noEqualOp = str_replace('=', '', self::$transOpInt[$this->operator]);
         $providerNoEqualOp = str_replace('=', '', self::$transOpInt[$provider->operator]);
 
@@ -190,25 +197,25 @@ class Constraint implements ConstraintInterface
         // '!=' operator is match when other operator is not '==' operator or version is not match
         // these kinds of comparisons always have a solution
         if ($isNonEqualOp || $isProviderNonEqualOp) {
-            return (!$isEqualOp && !$isProviderEqualOp)
-                || $this->versionCompare($provider->version, $this->version, '!=', $compareBranches);
+            return $this->matchCache[$cacheKey] = ((!$isEqualOp && !$isProviderEqualOp)
+                || $this->versionCompare($provider->version, $this->version, '!=', $compareBranches));
         }
 
         // an example for the condition is <= 2.0 & < 1.0
         // these kinds of comparisons always have a solution
         if ($this->operator !== self::OP_EQ && $noEqualOp === $providerNoEqualOp) {
-            return true;
+            return $this->matchCache[$cacheKey] = true;
         }
 
         if ($this->versionCompare($provider->version, $this->version, self::$transOpInt[$this->operator], $compareBranches)) {
             // special case, e.g. require >= 1.0 and provide < 1.0
             // 1.0 >= 1.0 but 1.0 is outside of the provided interval
-            return !($provider->version === $this->version
+            return $this->matchCache[$cacheKey] = !($provider->version === $this->version
                 && self::$transOpInt[$provider->operator] === $providerNoEqualOp
                 && self::$transOpInt[$this->operator] !== $noEqualOp);
         }
 
-        return false;
+        return $this->matchCache[$cacheKey] = false;
     }
 
     /**
