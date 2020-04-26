@@ -202,24 +202,30 @@ class MultiConstraint implements ConstraintInterface
                 $rc = $constraints[$i];
                 if (
                     $lc instanceof MultiConstraint
+                    && $lc->conjunctive
                     && $rc instanceof MultiConstraint
-                    && 2 === count($lc->constraints)
-                    && 2 === count($rc->constraints)
-                    && ($c01 = (string) $lc->constraints[1])
-                    && $c01[0] === '<'
-                    && ($c00 = (string) $lc->constraints[0])
-                    && substr($c00, 0, 2) === '>='
-                    && ($c11 = (string) $rc->constraints[1])
-                    && $c11[0] === '<'
-                    && ($c10 = (string) $rc->constraints[0])
-                    && substr($c10, 0, 2) === '>='
-                    && substr($c01, 2) === substr($c10, 3)
+                    && $rc->conjunctive
+                    && ($lc0 = (string) $lc->constraints[0])
+                    && substr($lc0, 0, 2) === '>='
+                    && ($lc1 = (string) $lc->constraints[1])
+                    && $lc1[0] === '<'
+                    && ($rc0 = (string) $rc->constraints[0])
+                    && substr($rc0, 0, 2) === '>='
+                    && ($rc1 = (string) $rc->constraints[1])
+                    && $rc1[0] === '<'
+                    && substr($lc1, 2) === substr($rc0, 3)
                 ) {
                     $optimized = true;
-                    $lc = new MultiConstraint(array(
-                        $lc->constraints[0],
-                        $rc->constraints[1],
-                    ), true);
+                    $lc = new MultiConstraint(
+                        array_merge(
+                            array(
+                                $lc->constraints[0],
+                                $rc->constraints[1],
+                            ),
+                            \array_slice($lc->constraints, 2),
+                            \array_slice($rc->constraints, 2)
+                        ),
+                        true);
                 } else {
                     $mergedConstraints[] = $lc;
                     $lc = $rc;
