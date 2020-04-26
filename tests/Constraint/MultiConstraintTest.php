@@ -283,6 +283,43 @@ class MultiConstraintTest extends TestCase
                     true // conjunctive
                 ),
             ),
+            'Test collapses multiple contiguous' => array(
+                '^2.5 || ^3.0 || ^4.0',
+                new MultiConstraint(
+                    array(
+                        new Constraint('>=', '2.5.0.0-dev'),
+                        new Constraint('<', '5.0.0.0-dev'),
+                    ),
+                    true // conjunctive
+                ),
+            ),
+            'Test collapses multiple contiguous with intermediate range' => array(
+                '^1.0 || ^2.0 !=2.0.1 || ^3.0 || ^4.0',
+                new MultiConstraint(
+                    array(
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '1.0.0.0-dev'),
+                                new Constraint('<', '2.0.0.0-dev'),
+                            )
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '2.0.0.0-dev'),
+                                new Constraint('<', '3.0.0.0-dev'),
+                                new Constraint('!=', '2.0.1.0'),
+                            )
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '3.0.0.0-dev'),
+                                new Constraint('<', '5.0.0.0-dev'),
+                            )
+                        ),
+                    ),
+                    false // disjunctive
+                ),
+            ),
             'Parse caret constraints must not collapse if non contiguous range' => array(
                 '^0.2 || ^1.0',
                 new MultiConstraint(
@@ -318,6 +355,54 @@ class MultiConstraintTest extends TestCase
                                 new Constraint('>=', '1.0.0.0-dev'),
                                 new Constraint('<', '2.0.0.0-dev'),
                                 new Constraint('!=', '1.0.1.0'),
+                            )
+                        ),
+                    ),
+                    false // disjunctive
+                ),
+            ),
+            'Must not collapse if other constraints also apply in one of intermediate range' => array(
+                '^1.0 || ^2.0 !=2.0.1 || ^3.0',
+                new MultiConstraint(
+                    array(
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '1.0.0.0-dev'),
+                                new Constraint('<', '2.0.0.0-dev'),
+                            )
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '2.0.0.0-dev'),
+                                new Constraint('<', '3.0.0.0-dev'),
+                                new Constraint('!=', '2.0.1.0'),
+                            )
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '3.0.0.0-dev'),
+                                new Constraint('<', '4.0.0.0-dev'),
+                            )
+                        ),
+                    ),
+                    false // disjunctive
+                ),
+            ),
+            'Must ignore not MultiConstraint' => array(
+                '^1.0 || 2.1 || ^3.0',
+                new MultiConstraint(
+                    array(
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '1.0.0.0-dev'),
+                                new Constraint('<', '2.0.0.0-dev'),
+                            )
+                        ),
+                        new Constraint('=', '2.1.0.0'),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '3.0.0.0-dev'),
+                                new Constraint('<', '4.0.0.0-dev'),
                             )
                         ),
                     ),
