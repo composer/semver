@@ -196,7 +196,7 @@ class MultiConstraint implements ConstraintInterface
         // [>= 1 < 2] || [>= 2 < 3] || [>= 3 < 4] => [>= 1 < 4]
         if (!$conjunctive) {
             $lc = $constraints[0];
-            $mergedConstraints = [];
+            $mergedConstraints = array();
             $optimized = false;
             for ($i = 1, $l = count($constraints); $i <$l; $i++) {
                 $rc = $constraints[$i];
