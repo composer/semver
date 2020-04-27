@@ -248,12 +248,13 @@ class VersionParser
             $constraints = $match[1];
         }
 
+        $constraints = preg_replace('{\s*\|\|?\s*}', '|', trim($constraints));
         $constraintsKey = '/'.$constraints;
         if (isset(self::$constraintCache[$constraintsKey])) {
             return self::$constraintCache[$constraintsKey];
         }
 
-        $orConstraints = preg_split('{\s*\|\|?\s*}', trim($constraints));
+        $orConstraints = explode('|', $constraints);
         $orGroups = array();
 
         foreach ($orConstraints as $constraints) {

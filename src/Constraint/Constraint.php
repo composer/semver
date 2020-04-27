@@ -182,7 +182,7 @@ class Constraint implements ConstraintInterface
      */
     public function matchSpecific(Constraint $provider, $compareBranches = false)
     {
-        $cacheKey = $this->operator.(int)$compareBranches.$provider->version;
+        $cacheKey = $provider->operator.(int)$compareBranches.$provider->version;
         if (isset($this->matchCache[$cacheKey])) {
             return $this->matchCache[$cacheKey];
         }
