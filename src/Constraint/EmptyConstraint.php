@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines the absence of a constraint.
  */
-class EmptyConstraint implements ConstraintInterface
+class EmptyConstraint implements CompilableConstraintInterface
 {
     /** @var string|null */
     protected $prettyString;
@@ -27,6 +27,11 @@ class EmptyConstraint implements ConstraintInterface
     public function matches(ConstraintInterface $provider)
     {
         return true;
+    }
+
+    public function compile($operator)
+    {
+        return 'true';
     }
 
     /**

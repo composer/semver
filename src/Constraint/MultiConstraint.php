@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a conjunctive or disjunctive set of constraints.
  */
-class MultiConstraint implements ConstraintInterface
+class MultiConstraint implements CompilableConstraintInterface
 {
     /** @var ConstraintInterface[] */
     protected $constraints;
@@ -76,6 +76,19 @@ class MultiConstraint implements ConstraintInterface
     public function isDisjunctive()
     {
         return !$this->conjunctive;
+    }
+
+    public function compile($otherOperator)
+    {
+        if (!$this->conjunctive) {
+            return '('.implode(') || (',\array_map(function(ConstraintInterface $constraint) use ($otherOperator) {
+                return $constraint->compile($otherOperator);
+            }, $this->constraints)).')';
+        }
+
+        return '('.implode(') && (',\array_map(function(ConstraintInterface $constraint) use ($otherOperator) {
+                return $constraint->compile($otherOperator);
+            }, $this->constraints)).')';
     }
 
     /**

@@ -90,6 +90,7 @@ class ConstraintTest extends TestCase
         $versionProvide = new Constraint($provideOperator, $provideVersion);
 
         $this->assertTrue($versionRequire->matches($versionProvide));
+        $this->assertTrue($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
     }
 
     public static function failingVersionMatches()
@@ -124,6 +125,7 @@ class ConstraintTest extends TestCase
         $versionProvide = new Constraint($provideOperator, $provideVersion);
 
         $this->assertFalse($versionRequire->matches($versionProvide));
+        $this->assertFalse($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
     }
 
     public function testInverseMatchingOtherConstraints()
@@ -163,11 +165,13 @@ class ConstraintTest extends TestCase
         $versionRequire = new Constraint('>', '0.12');
 
         $this->assertFalse($versionRequire->matches($this->versionProvide));
+        $this->assertFalse($this->matchCompiled($versionRequire, '==', 'dev-foo'));
         $this->assertFalse($versionRequire->matchSpecific($this->versionProvide, true));
 
         $versionRequire = new Constraint('<', '0.12');
 
         $this->assertFalse($versionRequire->matches($this->versionProvide));
+        $this->assertFalse($this->matchCompiled($versionRequire, '==', 'dev-foo'));
         $this->assertTrue($versionRequire->matchSpecific($this->versionProvide, true));
     }
 
@@ -259,5 +263,25 @@ class ConstraintTest extends TestCase
 
             'not equal to 1.0.0.0' => array('<>', '1.0.0.0', Bound::zero(), Bound::positiveInfinity()),
         );
+    }
+
+    private function matchCompiled(ConstraintInterface $constraint, $operator, $version)
+    {
+        $operatorMap  = array(
+            '=' => Constraint::OP_EQ,
+            '==' => Constraint::OP_EQ,
+            '<' => Constraint::OP_LT,
+            '<=' => Constraint::OP_LE,
+            '>' => Constraint::OP_GT,
+            '>=' => Constraint::OP_GE,
+            '<>' => Constraint::OP_NE,
+            '!=' => Constraint::OP_NE,
+        );
+        $code = $constraint->compile($operatorMap[$operator]);
+        $v = $version;
+        $b = 'dev-' === substr($v, 0, 4);
+        eval("\$r=$code;");
+
+        return $r;
     }
 }

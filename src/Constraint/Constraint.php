@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a constraint.
  */
-class Constraint implements ConstraintInterface
+class Constraint implements CompilableConstraintInterface
 {
     /* operator integer values */
     const OP_EQ = 0;
@@ -169,6 +169,81 @@ class Constraint implements ConstraintInterface
         }
 
         return version_compare($a, $b, $operator);
+    }
+
+    public function compile($otherOperator) {
+        $isBranch = 'dev-' === substr($this->version, 0, 4);
+
+        if (self::OP_NE === $this->operator) {
+            if ($isBranch) {
+                if ($otherOperator === self::OP_EQ) {
+                    return 'false';
+                }
+
+                return 'true';
+            }
+
+            if ($otherOperator === self::OP_EQ) {
+                return sprintf('!$b && version_compare($v, \'%s\', \'!=\')', $this->version);
+            }
+
+            return 'true';
+        } elseif (self::OP_EQ === $this->operator) {
+            if (in_array($otherOperator, array(self::OP_LT, self::OP_GT, self::OP_NE))) {
+                $codeComparison = 'false';
+            } else {
+                $codeComparison = sprintf('version_compare($v, \'%s\', \'==\')', $this->version);
+            }
+
+            if ($isBranch) {
+                if ($otherOperator === self::OP_NE) {
+                    return sprintf('!$b || $v === \'%s\'', $this->version);
+                }
+
+                return sprintf('($b && $v === \'%s\') || (!$b && %s)', $this->version, $codeComparison);
+            }
+
+            if ($otherOperator === self::OP_NE) {
+                return sprintf('(!$b && version_compare($v, \'%s\', \'!=\')) || (%s)', $this->version, $codeComparison);
+            }
+
+            return $codeComparison;
+        } else {
+            if ($this->operator === self::OP_LT || $this->operator === self::OP_LE) {
+                if (in_array($otherOperator, array(self::OP_LT, self::OP_LE))) {
+                    return 'true';
+                }
+            } else {
+                if (in_array($otherOperator, array(self::OP_GT, self::OP_GE))) {
+                    return 'true';
+                }
+            }
+
+            $codeComparison = sprintf('version_compare($v, \'%s\', \'%s\')', $this->version, self::$transOpInt[$this->operator]);
+            if ($this->operator === self::OP_LE) {
+                if ($otherOperator === self::OP_GT) {
+                    $codeComparison = sprintf('$v !== \'%s\' && ', $this->version) . $codeComparison;
+                }
+            } elseif ($this->operator === self::OP_GE) {
+                if ($otherOperator === self::OP_LT) {
+                    $codeComparison = sprintf('$v !== \'%s\' && ', $this->version) . $codeComparison;
+                }
+            }
+
+            if ($isBranch) {
+                if ($otherOperator === self::OP_NE) {
+                    return 'true';
+                }
+
+                return 'false';
+            }
+
+            if ($otherOperator === self::OP_NE) {
+                return 'true';
+            }
+
+            return sprintf('!$b && %s', $codeComparison);
+        }
     }
 
     /**
