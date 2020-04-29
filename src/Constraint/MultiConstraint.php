@@ -129,7 +129,7 @@ class MultiConstraint implements ConstraintInterface
      */
     public function __toString()
     {
-        if ($this->string) {
+        if ($this->string !== null) {
             return $this->string;
         }
 
