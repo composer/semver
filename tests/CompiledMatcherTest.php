@@ -11,15 +11,10 @@
 
 namespace Composer\Semver;
 
-use Composer\Semver\Constraint\Bound;
 use Composer\Semver\Constraint\Constraint;
-use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Semver\Constraint\MultiConstraint;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @coversDefaultClass \Composer\Semver\Comparator
- */
 class CompiledMatcherTest extends TestCase
 {
     public function testMatch()
