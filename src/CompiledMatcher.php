@@ -13,6 +13,7 @@ namespace Composer\Semver;
 
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\ConstraintInterface;
+use Composer\Semver\Constraint\NotCompilableConstraintException;
 
 /**
  * Helper class to evaluate constraint by compiling and reusing the code to evaluate
@@ -21,6 +22,15 @@ class CompiledMatcher
 {
     private static $checked = array();
     private static $enabled = null;
+
+    private static $transOpInt = array(
+        Constraint::OP_EQ => '==',
+        Constraint::OP_LT => '<',
+        Constraint::OP_LE => '<=',
+        Constraint::OP_GT => '>',
+        Constraint::OP_GE => '>=',
+        Constraint::OP_NE => '!=',
+    );
 
     /**
      * Evaluates the expression: $constraint match $operator $version
@@ -37,24 +47,23 @@ class CompiledMatcher
             self::$enabled = !in_array('eval', explode(',', ini_get('disable_functions')));
         }
         if (!self::$enabled) {
-            $transOpInt = array(
-                Constraint::OP_EQ => '==',
-                Constraint::OP_LT => '<',
-                Constraint::OP_LE => '<=',
-                Constraint::OP_GT => '>',
-                Constraint::OP_GE => '>=',
-                Constraint::OP_NE => '!=',
-            );
-            return $constraint->matches(new Constraint($transOpInt[$operator], $version));
+            return $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));
         }
 
         $cacheKey = $operator.$constraint;
         if (!isset(static::$checked[$cacheKey])) {
             $sha = \sha1($cacheKey);
             $function = 'composer_semver_constraint_'.$sha;
+            try {
+                $code = $constraint->compile($operator);
+                eval('function '.$function.'($v, $b){return '.$constraint->compile($operator).';}');
+                $function = '\\'.$function;
+            } catch (NotCompilableConstraintException $e) {
+                $function = function($v, $b) use ($constraint, $operator) {
+                    return $constraint->matches(new Constraint(self::$transOpInt[$operator], $v));
+                };
+            }
             static::$checked[$cacheKey] = $function;
-            eval('function '.$function.'($v, $b){return '.$constraint->compile($operator).';}');
-            $function = '\\'.$function;
         } else {
             $function = static::$checked[$cacheKey];
         }
