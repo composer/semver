@@ -189,25 +189,21 @@ class Constraint implements CompilableConstraintInterface
 
             return 'true';
         } elseif (self::OP_EQ === $this->operator) {
-            if (in_array($otherOperator, array(self::OP_LT, self::OP_GT, self::OP_NE))) {
-                $codeComparison = 'false';
-            } else {
-                $codeComparison = sprintf('version_compare($v, \'%s\', \'==\')', $this->version);
-            }
-
             if ($isBranch) {
-                if ($otherOperator === self::OP_NE) {
-                    return sprintf('!$b || $v === \'%s\'', $this->version);
+                if (in_array($otherOperator, array(self::OP_LT, self::OP_GT, self::OP_NE))) {
+                    return 'false';
                 }
 
-                return sprintf('($b && $v === \'%s\') || (!$b && %s)', $this->version, $codeComparison);
+                return sprintf('$b && $v === \'%s\'', $this->version);
             }
 
             if ($otherOperator === self::OP_NE) {
-                return sprintf('(!$b && version_compare($v, \'%s\', \'!=\')) || (%s)', $this->version, $codeComparison);
+                return sprintf('(!$b && version_compare($v, \'%s\', \'!=\'))', $this->version);
+            } elseif (in_array($otherOperator, array(self::OP_LT, self::OP_GT))) {
+                return 'false';
             }
 
-            return $codeComparison;
+            return sprintf('version_compare($v, \'%s\', \'==\')', $this->version);
         } else {
             if ($this->operator === self::OP_LT || $this->operator === self::OP_LE) {
                 if (in_array($otherOperator, array(self::OP_LT, self::OP_LE))) {

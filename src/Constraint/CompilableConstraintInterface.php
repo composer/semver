@@ -17,7 +17,7 @@ interface CompilableConstraintInterface extends ConstraintInterface
      * Provides a compiled version of the constraint for the given operator
      * Executor of compile version have to provide 2 variables:
      * - $v = the string version to compare with
-     * - $b = whether or not the version is a branch (starts with "dev-")
+     * - $b = whether or not the version is a non-comparable branch (starts with "dev-")
      *
      * @see Constraint::OP_* for the list of available operators.
      *

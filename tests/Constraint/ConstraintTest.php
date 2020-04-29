@@ -265,6 +265,37 @@ class ConstraintTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider matrix
+     */
+    public function testCompile($requireOperator, $requireVersion, $provideOperator, $provideVersion)
+    {
+        $require = new Constraint($requireOperator, $requireVersion);
+        $provide = new Constraint($provideOperator, $provideVersion);
+
+        // Asserts Compiled version returns the same result than standard
+        $this->assertSame($require->matches($provide), $this->matchCompiled($require, $provideOperator, $provideVersion));
+    }
+
+    public function matrix()
+    {
+        $versions = array('1.0', '2.0', 'dev-master', 'dev-foo', '3.0-b2', '3.0-beta2');
+        $operators = array('==', '!=', '>', '<', '>=', '<=');
+
+        $matrix = array();
+        foreach ($versions as $requireVersion) {
+            foreach ($operators as $requireOperator) {
+                foreach ($versions as $provideVersion) {
+                    foreach ($operators as $provideOperator) {
+                        $matrix[] = array($requireOperator, $requireVersion, $provideOperator, $provideVersion);
+                    }
+                }
+            }
+        }
+
+        return $matrix;
+    }
+
     private function matchCompiled(ConstraintInterface $constraint, $operator, $version)
     {
         $operatorMap  = array(
