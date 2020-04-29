@@ -22,6 +22,9 @@ class MultiConstraint implements ConstraintInterface
     /** @var string|null */
     protected $prettyString;
 
+    /** @var string|null */
+    protected $string;
+
     /** @var bool */
     protected $conjunctive;
 
@@ -126,12 +129,16 @@ class MultiConstraint implements ConstraintInterface
      */
     public function __toString()
     {
+        if ($this->string) {
+            return $this->string;
+        }
+
         $constraints = array();
         foreach ($this->constraints as $constraint) {
             $constraints[] = (string) $constraint;
         }
 
-        return '[' . implode($this->conjunctive ? ' ' : ' || ', $constraints) . ']';
+        return $this->string = '[' . implode($this->conjunctive ? ' ' : ' || ', $constraints) . ']';
     }
 
     /**
