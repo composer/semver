@@ -83,7 +83,7 @@ class MultiConstraint implements CompilableConstraintInterface
         if (!$this->conjunctive) {
             return '('.implode(') || (',\array_map(function(ConstraintInterface $constraint) use ($otherOperator) {
                 if (!$constraint instanceof CompilableConstraintInterface) {
-                    throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable', (string) $constraint));
+                    throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable.', (string) $constraint));
                 }
                 return $constraint->compile($otherOperator);
             }, $this->constraints)).')';
@@ -91,7 +91,7 @@ class MultiConstraint implements CompilableConstraintInterface
 
         return '('.implode(') && (',\array_map(function(ConstraintInterface $constraint) use ($otherOperator) {
                 if (!$constraint instanceof CompilableConstraintInterface) {
-                    throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable', (string) $constraint));
+                    throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable.', (string) $constraint));
                 }
                 return $constraint->compile($otherOperator);
             }, $this->constraints)).')';

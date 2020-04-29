@@ -11,6 +11,7 @@
 
 namespace Composer\Semver;
 
+use Composer\Semver\Constraint\CompilableConstraintInterface;
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Semver\Constraint\NotCompilableConstraintException;
@@ -20,7 +21,7 @@ use Composer\Semver\Constraint\NotCompilableConstraintException;
  */
 class CompiledMatcher
 {
-    private static $checked = array();
+    private static $compiledCheckerCache = array();
     private static $enabled = null;
 
     private static $transOpInt = array(
@@ -51,17 +52,20 @@ class CompiledMatcher
         }
 
         $cacheKey = $operator.$constraint;
-        if (!isset(static::$checked[$cacheKey])) {
+        if (!isset(self::$compiledCheckerCache[$cacheKey])) {
             try {
+                if (!$constraint instanceof CompilableConstraintInterface) {
+                    throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable.', (string) $constraint));
+                }
                 $code = $constraint->compile($operator);
-                static::$checked[$cacheKey] = $function = eval('return function($v, $b){return '.$code.';};');
+                self::$compiledCheckerCache[$cacheKey] = $function = eval('return function($v, $b){return '.$code.';};');
             } catch (NotCompilableConstraintException $e) {
-                static::$checked[$cacheKey] = $function = function($v, $b) use ($constraint, $operator) {
+                self::$compiledCheckerCache[$cacheKey] = $function = static function($v, $b) use ($constraint, $operator) {
                     return $constraint->matches(new Constraint(CompiledMatcher::$transOpInt[$operator], $v));
                 };
             }
         } else {
-            $function = static::$checked[$cacheKey];
+            $function = self::$compiledCheckerCache[$cacheKey];
         }
 
         $v = $version;

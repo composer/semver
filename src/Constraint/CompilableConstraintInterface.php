@@ -15,17 +15,19 @@ interface CompilableConstraintInterface extends ConstraintInterface
 {
     /**
      * Provides a compiled version of the constraint for the given operator
-     * Executor of compile version have to provide 2 variables:
+     * The compiled version must be a PHP expression.
+     * Executor of compile version must provide 2 variables:
      * - $v = the string version to compare with
      * - $b = whether or not the version is a non-comparable branch (starts with "dev-")
      *
      * @see Constraint::OP_* for the list of available operators.
+     * @example return '!$b && version_compare($v, '1.0', '>')';
      *
      * @param int $operator
      *
-     * @return string
+     * @throws NotCompilableConstraintException if the constraint cannot be compiled
      *
-     * @example !$b && version_compare($v, '1.0', '>')
+     * @return string
      */
     public function compile($operator);
 }
