@@ -296,7 +296,7 @@ class ConstraintTest extends TestCase
         return $matrix;
     }
 
-    private function matchCompiled(ConstraintInterface $constraint, $operator, $version)
+    private function matchCompiled(CompilableConstraintInterface $constraint, $operator, $version)
     {
         $operatorMap  = array(
             '=' => Constraint::OP_EQ,
@@ -313,6 +313,7 @@ class ConstraintTest extends TestCase
         $b = 'dev-' === substr($v, 0, 4);
         eval("\$r=$code;");
 
+        // @phpstan-ignore-next-line
         return $r;
     }
 }

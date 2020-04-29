@@ -57,8 +57,9 @@ class CompiledMatcher
                 $code = $constraint->compile($operator);
                 self::$compiledCheckerCache[$cacheKey] = $function = eval('return function($v, $b){return '.$code.';};');
             } catch (NotCompilableConstraintException $e) {
+                $operator = self::$transOpInt[$operator];
                 self::$compiledCheckerCache[$cacheKey] = $function = function($v, $b) use ($constraint, $operator) {
-                    return $constraint->matches(new Constraint(CompiledMatcher::$transOpInt[$operator], $v));
+                    return $constraint->matches(new Constraint($operator, $v));
                 };
             }
         } else {
