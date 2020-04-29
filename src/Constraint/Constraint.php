@@ -218,11 +218,11 @@ class Constraint implements CompilableConstraintInterface
             $codeComparison = sprintf('version_compare($v, %s, \'%s\')', \var_export($this->version, true), self::$transOpInt[$this->operator]);
             if ($this->operator === self::OP_LE) {
                 if ($otherOperator === self::OP_GT) {
-                    $codeComparison = sprintf('$v !== %s && ', \var_export($this->version, true)) . $codeComparison;
+                    $codeComparison = sprintf('version_compare($v, %s, \'!=\') && ', \var_export($this->version, true)) . $codeComparison;
                 }
             } elseif ($this->operator === self::OP_GE) {
                 if ($otherOperator === self::OP_LT) {
-                    $codeComparison = sprintf('$v !== %s && ', \var_export($this->version, true)) . $codeComparison;
+                    $codeComparison = sprintf('version_compare($v, %s, \'!=\') && ', \var_export($this->version, true)) . $codeComparison;
                 }
             }
 
@@ -274,7 +274,7 @@ class Constraint implements CompilableConstraintInterface
         if ($this->versionCompare($provider->version, $this->version, self::$transOpInt[$this->operator], $compareBranches)) {
             // special case, e.g. require >= 1.0 and provide < 1.0
             // 1.0 >= 1.0 but 1.0 is outside of the provided interval
-            return !($provider->version === $this->version
+            return !(\version_compare($provider->version, $this->version, '==')
                 && self::$transOpInt[$provider->operator] === $providerNoEqualOp
                 && self::$transOpInt[$this->operator] !== $noEqualOp);
         }
