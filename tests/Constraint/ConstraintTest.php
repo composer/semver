@@ -311,9 +311,7 @@ class ConstraintTest extends TestCase
         $code = $constraint->compile($operatorMap[$operator]);
         $v = $version;
         $b = 'dev-' === substr($v, 0, 4);
-        eval("\$r=$code;");
 
-        // @phpstan-ignore-next-line
-        return $r;
+        return eval("return $code;");
     }
 }
