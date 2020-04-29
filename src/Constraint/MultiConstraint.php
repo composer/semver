@@ -198,7 +198,7 @@ class MultiConstraint implements ConstraintInterface
             $lc = $constraints[0];
             $mergedConstraints = array();
             $optimized = false;
-            for ($i = 1, $l = count($constraints); $i <$l; $i++) {
+            for ($i = 1, $l = \count($constraints); $i <$l; $i++) {
                 $rc = $constraints[$i];
                 if (
                     $lc instanceof MultiConstraint
@@ -206,11 +206,11 @@ class MultiConstraint implements ConstraintInterface
                     && $rc instanceof MultiConstraint
                     && $rc->conjunctive
                     && ($lc0 = (string) $lc->constraints[0])
-                    && substr($lc0, 0, 2) === '>='
+                    && $lc0[0] === '>' && $lc0[1] === '='
                     && ($lc1 = (string) $lc->constraints[1])
                     && $lc1[0] === '<'
                     && ($rc0 = (string) $rc->constraints[0])
-                    && substr($rc0, 0, 2) === '>='
+                    && $rc0[0] === '>' && $rc0[1] === '='
                     && ($rc1 = (string) $rc->constraints[1])
                     && $rc1[0] === '<'
                     && substr($lc1, 2) === substr($rc0, 3)
