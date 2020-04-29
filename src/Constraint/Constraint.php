@@ -204,42 +204,36 @@ class Constraint implements CompilableConstraintInterface
             }
 
             return sprintf('version_compare($v, %s, \'==\')', \var_export($this->version, true));
-        } else {
-            if ($this->operator === self::OP_LT || $this->operator === self::OP_LE) {
-                if (in_array($otherOperator, array(self::OP_LT, self::OP_LE))) {
-                    return 'true';
-                }
-            } else {
-                if (in_array($otherOperator, array(self::OP_GT, self::OP_GE))) {
-                    return 'true';
-                }
-            }
+        }
 
-            $codeComparison = sprintf('version_compare($v, %s, \'%s\')', \var_export($this->version, true), self::$transOpInt[$this->operator]);
-            if ($this->operator === self::OP_LE) {
-                if ($otherOperator === self::OP_GT) {
-                    $codeComparison = sprintf('version_compare($v, %s, \'!=\') && ', \var_export($this->version, true)) . $codeComparison;
-                }
-            } elseif ($this->operator === self::OP_GE) {
-                if ($otherOperator === self::OP_LT) {
-                    $codeComparison = sprintf('version_compare($v, %s, \'!=\') && ', \var_export($this->version, true)) . $codeComparison;
-                }
-            }
-
-            if ($isBranch) {
-                if ($otherOperator === self::OP_NE) {
-                    return 'true';
-                }
-
-                return 'false';
-            }
-
-            if ($otherOperator === self::OP_NE) {
+        if (in_array($this->operator, array(self::OP_LT, self::OP_LE))) {
+            if (in_array($otherOperator, array(self::OP_LT, self::OP_LE))) {
                 return 'true';
             }
-
-            return sprintf('!$b && %s', $codeComparison);
+        } elseif (in_array($otherOperator, array(self::OP_GT, self::OP_GE))) {
+            return 'true';
         }
+
+        if ($otherOperator === self::OP_NE) {
+            return 'true';
+        }
+
+        if ($isBranch) {
+            return 'false';
+        }
+
+        $codeComparison = sprintf('version_compare($v, %s, \'%s\')', \var_export($this->version, true), self::$transOpInt[$this->operator]);
+        if ($this->operator === self::OP_LE) {
+            if ($otherOperator === self::OP_GT) {
+                return sprintf('!$b && version_compare($v, %s, \'!=\') && ', \var_export($this->version, true)) . $codeComparison;
+            }
+        } elseif ($this->operator === self::OP_GE) {
+            if ($otherOperator === self::OP_LT) {
+                return sprintf('!$b && version_compare($v, %s, \'!=\') && ', \var_export($this->version, true)) . $codeComparison;
+            }
+        }
+
+        return sprintf('!$b && %s', $codeComparison);
     }
 
     /**
