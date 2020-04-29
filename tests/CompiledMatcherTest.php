@@ -21,7 +21,6 @@ class CompiledMatcherTest extends TestCase
 {
     public function testMatch()
     {
-        $matcher = new CompiledMatcher(\sys_get_temp_dir());
-        $this->assertTrue($matcher->match(new Constraint('>=', '1'), Constraint::OP_GE, '2'));
+        $this->assertTrue(CompiledMatcher::match(new Constraint('>=', '1'), Constraint::OP_GE, '2'));
     }
 }

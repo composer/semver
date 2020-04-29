@@ -52,18 +52,14 @@ class CompiledMatcher
 
         $cacheKey = $operator.$constraint;
         if (!isset(static::$checked[$cacheKey])) {
-            $sha = \sha1($cacheKey);
-            $function = 'composer_semver_constraint_'.$sha;
             try {
                 $code = $constraint->compile($operator);
-                eval('function '.$function.'($v, $b){return '.$constraint->compile($operator).';}');
-                $function = '\\'.$function;
+                static::$checked[$cacheKey] = $function = eval('return function($v, $b){return '.$code.';};');
             } catch (NotCompilableConstraintException $e) {
-                $function = function($v, $b) use ($constraint, $operator) {
-                    return $constraint->matches(new Constraint(self::$transOpInt[$operator], $v));
+                static::$checked[$cacheKey] = $function = function($v, $b) use ($constraint, $operator) {
+                    return $constraint->matches(new Constraint(CompiledMatcher::$transOpInt[$operator], $v));
                 };
             }
-            static::$checked[$cacheKey] = $function;
         } else {
             $function = static::$checked[$cacheKey];
         }
