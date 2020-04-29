@@ -80,21 +80,26 @@ class MultiConstraint implements CompilableConstraintInterface
 
     public function compile($otherOperator)
     {
-        if (!$this->conjunctive) {
-            return '('.implode(') || (',\array_map(function(ConstraintInterface $constraint) use ($otherOperator) {
-                if (!$constraint instanceof CompilableConstraintInterface) {
-                    throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable.', (string) $constraint));
+        $parts = array();
+        foreach ($this->constraints as $constraint) {
+            if (!$constraint instanceof CompilableConstraintInterface) {
+                throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable.', (string) $constraint));
+            }
+            $code = $constraint->compile($otherOperator);
+            if ($code === 'true') {
+                if (!$this->conjunctive) {
+                    return 'true';
                 }
-                return $constraint->compile($otherOperator);
-            }, $this->constraints)).')';
+            } elseif ($code === 'false') {
+                if ($this->conjunctive) {
+                    return 'false';
+                }
+            } else {
+                $parts[] = '('.$code.')';
+            }
         }
 
-        return '('.implode(') && (',\array_map(function(ConstraintInterface $constraint) use ($otherOperator) {
-                if (!$constraint instanceof CompilableConstraintInterface) {
-                    throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable.', (string) $constraint));
-                }
-                return $constraint->compile($otherOperator);
-            }, $this->constraints)).')';
+        return $this->conjunctive ? implode('&&', $parts) : implode('||', $parts);
     }
 
     /**
