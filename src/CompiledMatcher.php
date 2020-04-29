@@ -47,16 +47,13 @@ class CompiledMatcher
         if (self::$enabled === null) {
             self::$enabled = !in_array('eval', explode(',', ini_get('disable_functions')));
         }
-        if (!self::$enabled) {
+        if (!self::$enabled || !$constraint instanceof CompilableConstraintInterface) {
             return $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));
         }
 
         $cacheKey = $operator.$constraint;
         if (!isset(self::$compiledCheckerCache[$cacheKey])) {
             try {
-                if (!$constraint instanceof CompilableConstraintInterface) {
-                    throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable.', (string) $constraint));
-                }
                 $code = $constraint->compile($operator);
                 self::$compiledCheckerCache[$cacheKey] = $function = eval('return function($v, $b){return '.$code.';};');
             } catch (NotCompilableConstraintException $e) {
@@ -68,8 +65,6 @@ class CompiledMatcher
             $function = self::$compiledCheckerCache[$cacheKey];
         }
 
-        $v = $version;
-
-        return $function($version, $v[0] === 'd' && 'dev-' === substr($v, 0, 4));
+        return $function($version, $version[0] === 'd' && 'dev-' === substr($version, 0, 4));
     }
 }
