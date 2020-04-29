@@ -172,6 +172,8 @@ class Constraint implements CompilableConstraintInterface
     }
 
     public function compile($otherOperator) {
+        $otherOperator = self::$transOpStr[$otherOperator];
+
         $isBranch = 'dev-' === substr($this->version, 0, 4);
 
         if (self::OP_NE === $this->operator) {

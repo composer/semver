@@ -19,7 +19,7 @@ class CompiledMatcherTest extends TestCase
 {
     public function testMatch()
     {
-        $this->assertTrue(CompiledMatcher::match(new Constraint('>=', '1'), Constraint::OP_GE, '2'));
+        $this->assertTrue(CompiledMatcher::match(new Constraint('>=', '1'), '==', '2'));
     }
 
     public function testMatchHandleNoCompilable()
@@ -37,7 +37,7 @@ class CompiledMatcherTest extends TestCase
             ->willReturn(true);
 
         // @phpstan-ignore-next-line
-        $this->assertTrue(CompiledMatcher::match($constraint, 0, '1'));
+        $this->assertTrue(CompiledMatcher::match($constraint, '==', '1'));
     }
 
     public function testMatchHandleNoCompilableInMulti()
@@ -60,6 +60,6 @@ class CompiledMatcherTest extends TestCase
             new Constraint('>', '2'),
         ), true);
 
-        $this->assertFalse(CompiledMatcher::match($multi, 0, '1'));
+        $this->assertFalse(CompiledMatcher::match($multi, '==', '1'));
     }
 }

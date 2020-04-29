@@ -331,17 +331,7 @@ class MultiConstraintTest extends TestCase
 
     private function matchCompiled(CompilableConstraintInterface $constraint, $operator, $version)
     {
-        $operatorMap  = array(
-            '=' => Constraint::OP_EQ,
-            '==' => Constraint::OP_EQ,
-            '<' => Constraint::OP_LT,
-            '<=' => Constraint::OP_LE,
-            '>' => Constraint::OP_GT,
-            '>=' => Constraint::OP_GE,
-            '<>' => Constraint::OP_NE,
-            '!=' => Constraint::OP_NE,
-        );
-        $code = $constraint->compile($operatorMap[$operator]);
+        $code = $constraint->compile($operator);
         $v = $version;
         $b = 'dev-' === substr($v, 0, 4);
 
