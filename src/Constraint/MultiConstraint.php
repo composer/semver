@@ -111,7 +111,7 @@ class MultiConstraint implements CompilableConstraintInterface
     {
         if (false === $this->conjunctive) {
             foreach ($this->constraints as $constraint) {
-                if ($provider->matches($constraint)) {
+                if ($constraint->matches($provider)) {
                     return true;
                 }
             }
@@ -120,7 +120,7 @@ class MultiConstraint implements CompilableConstraintInterface
         }
 
         foreach ($this->constraints as $constraint) {
-            if (!$provider->matches($constraint)) {
+            if (!$constraint->matches($provider)) {
                 return false;
             }
         }
