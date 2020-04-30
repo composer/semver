@@ -195,44 +195,44 @@ class MultiConstraint implements ConstraintInterface
         // them into one constraint
         // [>= 1 < 2] || [>= 2 < 3] || [>= 3 < 4] => [>= 1 < 4]
         if (!$conjunctive) {
-            $lc = $constraints[0];
+            $left = $constraints[0];
             $mergedConstraints = array();
             $optimized = false;
             for ($i = 1, $l = \count($constraints); $i <$l; $i++) {
-                $rc = $constraints[$i];
+                $right = $constraints[$i];
                 if (
-                    $lc instanceof MultiConstraint
-                    && $lc->conjunctive
-                    && $rc instanceof MultiConstraint
-                    && $rc->conjunctive
-                    && ($lc0 = (string) $lc->constraints[0])
-                    && $lc0[0] === '>' && $lc0[1] === '='
-                    && ($lc1 = (string) $lc->constraints[1])
-                    && $lc1[0] === '<'
-                    && ($rc0 = (string) $rc->constraints[0])
-                    && $rc0[0] === '>' && $rc0[1] === '='
-                    && ($rc1 = (string) $rc->constraints[1])
-                    && $rc1[0] === '<'
-                    && substr($lc1, 2) === substr($rc0, 3)
+                    $left instanceof MultiConstraint
+                    && $left->conjunctive
+                    && $right instanceof MultiConstraint
+                    && $right->conjunctive
+                    && ($left0 = (string) $left->constraints[0])
+                    && $left0[0] === '>' && $left0[1] === '='
+                    && ($left1 = (string) $left->constraints[1])
+                    && $left1[0] === '<'
+                    && ($right0 = (string) $right->constraints[0])
+                    && $right0[0] === '>' && $right0[1] === '='
+                    && ($right1 = (string) $right->constraints[1])
+                    && $right1[0] === '<'
+                    && substr($left1, 2) === substr($right0, 3)
                 ) {
                     $optimized = true;
-                    $lc = new MultiConstraint(
+                    $left = new MultiConstraint(
                         array_merge(
                             array(
-                                $lc->constraints[0],
-                                $rc->constraints[1],
+                                $left->constraints[0],
+                                $right->constraints[1],
                             ),
-                            \array_slice($lc->constraints, 2),
-                            \array_slice($rc->constraints, 2)
+                            \array_slice($left->constraints, 2),
+                            \array_slice($right->constraints, 2)
                         ),
                         true);
                 } else {
-                    $mergedConstraints[] = $lc;
-                    $lc = $rc;
+                    $mergedConstraints[] = $left;
+                    $left = $right;
                 }
             }
             if ($optimized) {
-                $mergedConstraints[] = $lc;
+                $mergedConstraints[] = $left;
                 return array($mergedConstraints, false);
             }
         }
