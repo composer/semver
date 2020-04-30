@@ -38,7 +38,8 @@ matrix:
 
 before_script:
   - if [[ $REMOVE_PHPSTAN = '1' ]]; then composer remove phpstan/phpstan --dev --no-update; fi
-  - composer update --no-interaction --no-progress --prefer-dist --ansi
+  - if [ "$TRAVIS_PHP_VERSION" != "nightly" ]; then composer update --no-interaction --no-progress --prefer-dist --ansi; fi
+  - if [ "$TRAVIS_PHP_VERSION" == "nightly" ]; then composer update --no-interaction --no-progress --prefer-dist --ansi --ignore-platform-reqs; fi
 
 script:
   - vendor/bin/phpunit --coverage-clover=coverage.xml
