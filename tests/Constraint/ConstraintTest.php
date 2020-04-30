@@ -104,6 +104,7 @@ class ConstraintTest extends TestCase
             array('<=', '1', '>=', '2'),
             array('>=', '2', '<=', '1'),
             array('==', '2', '<', '2'),
+            array('==', '2.0-b2', '<', '2.0-beta2'),
             array('!=', '1', '==', '1'),
             array('==', '1', '!=', '1'),
             array('==', 'dev-foo-dist', '==', 'dev-foo-zist'),
