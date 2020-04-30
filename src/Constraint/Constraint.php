@@ -172,7 +172,7 @@ class Constraint implements CompilableConstraintInterface
     }
 
     public function compile($otherOperator) {
-        $isBranch = 'dev-' === substr($this->version, 0, 4);
+        $isBranch = $this->version[0] === 'd' && 'dev-' === substr($this->version, 0, 4);
 
         if (self::OP_NE === $this->operator) {
             if ($isBranch) {
@@ -190,7 +190,7 @@ class Constraint implements CompilableConstraintInterface
             return 'true';
         } elseif (self::OP_EQ === $this->operator) {
             if ($isBranch) {
-                if (in_array($otherOperator, array(self::OP_LT, self::OP_GT, self::OP_NE))) {
+                if (in_array($otherOperator, array(self::OP_LT, self::OP_GT, self::OP_NE), true)) {
                     return 'false';
                 }
 
@@ -199,18 +199,18 @@ class Constraint implements CompilableConstraintInterface
 
             if ($otherOperator === self::OP_NE) {
                 return sprintf('(!$b && \version_compare($v, %s, \'!=\'))', \var_export($this->version, true));
-            } elseif (in_array($otherOperator, array(self::OP_LT, self::OP_GT))) {
+            } elseif (in_array($otherOperator, array(self::OP_LT, self::OP_GT), true)) {
                 return 'false';
             }
 
             return sprintf('\version_compare($v, %s, \'==\')', \var_export($this->version, true));
         }
 
-        if (in_array($this->operator, array(self::OP_LT, self::OP_LE))) {
-            if (in_array($otherOperator, array(self::OP_LT, self::OP_LE))) {
+        if (in_array($this->operator, array(self::OP_LT, self::OP_LE), true)) {
+            if (in_array($otherOperator, array(self::OP_LT, self::OP_LE), true)) {
                 return 'true';
             }
-        } elseif (in_array($otherOperator, array(self::OP_GT, self::OP_GE))) {
+        } elseif (in_array($otherOperator, array(self::OP_GT, self::OP_GE), true)) {
             return 'true';
         }
 

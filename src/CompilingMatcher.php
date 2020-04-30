@@ -19,7 +19,7 @@ use Composer\Semver\Constraint\NotCompilableConstraintException;
 /**
  * Helper class to evaluate constraint by compiling and reusing the code to evaluate
  */
-class CompiledMatcher
+class CompilingMatcher
 {
     private static $compiledCheckerCache = array();
     private static $enabled = null;

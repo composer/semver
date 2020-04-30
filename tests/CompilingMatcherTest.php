@@ -15,11 +15,11 @@ use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\MultiConstraint;
 use PHPUnit\Framework\TestCase;
 
-class CompiledMatcherTest extends TestCase
+class CompilingMatcherTest extends TestCase
 {
     public function testMatch()
     {
-        $this->assertTrue(CompiledMatcher::match(new Constraint('>=', '1'), Constraint::OP_EQ, '2'));
+        $this->assertTrue(CompilingMatcher::match(new Constraint('>=', '1'), Constraint::OP_EQ, '2'));
     }
 
     public function testMatchHandleNoCompilable()
@@ -37,7 +37,7 @@ class CompiledMatcherTest extends TestCase
             ->willReturn(true);
 
         // @phpstan-ignore-next-line
-        $this->assertTrue(CompiledMatcher::match($constraint, Constraint::OP_EQ, '1'));
+        $this->assertTrue(CompilingMatcher::match($constraint, Constraint::OP_EQ, '1'));
     }
 
     public function testMatchHandleNoCompilableInMulti()
@@ -60,6 +60,6 @@ class CompiledMatcherTest extends TestCase
             new Constraint('>', '2'),
         ), true);
 
-        $this->assertFalse(CompiledMatcher::match($multi, Constraint::OP_EQ, '1'));
+        $this->assertFalse(CompilingMatcher::match($multi, Constraint::OP_EQ, '1'));
     }
 }
