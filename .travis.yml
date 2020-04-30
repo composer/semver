@@ -33,9 +33,8 @@ matrix:
       env:
         - REMOVE_PHPSTAN=0
     - php: nightly
+      dist: bionic
   fast_finish: true
-  allow_failures:
-    - php: nightly
 
 before_script:
   - if [[ $REMOVE_PHPSTAN = '1' ]]; then composer remove phpstan/phpstan --dev --no-update; fi
