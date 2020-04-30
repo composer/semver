@@ -30,6 +30,7 @@ matrix:
     - php: 7.3
       dist: xenial
     - php: 7.4
+      dist: bionic
       env:
         - REMOVE_PHPSTAN=0
     - php: nightly
