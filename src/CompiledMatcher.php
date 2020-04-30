@@ -37,7 +37,7 @@ class CompiledMatcher
      * Evaluates the expression: $constraint match $operator $version
      *
      * @param ConstraintInterface $constraint
-     * @param string              $operator
+     * @param int                 $operator
      * @param string              $version
      *
      * @return mixed
@@ -48,7 +48,7 @@ class CompiledMatcher
             self::$enabled = !in_array('eval', explode(',', ini_get('disable_functions')));
         }
         if (!self::$enabled || !$constraint instanceof CompilableConstraintInterface) {
-            return $constraint->matches(new Constraint($operator, $version));
+            return $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));
         }
 
         $cacheKey = $operator.$constraint;
@@ -57,6 +57,7 @@ class CompiledMatcher
                 $code = $constraint->compile($operator);
                 self::$compiledCheckerCache[$cacheKey] = $function = eval('return function($v, $b){return '.$code.';};');
             } catch (NotCompilableConstraintException $e) {
+                $operator = self::$transOpInt[$operator];
                 self::$compiledCheckerCache[$cacheKey] = $function = function($v, $b) use ($constraint, $operator) {
                     return $constraint->matches(new Constraint($operator, $v));
                 };

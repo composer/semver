@@ -23,7 +23,7 @@ interface CompilableConstraintInterface extends ConstraintInterface
      * @see Constraint::OP_* for the list of available operators.
      * @example return '!$b && version_compare($v, '1.0', '>')';
      *
-     * @param string $operator one of ==, !=, >, >=, <, <=
+     * @param int $operator one Constraint::OP_*
      *
      * @throws NotCompilableConstraintException if the constraint cannot be compiled
      *
