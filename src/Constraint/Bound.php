@@ -51,12 +51,12 @@ class Bound
 
     public function isZero()
     {
-        return $this->getVersion() === '0' && $this->isInclusive();
+        return $this->isInclusive && $this->version === '0';
     }
 
     public function isPositiveInfinity()
     {
-        return $this->getVersion() === (string) PHP_INT_MAX && !$this->isInclusive();
+        return !$this->isInclusive && $this->version === (string) PHP_INT_MAX;
     }
 
     /**
@@ -69,7 +69,7 @@ class Bound
      */
     public function compareTo(Bound $other, $operator)
     {
-        if (!\in_array($operator, array('<', '>'), true)) {
+        if ($operator !== '<' && $operator !== '>') {
             throw new \InvalidArgumentException('Does not support any other operator other than > or <.');
         }
 
@@ -78,7 +78,7 @@ class Bound
             return false;
         }
 
-        $compareResult = version_compare($this->getVersion(), $other->getVersion());
+        $compareResult = version_compare($this->version, $other->version);
 
         // Not the same version means we don't need to check if the bounds are inclusive or not
         if (0 !== $compareResult) {
@@ -86,15 +86,15 @@ class Bound
         }
 
         // Question we're answering here is "am I higher than $other?"
-        return '>' === $operator ? $other->isInclusive() : !$other->isInclusive();
+        return '>' === $operator ? $other->isInclusive : !$other->isInclusive;
     }
 
     public function __toString()
     {
         return sprintf(
             '%s [%s]',
-            $this->getVersion(),
-            $this->isInclusive() ? 'inclusive' : 'exclusive'
+            $this->version,
+            $this->isInclusive ? 'inclusive' : 'exclusive'
         );
     }
 
