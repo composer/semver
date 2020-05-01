@@ -99,6 +99,10 @@ class MultiConstraint implements CompilableConstraintInterface
             }
         }
 
+        if (!$parts) {
+            return $this->conjunctive ? 'true' : 'false';
+        }
+
         return $this->conjunctive ? implode('&&', $parts) : implode('||', $parts);
     }
 
