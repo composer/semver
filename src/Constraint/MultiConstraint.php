@@ -170,7 +170,9 @@ class MultiConstraint implements CompilableConstraintInterface
      */
     public function getLowerBound()
     {
-        $this->extractBounds();
+        if (null === $this->lowerBound) {
+            $this->extractBounds();
+        }
 
         return $this->lowerBound;
     }
@@ -180,7 +182,9 @@ class MultiConstraint implements CompilableConstraintInterface
      */
     public function getUpperBound()
     {
-        $this->extractBounds();
+        if (null === $this->upperBound) {
+            $this->extractBounds();
+        }
 
         return $this->upperBound;
     }
@@ -275,10 +279,6 @@ class MultiConstraint implements CompilableConstraintInterface
 
     private function extractBounds()
     {
-        if (null !== $this->lowerBound) {
-            return;
-        }
-
         foreach ($this->constraints as $constraint) {
             if (null === $this->lowerBound && null === $this->upperBound) {
                 $this->lowerBound = $constraint->getLowerBound();

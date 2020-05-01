@@ -289,7 +289,9 @@ class Constraint implements CompilableConstraintInterface
      */
     public function getLowerBound()
     {
-        $this->extractBounds();
+        if (null === $this->lowerBound) {
+            $this->extractBounds();
+        }
 
         return $this->lowerBound;
     }
@@ -299,17 +301,15 @@ class Constraint implements CompilableConstraintInterface
      */
     public function getUpperBound()
     {
-        $this->extractBounds();
+        if (null === $this->upperBound) {
+            $this->extractBounds();
+        }
 
         return $this->upperBound;
     }
 
     private function extractBounds()
     {
-        if (null !== $this->lowerBound) {
-            return;
-        }
-
         // Branches
         if (strpos($this->version, 'dev-') === 0) {
             $this->lowerBound = Bound::zero();
