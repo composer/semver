@@ -52,6 +52,7 @@ class MultiConstraintTest extends TestCase
         $multiRequire = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd));
 
         $this->assertTrue($multiRequire->matches($versionProvide));
+        $this->assertTrue($this->matchCompiled($multiRequire, '==', 1.1));
     }
 
     public function testMultiVersionProvidedMatchSucceeds()
@@ -83,6 +84,7 @@ class MultiConstraintTest extends TestCase
         $multiRequire = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd));
 
         $this->assertFalse($multiRequire->matches($versionProvide));
+        $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.2));
     }
 
     public function testGetPrettyString()
@@ -325,5 +327,25 @@ class MultiConstraintTest extends TestCase
                 ),
             ),
         );
+    }
+
+    private function matchCompiled(CompilableConstraintInterface $constraint, $operator, $version)
+    {
+        $map = array(
+            '=' => Constraint::OP_EQ,
+            '==' => Constraint::OP_EQ,
+            '<' => Constraint::OP_LT,
+            '<=' => Constraint::OP_LE,
+            '>' => Constraint::OP_GT,
+            '>=' => Constraint::OP_GE,
+            '<>' => Constraint::OP_NE,
+            '!=' => Constraint::OP_NE,
+        );
+
+        $code = $constraint->compile($map[$operator]);
+        $v = $version;
+        $b = 'dev-' === substr($v, 0, 4);
+
+        return eval("return $code;");
     }
 }

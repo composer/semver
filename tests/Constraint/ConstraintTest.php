@@ -90,6 +90,7 @@ class ConstraintTest extends TestCase
         $versionProvide = new Constraint($provideOperator, $provideVersion);
 
         $this->assertTrue($versionRequire->matches($versionProvide));
+        $this->assertTrue($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
     }
 
     public static function failingVersionMatches()
@@ -125,6 +126,7 @@ class ConstraintTest extends TestCase
         $versionProvide = new Constraint($provideOperator, $provideVersion);
 
         $this->assertFalse($versionRequire->matches($versionProvide));
+        $this->assertFalse($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
     }
 
     public function testInverseMatchingOtherConstraints()
@@ -164,11 +166,13 @@ class ConstraintTest extends TestCase
         $versionRequire = new Constraint('>', '0.12');
 
         $this->assertFalse($versionRequire->matches($this->versionProvide));
+        $this->assertFalse($this->matchCompiled($versionRequire, '==', 'dev-foo'));
         $this->assertFalse($versionRequire->matchSpecific($this->versionProvide, true));
 
         $versionRequire = new Constraint('<', '0.12');
 
         $this->assertFalse($versionRequire->matches($this->versionProvide));
+        $this->assertFalse($this->matchCompiled($versionRequire, '==', 'dev-foo'));
         $this->assertTrue($versionRequire->matchSpecific($this->versionProvide, true));
     }
 
@@ -260,5 +264,56 @@ class ConstraintTest extends TestCase
 
             'not equal to 1.0.0.0' => array('<>', '1.0.0.0', Bound::zero(), Bound::positiveInfinity()),
         );
+    }
+
+    /**
+     * @dataProvider matrix
+     */
+    public function testCompile($requireOperator, $requireVersion, $provideOperator, $provideVersion)
+    {
+        $require = new Constraint($requireOperator, $requireVersion);
+        $provide = new Constraint($provideOperator, $provideVersion);
+
+        // Asserts Compiled version returns the same result than standard
+        $this->assertSame($require->matches($provide), $this->matchCompiled($require, $provideOperator, $provideVersion));
+    }
+
+    public function matrix()
+    {
+        $versions = array('1.0', '2.0', 'dev-master', 'dev-foo', '3.0-b2', '3.0-beta2');
+        $operators = array('==', '!=', '>', '<', '>=', '<=');
+
+        $matrix = array();
+        foreach ($versions as $requireVersion) {
+            foreach ($operators as $requireOperator) {
+                foreach ($versions as $provideVersion) {
+                    foreach ($operators as $provideOperator) {
+                        $matrix[] = array($requireOperator, $requireVersion, $provideOperator, $provideVersion);
+                    }
+                }
+            }
+        }
+
+        return $matrix;
+    }
+
+    private function matchCompiled(CompilableConstraintInterface $constraint, $operator, $version)
+    {
+        $map = array(
+            '=' => Constraint::OP_EQ,
+            '==' => Constraint::OP_EQ,
+            '<' => Constraint::OP_LT,
+            '<=' => Constraint::OP_LE,
+            '>' => Constraint::OP_GT,
+            '>=' => Constraint::OP_GE,
+            '<>' => Constraint::OP_NE,
+            '!=' => Constraint::OP_NE,
+        );
+
+        $code = $constraint->compile($map[$operator]);
+        $v = $version;
+        $b = 'dev-' === substr($v, 0, 4);
+
+        return eval("return $code;");
     }
 }
