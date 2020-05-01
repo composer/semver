@@ -209,6 +209,9 @@ class MultiConstraint implements CompilableConstraintInterface
         $optimized = self::optimizeConstraints($constraints, $conjunctive);
         if ($optimized !== null) {
             list($constraints, $conjunctive) = $optimized;
+            if (\count($constraints) === 1) {
+                return $constraints[0];
+            }
         }
 
         return new self($constraints, $conjunctive);
@@ -221,25 +224,48 @@ class MultiConstraint implements CompilableConstraintInterface
     {
         // parse the two OR groups and if they are contiguous we collapse
         // them into one constraint
-        if (!$conjunctive
-            && 2 === count($constraints)
-            && $constraints[0] instanceof MultiConstraint
-            && $constraints[1] instanceof MultiConstraint
-            && 2 === count($constraints[0]->getConstraints())
-            && 2 === count($constraints[1]->getConstraints())
-            && ($a = (string) $constraints[0])
-            && strpos($a, '[>=') === 0 && (false !== ($posA = strpos($a, '<', 4)))
-            && ($b = (string) $constraints[1])
-            && strpos($b, '[>=') === 0 && (false !== ($posB = strpos($b, '<', 4)))
-            && substr($a, $posA + 2, -1) === substr($b, 4, $posB - 5)
-        ) {
-            return array(
-                array(
-                    new Constraint('>=', substr($a, 4, $posB - 5)),
-                    new Constraint('<', substr($b, $posB + 2, -1)),
-                ),
-                true,
-            );
+        // [>= 1 < 2] || [>= 2 < 3] || [>= 3 < 4] => [>= 1 < 4]
+        if (!$conjunctive) {
+            $left = $constraints[0];
+            $mergedConstraints = array();
+            $optimized = false;
+            for ($i = 1, $l = \count($constraints); $i <$l; $i++) {
+                $right = $constraints[$i];
+                if (
+                    $left instanceof MultiConstraint
+                    && $left->conjunctive
+                    && $right instanceof MultiConstraint
+                    && $right->conjunctive
+                    && ($left0 = (string) $left->constraints[0])
+                    && $left0[0] === '>' && $left0[1] === '='
+                    && ($left1 = (string) $left->constraints[1])
+                    && $left1[0] === '<'
+                    && ($right0 = (string) $right->constraints[0])
+                    && $right0[0] === '>' && $right0[1] === '='
+                    && ($right1 = (string) $right->constraints[1])
+                    && $right1[0] === '<'
+                    && substr($left1, 2) === substr($right0, 3)
+                ) {
+                    $optimized = true;
+                    $left = new MultiConstraint(
+                        array_merge(
+                            array(
+                                $left->constraints[0],
+                                $right->constraints[1],
+                            ),
+                            \array_slice($left->constraints, 2),
+                            \array_slice($right->constraints, 2)
+                        ),
+                        true);
+                } else {
+                    $mergedConstraints[] = $left;
+                    $left = $right;
+                }
+            }
+            if ($optimized) {
+                $mergedConstraints[] = $left;
+                return array($mergedConstraints, false);
+            }
         }
 
         // TODO: Here's the place to put more optimizations
