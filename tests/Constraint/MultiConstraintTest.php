@@ -391,6 +391,30 @@ class MultiConstraintTest extends TestCase
         );
     }
 
+    public function testMultiConstraintNotconjunctiveFillWithFalse()
+    {
+        $versionProvide = new Constraint('==', '1.1');
+        $multiRequire = new MultiConstraint(array(
+            new Constraint('!=', 'dev-foo'), // always false
+            new Constraint('!=', 'dev-bar'), // always false
+        ), false);
+
+        $this->assertFalse($multiRequire->matches($versionProvide));
+        $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.1));
+    }
+
+    public function testMultiConstraintConjunctiveFillWithTrue()
+    {
+        $versionProvide = new Constraint('!=', '1.1');
+        $multiRequire = new MultiConstraint(array(
+            new Constraint('!=', 'dev-foo'), // always true
+            new Constraint('!=', 'dev-bar'), // always true
+        ), true);
+
+        $this->assertTrue($multiRequire->matches($versionProvide));
+        $this->assertTrue($this->matchCompiled($multiRequire, '!=', 1.1));
+    }
+
     private function matchCompiled(CompilableConstraintInterface $constraint, $operator, $version)
     {
         $map = array(
