@@ -250,7 +250,7 @@ class VersionParser
 
         foreach ($orConstraints as $constraints) {
             $andConstraints = preg_split('{(?<!^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|$)}', $constraints);
-            if (count($andConstraints) > 1) {
+            if (\count($andConstraints) > 1) {
                 $constraintObjects = array();
                 foreach ($andConstraints as $constraint) {
                     foreach ($this->parseConstraint($constraint) as $parsedConstraint) {
@@ -261,7 +261,7 @@ class VersionParser
                 $constraintObjects = $this->parseConstraint($andConstraints[0]);
             }
 
-            if (1 === count($constraintObjects)) {
+            if (1 === \count($constraintObjects)) {
                 $constraint = $constraintObjects[0];
             } else {
                 $constraint = new MultiConstraint($constraintObjects);

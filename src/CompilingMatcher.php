@@ -45,7 +45,7 @@ class CompilingMatcher
     public static function match(ConstraintInterface $constraint, $operator, $version)
     {
         if (self::$enabled === null) {
-            self::$enabled = !in_array('eval', explode(',', ini_get('disable_functions')));
+            self::$enabled = !\in_array('eval', explode(',', ini_get('disable_functions')), true);
         }
         if (!self::$enabled || !$constraint instanceof CompilableConstraintInterface) {
             return $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));

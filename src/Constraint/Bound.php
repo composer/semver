@@ -69,7 +69,7 @@ class Bound
      */
     public function compareTo(Bound $other, $operator)
     {
-        if (!in_array($operator, array('<', '>'))) {
+        if (!\in_array($operator, array('<', '>'), true)) {
             throw new \InvalidArgumentException('Does not support any other operator other than > or <.');
         }
 
