@@ -96,6 +96,9 @@ class ConstraintTest extends TestCase
 
         $this->assertTrue($versionRequire->matches($versionProvide));
         $this->assertTrue($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
+        // the operation should be commutative
+        $this->assertTrue($versionProvide->matches($versionRequire));
+        $this->assertTrue($this->matchCompiled($versionProvide, $requireOperator, $requireVersion));
     }
 
     public static function failingVersionMatches()
@@ -132,6 +135,9 @@ class ConstraintTest extends TestCase
 
         $this->assertFalse($versionRequire->matches($versionProvide));
         $this->assertFalse($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
+        // the operation should be commutative
+        $this->assertFalse($versionProvide->matches($versionRequire));
+        $this->assertFalse($this->matchCompiled($versionProvide, $requireOperator, $requireVersion));
     }
 
     public function testInverseMatchingOtherConstraints()
