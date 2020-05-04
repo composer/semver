@@ -89,7 +89,6 @@ class MultiConstraintTest extends TestCase
         $this->assertFalse($multiRequire->matches($versionProvide));
         $this->assertFalse($versionProvide->matches($multiRequire));
         $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.2));
-
     }
 
     public function testGetPrettyString()
