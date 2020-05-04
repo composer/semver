@@ -176,9 +176,7 @@ class Constraint implements CompilableConstraintInterface
     }
 
     public function compile($otherOperator) {
-        $isBranch = $this->version[0] === 'd' && 'dev-' === substr($this->version, 0, 4);
-
-        if ($isBranch) {
+        if ($this->version[0] === 'd' && 'dev-' === substr($this->version, 0, 4)) {
             if (self::OP_EQ === $this->operator) {
                 if (self::OP_EQ === $otherOperator) {
                     return sprintf('$b && $v === %s', \var_export($this->version, true));
