@@ -52,6 +52,7 @@ class MultiConstraintTest extends TestCase
         $multiRequire = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd));
 
         $this->assertTrue($multiRequire->matches($versionProvide));
+        $this->assertTrue($versionProvide->matches($multiRequire));
         $this->assertTrue($this->matchCompiled($multiRequire, '==', 1.1));
     }
 
@@ -64,6 +65,7 @@ class MultiConstraintTest extends TestCase
         $multiProvide = new MultiConstraint(array($versionProvideStart, $versionProvideEnd));
 
         $this->assertTrue($multiRequire->matches($multiProvide));
+        $this->assertTrue($multiProvide->matches($multiRequire));
     }
 
     public function testMultiVersionMatchSucceedsInsideForeachLoop()
@@ -75,6 +77,7 @@ class MultiConstraintTest extends TestCase
         $multiProvide = new MultiConstraint(array($versionProvideStart, $versionProvideEnd), false);
 
         $this->assertTrue($multiRequire->matches($multiProvide));
+        $this->assertTrue($multiProvide->matches($multiRequire));
     }
 
     public function testMultiVersionMatchFails()
@@ -84,7 +87,9 @@ class MultiConstraintTest extends TestCase
         $multiRequire = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd));
 
         $this->assertFalse($multiRequire->matches($versionProvide));
+        $this->assertFalse($versionProvide->matches($multiRequire));
         $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.2));
+
     }
 
     public function testGetPrettyString()
@@ -400,6 +405,7 @@ class MultiConstraintTest extends TestCase
         ), false);
 
         $this->assertFalse($multiRequire->matches($versionProvide));
+        $this->assertFalse($versionProvide->matches($multiRequire));
         $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.1));
     }
 
@@ -412,6 +418,7 @@ class MultiConstraintTest extends TestCase
         ), true);
 
         $this->assertTrue($multiRequire->matches($versionProvide));
+        $this->assertTrue($versionProvide->matches($multiRequire));
         $this->assertTrue($this->matchCompiled($multiRequire, '!=', 1.1));
     }
 
