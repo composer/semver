@@ -395,8 +395,8 @@ class MultiConstraintTest extends TestCase
     {
         $versionProvide = new Constraint('==', '1.1');
         $multiRequire = new MultiConstraint(array(
-            new Constraint('!=', 'dev-foo'), // always false
-            new Constraint('!=', 'dev-bar'), // always false
+            new Constraint('>', 'dev-foo'), // always false
+            new Constraint('>', 'dev-bar'), // always false
         ), false);
 
         $this->assertFalse($multiRequire->matches($versionProvide));

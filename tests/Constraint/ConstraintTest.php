@@ -141,17 +141,21 @@ class ConstraintTest extends TestCase
             array('!=', '2', '>', '2'),
             array('!=', '2', '>', '3'),
 
-            array('==', 'dev-foo-bar', '!=', 'dev-foo-xyz'),
-
+            // branch names
             array('==', 'dev-foo-bar', '==', 'dev-foo-bar'),
             array('==', 'dev-events+issue-17', '==', 'dev-events+issue-17'),
-            array('==', 'dev-foo-bar', '<=', 'dev-foo-bar'),
-            array('==', 'dev-foo-bar', '>=', 'dev-foo-bar'),
-
-            array('<=', 'dev-foo-bar', '==', 'dev-foo-bar'),
-            array('>=', 'dev-foo-bar', '==', 'dev-foo-bar'),
+            array('==', 'dev-foo-bar', '!=', 'dev-foo-xyz'),
 
             array('!=', 'dev-foo-bar', '!=', 'dev-foo-xyz'),
+
+            // numbers vs branches
+            array('==', '0.12', '!=', 'dev-foo'),
+            array('<', '0.12', '!=', 'dev-foo'),
+            array('<=', '0.12', '!=', 'dev-foo'),
+            array('>=', '0.12', '!=', 'dev-foo'),
+            array('>', '0.12', '!=', 'dev-foo'),
+            array('!=', '0.12', '==', 'dev-foo'),
+            array('!=', '0.12', '!=', 'dev-foo'),
         );
     }
 
@@ -250,6 +254,8 @@ class ConstraintTest extends TestCase
 
             // same branch names
             array('==', 'dev-foo-bar', '<', 'dev-foo-bar'),
+            array('==', 'dev-foo-bar', '<=', 'dev-foo-bar'),
+            array('==', 'dev-foo-bar', '>=', 'dev-foo-bar'),
             array('==', 'dev-foo-bar', '>', 'dev-foo-bar'),
             array('==', 'dev-foo-bar', '!=', 'dev-foo-bar'),
 
@@ -260,12 +266,14 @@ class ConstraintTest extends TestCase
             array('<', 'dev-foo-bar', '>', 'dev-foo-bar'),
             array('<', 'dev-foo-bar', '!=', 'dev-foo-bar'),
 
+            array('<=', 'dev-foo-bar', '==', 'dev-foo-bar'),
             array('<=', 'dev-foo-bar', '<', 'dev-foo-bar'),
             array('<=', 'dev-foo-bar', '<=', 'dev-foo-bar'),
             array('<=', 'dev-foo-bar', '>=', 'dev-foo-bar'),
             array('<=', 'dev-foo-bar', '>', 'dev-foo-bar'),
             array('<=', 'dev-foo-bar', '!=', 'dev-foo-bar'),
 
+            array('>=', 'dev-foo-bar', '==', 'dev-foo-bar'),
             array('>=', 'dev-foo-bar', '<', 'dev-foo-bar'),
             array('>=', 'dev-foo-bar', '<=', 'dev-foo-bar'),
             array('>=', 'dev-foo-bar', '>=', 'dev-foo-bar'),
@@ -279,11 +287,41 @@ class ConstraintTest extends TestCase
             array('>', 'dev-foo-bar', '>', 'dev-foo-bar'),
             array('>', 'dev-foo-bar', '!=', 'dev-foo-bar'),
 
-            // branch vs number
-            array('<', '0.12', '==', 'dev-foo'), // branches are not comparable
-            array('<=', '0.12', '==', 'dev-foo'), // branches are not comparable
-            array('>=', '0.12', '==', 'dev-foo'), // branches are not comparable
-            array('>', '0.12', '==', 'dev-foo'), // branches are not comparable
+            // branch vs number, not comparable so mostly false
+            array('==', '0.12', '==', 'dev-foo'),
+            array('==', '0.12', '<', 'dev-foo'),
+            array('==', '0.12', '<=', 'dev-foo'),
+            array('==', '0.12', '>=', 'dev-foo'),
+            array('==', '0.12', '>', 'dev-foo'),
+
+            array('<', '0.12', '==', 'dev-foo'),
+            array('<', '0.12', '<', 'dev-foo'),
+            array('<', '0.12', '<=', 'dev-foo'),
+            array('<', '0.12', '>=', 'dev-foo'),
+            array('<', '0.12', '>', 'dev-foo'),
+
+            array('<=', '0.12', '==', 'dev-foo'),
+            array('<=', '0.12', '<', 'dev-foo'),
+            array('<=', '0.12', '<=', 'dev-foo'),
+            array('<=', '0.12', '>=', 'dev-foo'),
+            array('<=', '0.12', '>', 'dev-foo'),
+
+            array('>=', '0.12', '==', 'dev-foo'),
+            array('>=', '0.12', '<', 'dev-foo'),
+            array('>=', '0.12', '<=', 'dev-foo'),
+            array('>=', '0.12', '>=', 'dev-foo'),
+            array('>=', '0.12', '>', 'dev-foo'),
+
+            array('>', '0.12', '==', 'dev-foo'),
+            array('>', '0.12', '<', 'dev-foo'),
+            array('>', '0.12', '<=', 'dev-foo'),
+            array('>', '0.12', '>=', 'dev-foo'),
+            array('>', '0.12', '>', 'dev-foo'),
+
+            array('!=', '0.12', '<', 'dev-foo'),
+            array('!=', '0.12', '<=', 'dev-foo'),
+            array('!=', '0.12', '>=', 'dev-foo'),
+            array('!=', '0.12', '>', 'dev-foo'),
         );
     }
 
