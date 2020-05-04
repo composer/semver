@@ -265,7 +265,11 @@ class Constraint implements CompilableConstraintInterface
             return true;
         }
 
-        if ($this->versionCompare($provider->version, $this->version, self::$transOpInt[$this->operator], $compareBranches)) {
+        $version1 = $isEqualOp ? $this->version : $provider->version;
+        $version2 = $isEqualOp ? $provider->version : $this->version;
+        $operator = $isEqualOp ? $provider->operator : $this->operator;
+
+        if ($this->versionCompare($version1, $version2, self::$transOpInt[$operator], $compareBranches)) {
             // special case, e.g. require >= 1.0 and provide < 1.0
             // 1.0 >= 1.0 but 1.0 is outside of the provided interval
             return !(\version_compare($provider->version, $this->version, '==')
