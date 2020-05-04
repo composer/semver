@@ -278,6 +278,18 @@ class ConstraintTest extends TestCase
         $this->assertSame($require->matches($provide), $this->matchCompiled($require, $provideOperator, $provideVersion));
     }
 
+    /**
+     * @dataProvider matrix
+     */
+    public function testBijective($requireOperator, $requireVersion, $provideOperator, $provideVersion)
+    {
+        $require = new Constraint($requireOperator, $requireVersion);
+        $provide = new Constraint($provideOperator, $provideVersion);
+
+        // Asserts $a->matches($b) is identical as $b->matches($a)
+        $this->assertSame($require->matches($provide), $provide->matches($require));
+    }
+
     public function matrix()
     {
         $versions = array('1.0', '2.0', 'dev-master', 'dev-foo', '3.0-b2', '3.0-beta2');

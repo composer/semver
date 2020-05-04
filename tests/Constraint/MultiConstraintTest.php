@@ -53,6 +53,7 @@ class MultiConstraintTest extends TestCase
 
         $this->assertTrue($multiRequire->matches($versionProvide));
         $this->assertTrue($this->matchCompiled($multiRequire, '==', 1.1));
+        $this->assertSame($multiRequire->matches($versionProvide), $versionProvide->matches($multiRequire));
     }
 
     public function testMultiVersionProvidedMatchSucceeds()
@@ -64,6 +65,7 @@ class MultiConstraintTest extends TestCase
         $multiProvide = new MultiConstraint(array($versionProvideStart, $versionProvideEnd));
 
         $this->assertTrue($multiRequire->matches($multiProvide));
+        $this->assertSame($multiRequire->matches($multiProvide), $multiProvide->matches($multiRequire));
     }
 
     public function testMultiVersionMatchSucceedsInsideForeachLoop()
@@ -75,6 +77,7 @@ class MultiConstraintTest extends TestCase
         $multiProvide = new MultiConstraint(array($versionProvideStart, $versionProvideEnd), false);
 
         $this->assertTrue($multiRequire->matches($multiProvide));
+        $this->assertSame($multiRequire->matches($multiProvide), $multiProvide->matches($multiRequire));
     }
 
     public function testMultiVersionMatchFails()
@@ -84,6 +87,7 @@ class MultiConstraintTest extends TestCase
         $multiRequire = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd));
 
         $this->assertFalse($multiRequire->matches($versionProvide));
+        $this->assertSame($multiRequire->matches($versionProvide), $versionProvide->matches($multiRequire));
         $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.2));
     }
 

@@ -160,7 +160,7 @@ class Constraint implements CompilableConstraintInterface
         $bIsBranch = 'dev-' === substr($b, 0, 4);
 
         if ($aIsBranch && $bIsBranch) {
-            return $operator === '==' && $a === $b;
+            return ($operator === '==' || $operator === '<=' || $operator === '>=') && $a === $b;
         }
 
         // when branches are not comparable, we make sure dev branches never match anything
@@ -199,11 +199,9 @@ class Constraint implements CompilableConstraintInterface
 
             if ($otherOperator === self::OP_NE) {
                 return sprintf('(!$b && \version_compare($v, %s, \'!=\'))', \var_export($this->version, true));
-            } elseif (\in_array($otherOperator, array(self::OP_LT, self::OP_GT), true)) {
-                return 'false';
             }
 
-            return sprintf('\version_compare($v, %s, \'==\')', \var_export($this->version, true));
+            return sprintf('!$b && \version_compare(%s, $v, \'%s\')', \var_export($this->version, true), self::$transOpInt[$otherOperator]);
         }
 
         if (\in_array($this->operator, array(self::OP_LT, self::OP_LE), true)) {
@@ -219,6 +217,10 @@ class Constraint implements CompilableConstraintInterface
         }
 
         if ($isBranch) {
+            if (\in_array($this->operator, array(self::OP_LE, self::OP_GE), true) && \in_array($otherOperator, array(self::OP_LE, self::OP_GE, self::OP_EQ), true)) {
+                return \sprintf('$b && %s === $v', \var_export($this->version, true));
+            }
+
             return 'false';
         }
 
@@ -263,6 +265,13 @@ class Constraint implements CompilableConstraintInterface
         // these kinds of comparisons always have a solution
         if ($this->operator !== self::OP_EQ && $noEqualOp === $providerNoEqualOp) {
             return true;
+        }
+
+        if ($this->operator === self::OP_EQ) {
+            return $this->versionCompare($this->version, $provider->version, self::$transOpInt[$provider->operator], $compareBranches);
+        }
+        if ($provider->operator === self::OP_EQ) {
+            return $this->versionCompare($provider->version, $this->version, self::$transOpInt[$this->operator], $compareBranches);
         }
 
         if ($this->versionCompare($provider->version, $this->version, self::$transOpInt[$this->operator], $compareBranches)) {
