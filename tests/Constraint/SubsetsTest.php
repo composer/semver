@@ -49,6 +49,8 @@ class SubsetsTest extends TestCase
             array('!= 3.0.0',        '> 3.0 || < 3.0'),
             array('!= 3.0.0',        '^2.0 || <2 || >3'),
             array('>3',              '^2 || ^3 || >=4'),
+            array('= dev-foo',        '= dev-foo'),
+            array('!= dev-foo',        '!= dev-foo'),
         );
     }
 
@@ -82,6 +84,10 @@ class SubsetsTest extends TestCase
             array('!= 3.0.0',        '!= 3.0.1'),
             array('>3',              '^2 || ^3 || >4'),
             array('^2.1',            '^2.0, !=2.1.3'),
+            array('<2.0',            '>=1.1'),
+            array('< dev-foo',       '= dev-foo'),
+            array('!= dev-foo',      '!= dev-bar'),
+            array('!= dev-foo',      '= dev-bar'),
         );
     }
 }

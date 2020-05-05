@@ -140,11 +140,87 @@ class Constraint implements CompilableConstraintInterface
             }
         }
 
-        if ($this->operator === self::OP_NE) {
-            return (string) $constraint === (string) $this;
+        // constraints are subsets of themselves
+        if ((string) $constraint === (string) $this) {
+            return true;
         }
 
-        return $constraint->matches($this);
+        // exact non-match constraint can only be a subset of themselves at this point so if they were not we abort
+        if ($this->operator === self::OP_NE || $constraint->operator === self::OP_NE) {
+            return false;
+        }
+
+        // exact match constraint are a subset if they intersect
+        if ($this->operator === self::OP_EQ || $constraint->operator === self::OP_EQ) {
+            return $this->matches($constraint);
+        }
+
+        if ($this->operator === $constraint->operator) {
+            // compare e.g. < 3 && < 4.5 to see if this side is smaller than the other (and thus a subset)
+            if ($this->operator === self::OP_LE || $this->operator === self::OP_LT) {
+                return $this->versionCompare($this->version, $constraint->version, '<=');
+            }
+            // compare e.g. > 3 && > 4.5 to see if this side is bigger than the other (and thus a subset)
+            if ($this->operator === self::OP_GE || $this->operator === self::OP_GT) {
+                return $this->versionCompare($this->version, $constraint->version, '>=');
+            }
+
+            throw new \LogicException('Should not be reached');
+        }
+
+        // compare e.g. < 3 && <= 4.5 to see if this side is smaller or eq than the other (and thus a subset)
+        if ($this->operator === self::OP_LT && $constraint->operator === self::OP_LE) {
+            return $this->versionCompare($this->version, $constraint->version, '<=');
+        }
+        // e.g. < 3 && > 4.5, this cannot be a subset
+        if ($this->operator === self::OP_LT && $constraint->operator === self::OP_GT) {
+            return false;
+        }
+        // e.g. < 3 && >= 4.5, this can only be a subset of >=0
+        if ($this->operator === self::OP_LT && $constraint->operator === self::OP_GE) {
+            return $this->versionCompare('0.0.0.0', $constraint->version, '=');
+        }
+
+        // compare e.g. <= 3 && < 4.5 to see if this side is smaller than the other (and thus a subset)
+        if ($this->operator === self::OP_LE && $constraint->operator === self::OP_LT) {
+            return $this->versionCompare($this->version, $constraint->version, '<');
+        }
+        // e.g. <= 3 && > 4.5, this cannot be a subset
+        if ($this->operator === self::OP_LE && $constraint->operator === self::OP_GT) {
+            return false;
+        }
+        // e.g. <= 3 && >= 4.5, this can only be a subset of >=0
+        if ($this->operator === self::OP_LE && $constraint->operator === self::OP_GE) {
+            return $this->versionCompare('0.0.0.0', $constraint->version, '=');
+        }
+
+        // compare e.g. > 3 && >= 4.5 to see if this side is bigger or eq than the other (and thus a subset)
+        if ($this->operator === self::OP_GT && $constraint->operator === self::OP_GE) {
+            return $this->versionCompare($this->version, $constraint->version, '>=');
+        }
+        // e.g. > 3 && < 4.5, this cannot be a subset
+        if ($this->operator === self::OP_GT && $constraint->operator === self::OP_LT) {
+            return false;
+        }
+        // e.g. > 3 && <= 4.5, this can only be a subset of <=INF which we do not really support so assuming false
+        if ($this->operator === self::OP_GT && $constraint->operator === self::OP_LE) {
+            return false;
+        }
+
+        // compare e.g. >= 3 && > 4.5 to see if this side is bigger than the other (and thus a subset)
+        if ($this->operator === self::OP_GE && $constraint->operator === self::OP_GT) {
+            return $this->versionCompare($this->version, $constraint->version, '>');
+        }
+        // e.g. >= 3 && < 4.5, this cannot be a subset
+        if ($this->operator === self::OP_GE && $constraint->operator === self::OP_LT) {
+            return false;
+        }
+        // e.g. >= 3 && <= 4.5, this can only be a subset of <=INF which we do not really support so assuming false
+        if ($this->operator === self::OP_GE && $constraint->operator === self::OP_LE) {
+            return false;
+        }
+
+        throw new \LogicException('Should not be reached');
     }
 
     /**
