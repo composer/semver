@@ -57,27 +57,105 @@ class ConstraintTest extends TestCase
     {
         return array(
             //    require    provide
-            array('==', '1', '==', '1'),
-            array('>=', '1', '>=', '2'),
-            array('>=', '2', '>=', '1'),
-            array('>=', '2', '>', '1'),
-            array('<=', '2', '>=', '1'),
-            array('>=', '1', '<=', '2'),
+            array('==', '2', '==', '2'),
+            array('==', '2', '<', '3'),
+            array('==', '2', '<=', '2'),
+            array('==', '2', '<=', '3'),
+            array('==', '2', '>=', '1'),
             array('==', '2', '>=', '2'),
-            array('!=', '1', '!=', '1'),
-            array('!=', '1', '==', '2'),
-            array('!=', '1', '<', '1'),
-            array('!=', '1', '<=', '1'),
-            array('!=', '1', '>', '1'),
-            array('!=', '1', '>=', '1'),
+            array('==', '2', '>', '1'),
+            array('==', '2', '!=', '1'),
+            array('==', '2', '!=', '3'),
+
+            array('<', '2', '==', '1'),
+            array('<', '2', '<', '1'),
+            array('<', '2', '<', '2'),
+            array('<', '2', '<', '3'),
+            array('<', '2', '<=', '1'),
+            array('<', '2', '<=', '2'),
+            array('<', '2', '<=', '3'),
+            array('<', '2', '>=', '1'),
+            array('<', '2', '>', '1'),
+            array('<', '2', '!=', '1'),
+            array('<', '2', '!=', '2'),
+            array('<', '2', '!=', '3'),
+
+            array('<=', '2', '==', '1'),
+            array('<=', '2', '==', '2'),
+            array('<=', '2', '<', '1'),
+            array('<=', '2', '<', '2'),
+            array('<=', '2', '<', '3'),
+            array('<=', '2', '<=', '1'),
+            array('<=', '2', '<=', '2'),
+            array('<=', '2', '<=', '3'),
+            array('<=', '2', '>=', '1'),
+            array('<=', '2', '>=', '2'),
+            array('<=', '2', '>', '1'),
+            array('<=', '2', '!=', '1'),
+            array('<=', '2', '!=', '2'),
+            array('<=', '2', '!=', '3'),
+
+            array('>=', '2', '==', '2'),
+            array('>=', '2', '==', '3'),
+            array('>=', '2', '<', '3'),
+            array('>=', '2', '<=', '2'),
+            array('>=', '2', '<=', '3'),
+            array('>=', '2', '>=', '1'),
+            array('>=', '2', '>=', '2'),
+            array('>=', '2', '>=', '3'),
+            array('>=', '2', '>', '1'),
+            array('>=', '2', '>', '2'),
+            array('>=', '2', '>', '3'),
+            array('>=', '2', '!=', '1'),
+            array('>=', '2', '!=', '2'),
+            array('>=', '2', '!=', '3'),
+
+            array('>', '2', '==', '3'),
+            array('>', '2', '<', '3'),
+            array('>', '2', '<=', '3'),
+            array('>', '2', '>=', '1'),
+            array('>', '2', '>=', '2'),
+            array('>', '2', '>=', '3'),
+            array('>', '2', '>', '1'),
+            array('>', '2', '>', '2'),
+            array('>', '2', '>', '3'),
+            array('>', '2', '!=', '1'),
+            array('>', '2', '!=', '2'),
+            array('>', '2', '!=', '3'),
+
+            array('!=', '2', '!=', '1'),
+            array('!=', '2', '!=', '2'),
+            array('!=', '2', '!=', '3'),
+            array('!=', '2', '==', '1'),
+            array('!=', '2', '==', '3'),
+            array('!=', '2', '<', '1'),
+            array('!=', '2', '<', '2'),
+            array('!=', '2', '<', '3'),
+            array('!=', '2', '<=', '1'),
+            array('!=', '2', '<=', '2'),
+            array('!=', '2', '<=', '3'),
+            array('!=', '2', '>=', '1'),
+            array('!=', '2', '>=', '2'),
+            array('!=', '2', '>=', '3'),
+            array('!=', '2', '>', '1'),
+            array('!=', '2', '>', '2'),
+            array('!=', '2', '>', '3'),
+
+            // branch names
             array('==', 'dev-foo-bar', '==', 'dev-foo-bar'),
             array('==', 'dev-events+issue-17', '==', 'dev-events+issue-17'),
-            array('==', 'dev-foo-xyz', '==', 'dev-foo-xyz'),
-            array('>=', 'dev-foo-bar', '>=', 'dev-foo-xyz'),
-            array('<=', 'dev-foo-bar', '<', 'dev-foo-xyz'),
-            array('!=', 'dev-foo-bar', '<', 'dev-foo-xyz'),
-            array('>=', 'dev-foo-bar', '!=', 'dev-foo-bar'),
+            array('==', 'dev-foo-bar', '!=', 'dev-foo-xyz'),
+
             array('!=', 'dev-foo-bar', '!=', 'dev-foo-xyz'),
+
+            // numbers vs branches
+            array('==', '0.12', '!=', 'dev-foo'),
+            array('<', '0.12', '!=', 'dev-foo'),
+            array('<=', '0.12', '!=', 'dev-foo'),
+            array('>=', '0.12', '!=', 'dev-foo'),
+            array('>', '0.12', '!=', 'dev-foo'),
+            array('!=', '0.12', '==', 'dev-foo'),
+            array('!=', '0.12', '!=', 'dev-foo'),
         );
     }
 
@@ -91,29 +169,159 @@ class ConstraintTest extends TestCase
 
         $this->assertTrue($versionRequire->matches($versionProvide));
         $this->assertTrue($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
+        // the operation should be commutative
+        $this->assertTrue($versionProvide->matches($versionRequire));
+        $this->assertTrue($this->matchCompiled($versionProvide, $requireOperator, $requireVersion));
     }
 
     public static function failingVersionMatches()
     {
         return array(
             //    require    provide
-            array('==', '1', '==', '2'),
-            array('>=', '2', '<=', '1'),
-            array('>=', '2', '<', '2'),
-            array('<=', '2', '>', '2'),
-            array('>', '2', '<=', '2'),
-            array('<=', '1', '>=', '2'),
-            array('>=', '2', '<=', '1'),
+            array('==', '2', '==', '1'),
+            array('==', '2', '==', '3'),
+            array('==', '2', '<', '1'),
             array('==', '2', '<', '2'),
+            array('==', '2', '<=', '1'),
+            array('==', '2', '>=', '3'),
+            array('==', '2', '>', '2'),
+            array('==', '2', '>', '3'),
+            array('==', '2', '!=', '2'),
+
+            array('<', '2', '==', '2'),
+            array('<', '2', '==', '3'),
+            array('<', '2', '>=', '2'),
+            array('<', '2', '>=', '3'),
+            array('<', '2', '>', '2'),
+            array('<', '2', '>', '3'),
+
+            array('<=', '2', '==', '3'),
+            array('<=', '2', '>=', '3'),
+            array('<=', '2', '>', '2'),
+            array('<=', '2', '>', '3'),
+
+            array('>=', '2', '==', '1'),
+            array('>=', '2', '<', '1'),
+            array('>=', '2', '<', '2'),
+            array('>=', '2', '<=', '1'),
+
+            array('>', '2', '==', '1'),
+            array('>', '2', '==', '2'),
+            array('>', '2', '<', '1'),
+            array('>', '2', '<', '2'),
+            array('>', '2', '<=', '1'),
+            array('>', '2', '<=', '2'),
+
+            array('!=', '2', '==', '2'),
+
             array('==', '2.0-b2', '<', '2.0-beta2'),
-            array('!=', '1', '==', '1'),
-            array('==', '1', '!=', '1'),
             array('==', 'dev-foo-dist', '==', 'dev-foo-zist'),
-            array('==', 'dev-foo-bist', '==', 'dev-foo-aist'),
-            array('<=', 'dev-foo-bist', '>=', 'dev-foo-aist'),
-            array('>=', 'dev-foo-bist', '<', 'dev-foo-aist'),
-            array('<', '0.12', '==', 'dev-foo'), // branches are not comparable
-            array('>', '0.12', '==', 'dev-foo'), // branches are not comparable
+
+            // different branch names
+            array('==', 'dev-foo-bar', '==', 'dev-foo-xyz'),
+            array('==', 'dev-foo-bar', '<', 'dev-foo-xyz'),
+            array('==', 'dev-foo-bar', '<=', 'dev-foo-xyz'),
+            array('==', 'dev-foo-bar', '>=', 'dev-foo-xyz'),
+            array('==', 'dev-foo-bar', '>', 'dev-foo-xyz'),
+
+            array('<', 'dev-foo-bar', '==', 'dev-foo-xyz'),
+            array('<', 'dev-foo-bar', '<', 'dev-foo-xyz'),
+            array('<', 'dev-foo-bar', '<=', 'dev-foo-xyz'),
+            array('<', 'dev-foo-bar', '>=', 'dev-foo-xyz'),
+            array('<', 'dev-foo-bar', '>', 'dev-foo-xyz'),
+            array('<', 'dev-foo-bar', '!=', 'dev-foo-xyz'),
+
+            array('<=', 'dev-foo-bar', '==', 'dev-foo-xyz'),
+            array('<=', 'dev-foo-bar', '<', 'dev-foo-xyz'),
+            array('<=', 'dev-foo-bar', '<=', 'dev-foo-xyz'),
+            array('<=', 'dev-foo-bar', '>=', 'dev-foo-xyz'),
+            array('<=', 'dev-foo-bar', '>', 'dev-foo-xyz'),
+            array('<=', 'dev-foo-bar', '!=', 'dev-foo-xyz'),
+
+            array('>=', 'dev-foo-bar', '==', 'dev-foo-xyz'),
+            array('>=', 'dev-foo-bar', '<', 'dev-foo-xyz'),
+            array('>=', 'dev-foo-bar', '<=', 'dev-foo-xyz'),
+            array('>=', 'dev-foo-bar', '>=', 'dev-foo-xyz'),
+            array('>=', 'dev-foo-bar', '>', 'dev-foo-xyz'),
+            array('>=', 'dev-foo-bar', '!=', 'dev-foo-xyz'),
+
+            array('>', 'dev-foo-bar', '==', 'dev-foo-xyz'),
+            array('>', 'dev-foo-bar', '<', 'dev-foo-xyz'),
+            array('>', 'dev-foo-bar', '<=', 'dev-foo-xyz'),
+            array('>', 'dev-foo-bar', '>=', 'dev-foo-xyz'),
+            array('>', 'dev-foo-bar', '>', 'dev-foo-xyz'),
+            array('>', 'dev-foo-bar', '!=', 'dev-foo-xyz'),
+
+            // same branch names
+            array('==', 'dev-foo-bar', '<', 'dev-foo-bar'),
+            array('==', 'dev-foo-bar', '<=', 'dev-foo-bar'),
+            array('==', 'dev-foo-bar', '>=', 'dev-foo-bar'),
+            array('==', 'dev-foo-bar', '>', 'dev-foo-bar'),
+            array('==', 'dev-foo-bar', '!=', 'dev-foo-bar'),
+
+            array('<', 'dev-foo-bar', '==', 'dev-foo-bar'),
+            array('<', 'dev-foo-bar', '<', 'dev-foo-bar'),
+            array('<', 'dev-foo-bar', '<=', 'dev-foo-bar'),
+            array('<', 'dev-foo-bar', '>=', 'dev-foo-bar'),
+            array('<', 'dev-foo-bar', '>', 'dev-foo-bar'),
+            array('<', 'dev-foo-bar', '!=', 'dev-foo-bar'),
+
+            array('<=', 'dev-foo-bar', '==', 'dev-foo-bar'),
+            array('<=', 'dev-foo-bar', '<', 'dev-foo-bar'),
+            array('<=', 'dev-foo-bar', '<=', 'dev-foo-bar'),
+            array('<=', 'dev-foo-bar', '>=', 'dev-foo-bar'),
+            array('<=', 'dev-foo-bar', '>', 'dev-foo-bar'),
+            array('<=', 'dev-foo-bar', '!=', 'dev-foo-bar'),
+
+            array('>=', 'dev-foo-bar', '==', 'dev-foo-bar'),
+            array('>=', 'dev-foo-bar', '<', 'dev-foo-bar'),
+            array('>=', 'dev-foo-bar', '<=', 'dev-foo-bar'),
+            array('>=', 'dev-foo-bar', '>=', 'dev-foo-bar'),
+            array('>=', 'dev-foo-bar', '>', 'dev-foo-bar'),
+            array('>=', 'dev-foo-bar', '!=', 'dev-foo-bar'),
+
+            array('>', 'dev-foo-bar', '==', 'dev-foo-bar'),
+            array('>', 'dev-foo-bar', '<', 'dev-foo-bar'),
+            array('>', 'dev-foo-bar', '<=', 'dev-foo-bar'),
+            array('>', 'dev-foo-bar', '>=', 'dev-foo-bar'),
+            array('>', 'dev-foo-bar', '>', 'dev-foo-bar'),
+            array('>', 'dev-foo-bar', '!=', 'dev-foo-bar'),
+
+            // branch vs number, not comparable so mostly false
+            array('==', '0.12', '==', 'dev-foo'),
+            array('==', '0.12', '<', 'dev-foo'),
+            array('==', '0.12', '<=', 'dev-foo'),
+            array('==', '0.12', '>=', 'dev-foo'),
+            array('==', '0.12', '>', 'dev-foo'),
+
+            array('<', '0.12', '==', 'dev-foo'),
+            array('<', '0.12', '<', 'dev-foo'),
+            array('<', '0.12', '<=', 'dev-foo'),
+            array('<', '0.12', '>=', 'dev-foo'),
+            array('<', '0.12', '>', 'dev-foo'),
+
+            array('<=', '0.12', '==', 'dev-foo'),
+            array('<=', '0.12', '<', 'dev-foo'),
+            array('<=', '0.12', '<=', 'dev-foo'),
+            array('<=', '0.12', '>=', 'dev-foo'),
+            array('<=', '0.12', '>', 'dev-foo'),
+
+            array('>=', '0.12', '==', 'dev-foo'),
+            array('>=', '0.12', '<', 'dev-foo'),
+            array('>=', '0.12', '<=', 'dev-foo'),
+            array('>=', '0.12', '>=', 'dev-foo'),
+            array('>=', '0.12', '>', 'dev-foo'),
+
+            array('>', '0.12', '==', 'dev-foo'),
+            array('>', '0.12', '<', 'dev-foo'),
+            array('>', '0.12', '<=', 'dev-foo'),
+            array('>', '0.12', '>=', 'dev-foo'),
+            array('>', '0.12', '>', 'dev-foo'),
+
+            array('!=', '0.12', '<', 'dev-foo'),
+            array('!=', '0.12', '<=', 'dev-foo'),
+            array('!=', '0.12', '>=', 'dev-foo'),
+            array('!=', '0.12', '>', 'dev-foo'),
         );
     }
 
@@ -127,6 +335,9 @@ class ConstraintTest extends TestCase
 
         $this->assertFalse($versionRequire->matches($versionProvide));
         $this->assertFalse($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
+        // the operation should be commutative
+        $this->assertFalse($versionProvide->matches($versionRequire));
+        $this->assertFalse($this->matchCompiled($versionProvide, $requireOperator, $requireVersion));
     }
 
     public function testInverseMatchingOtherConstraints()

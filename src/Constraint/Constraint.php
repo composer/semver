@@ -159,6 +159,10 @@ class Constraint implements CompilableConstraintInterface
         $aIsBranch = 'dev-' === substr($a, 0, 4);
         $bIsBranch = 'dev-' === substr($b, 0, 4);
 
+        if ($operator === '!=' && ($aIsBranch || $bIsBranch)) {
+            return $a !== $b;
+        }
+
         if ($aIsBranch && $bIsBranch) {
             return $operator === '==' && $a === $b;
         }
@@ -172,54 +176,64 @@ class Constraint implements CompilableConstraintInterface
     }
 
     public function compile($otherOperator) {
-        $isBranch = $this->version[0] === 'd' && 'dev-' === substr($this->version, 0, 4);
-
-        if (self::OP_NE === $this->operator) {
-            if ($isBranch) {
-                if ($otherOperator === self::OP_EQ) {
-                    return 'false';
+        if ($this->version[0] === 'd' && 'dev-' === substr($this->version, 0, 4)) {
+            if (self::OP_EQ === $this->operator) {
+                if (self::OP_EQ === $otherOperator) {
+                    return sprintf('$b && $v === %s', \var_export($this->version, true));
                 }
-
-                return 'true';
-            }
-
-            if ($otherOperator === self::OP_EQ) {
-                return sprintf('!$b && \version_compare($v, %s, \'!=\')', \var_export($this->version, true));
-            }
-
-            return 'true';
-        } elseif (self::OP_EQ === $this->operator) {
-            if ($isBranch) {
-                if (\in_array($otherOperator, array(self::OP_LT, self::OP_GT, self::OP_NE), true)) {
-                    return 'false';
+                if (self::OP_NE === $otherOperator) {
+                    return sprintf('!$b || $v !== %s', \var_export($this->version, true));
                 }
-
-                return sprintf('$b && $v === %s', \var_export($this->version, true));
-            }
-
-            if ($otherOperator === self::OP_NE) {
-                return sprintf('(!$b && \version_compare($v, %s, \'!=\'))', \var_export($this->version, true));
-            } elseif (\in_array($otherOperator, array(self::OP_LT, self::OP_GT), true)) {
                 return 'false';
             }
 
-            return sprintf('\version_compare($v, %s, \'==\')', \var_export($this->version, true));
+            if (self::OP_NE === $this->operator) {
+                if (self::OP_EQ === $otherOperator) {
+                    return sprintf('!$b || $v !== %s', \var_export($this->version, true));
+                }
+                if (self::OP_NE === $otherOperator) {
+                    return 'true';
+                }
+                return '!$b';
+            }
+
+            return 'false';
         }
 
-        if (\in_array($this->operator, array(self::OP_LT, self::OP_LE), true)) {
-            if (\in_array($otherOperator, array(self::OP_LT, self::OP_LE), true)) {
+        if (self::OP_EQ === $this->operator) {
+            if (self::OP_EQ === $otherOperator) {
+                return sprintf('\version_compare($v, %s, \'==\')', \var_export($this->version, true));
+            }
+            if (self::OP_NE === $otherOperator) {
+                return sprintf('$b || \version_compare($v, %s, \'!=\')', \var_export($this->version, true));
+            }
+
+            return sprintf('!$b && \version_compare(%s, $v, \'%s\')', \var_export($this->version, true), self::$transOpInt[$otherOperator]);
+        }
+
+        if (self::OP_NE === $this->operator) {
+            if (self::OP_EQ === $otherOperator) {
+                return sprintf('$b || (!$b && \version_compare($v, %s, \'!=\'))', \var_export($this->version, true));
+            }
+
+            if (self::OP_NE === $otherOperator) {
                 return 'true';
             }
-        } elseif (\in_array($otherOperator, array(self::OP_GT, self::OP_GE), true)) {
-            return 'true';
+            return '!$b';
         }
 
-        if ($otherOperator === self::OP_NE) {
-            return 'true';
+        if (self::OP_LT === $this->operator || self::OP_LE === $this->operator) {
+            if (self::OP_LT === $otherOperator || self::OP_LE === $otherOperator) {
+                return '!$b';
+            }
+        } elseif (self::OP_GT === $this->operator || self::OP_GE === $this->operator) {
+            if (self::OP_GT === $otherOperator || self::OP_GE === $otherOperator) {
+                return '!$b';
+            }
         }
 
-        if ($isBranch) {
-            return 'false';
+        if (self::OP_NE === $otherOperator) {
+            return 'true';
         }
 
         $codeComparison = sprintf('\version_compare($v, %s, \'%s\')', \var_export($this->version, true), self::$transOpInt[$this->operator]);
@@ -255,22 +269,40 @@ class Constraint implements CompilableConstraintInterface
         // '!=' operator is match when other operator is not '==' operator or version is not match
         // these kinds of comparisons always have a solution
         if ($isNonEqualOp || $isProviderNonEqualOp) {
-            return (!$isEqualOp && !$isProviderEqualOp)
-                || $this->versionCompare($provider->version, $this->version, '!=', $compareBranches);
+            if ($isNonEqualOp && !$isProviderNonEqualOp && !$isProviderEqualOp && 'dev-' === substr($provider->version, 0, 4)) {
+                return false;
+            }
+
+            if ($isProviderNonEqualOp && !$isNonEqualOp && !$isEqualOp && 'dev-' === substr($this->version, 0, 4)) {
+                return false;
+            }
+
+            if (!$isEqualOp && !$isProviderEqualOp) {
+                return true;
+            }
+            return $this->versionCompare($provider->version, $this->version, '!=', $compareBranches);
         }
 
         // an example for the condition is <= 2.0 & < 1.0
         // these kinds of comparisons always have a solution
         if ($this->operator !== self::OP_EQ && $noEqualOp === $providerNoEqualOp) {
+            if ('dev-' === substr($this->version, 0, 4) || 'dev-' === substr($provider->version, 0, 4)) {
+                return false;
+            }
             return true;
         }
 
-        if ($this->versionCompare($provider->version, $this->version, self::$transOpInt[$this->operator], $compareBranches)) {
+        $version1 = $isEqualOp ? $this->version : $provider->version;
+        $version2 = $isEqualOp ? $provider->version : $this->version;
+        $operator = $isEqualOp ? $provider->operator : $this->operator;
+
+        if ($this->versionCompare($version1, $version2, self::$transOpInt[$operator], $compareBranches)) {
             // special case, e.g. require >= 1.0 and provide < 1.0
             // 1.0 >= 1.0 but 1.0 is outside of the provided interval
-            return !(\version_compare($provider->version, $this->version, '==')
-                && self::$transOpInt[$provider->operator] === $providerNoEqualOp
-                && self::$transOpInt[$this->operator] !== $noEqualOp);
+
+            return !(self::$transOpInt[$provider->operator] === $providerNoEqualOp
+                && self::$transOpInt[$this->operator] !== $noEqualOp
+                && \version_compare($provider->version, $this->version, '=='));
         }
 
         return false;
