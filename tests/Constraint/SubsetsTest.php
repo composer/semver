@@ -36,6 +36,7 @@ class SubsetsTest extends TestCase
             array('1.0.0',           '*'),
             array('1.0.*',           '*'),
             array('^1.0 || ^2.0',    '*'),
+            array('^3.0',            '^3.2 || *'),
             array('^1.0 || ^2.0',    '^1.0 || ^2.0'),
             array('^1.0 || ^2.0',    '^1.0 || ^2.0 || ^4.0'),
             array('^1.2',            '^1.0 || ^2.0'),
@@ -47,9 +48,12 @@ class SubsetsTest extends TestCase
             array('3.0.0',           '<= 3.0.0'),
             array('!= 3.0.0',        '*'),
             array('!= 3.0.0',        '!= 3.0'),
+            array('!= 3.0, != 2.0',  '!= 2.0, != 3.0'),
             array('!= 3.0.0',        '> 3.0 || < 3.0'),
             array('!= 3.0.0',        '^2.0 || <2 || >3'),
             array('>3',              '^2 || ^3 || >=4'),
+            array('>3',              '>=3'),
+            array('<3',              '<=3'),
             array('= dev-foo',       '= dev-foo'),
             array('!= dev-foo',      '!= dev-foo'),
             array('1.5.*',           '^1.4'),
@@ -66,6 +70,7 @@ class SubsetsTest extends TestCase
             array('^1.1',            '> 1.0.0'),
             array('^1.1, !=1.5.0',   '> 1.0.0'),
             array('^1.1, !=0.5.0',   '> 1.0.0'),
+            array('^2.0 || dev-foo', '> 1.0 || dev-foo || dev-bar'),
         );
     }
 
@@ -104,6 +109,8 @@ class SubsetsTest extends TestCase
             array('>= 1.0.0',        '= 1.2.3'),
             array('< 2.0.0',         '= 1.2.3'),
             array('>3',              '^2 || ^3 || >4'),
+            array('>=3',             '>3'),
+            array('<=3',             '<3'),
             array('^2.1',            '^2.0, !=2.1.3'),
             array('<2.0',            '>=1.1'),
             array('< dev-foo',       '= dev-foo'),
@@ -116,6 +123,7 @@ class SubsetsTest extends TestCase
             array('^1.0 || ^3.2',    '^1.2 || ^3.0'),
             array('^1.0 || ^3.2',    '^3.0'),
             array('^1.3 || ^3.2',    '>1.4'),
+            array('^2.0 || dev-foo', '> 1.0 || dev-bar'),
         );
     }
 }
