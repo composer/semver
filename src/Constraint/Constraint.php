@@ -121,6 +121,11 @@ class Constraint implements CompilableConstraintInterface
         }
 
         if ($constraint instanceof MultiConstraint) {
+            // != X is a subset of Y if Y does not intersect with X
+            if ($this->operator === self::OP_NE) {
+                return false === strpos((string) $constraint, ' dev-') && !$constraint->matches(new Constraint('=', $this->version));
+            }
+
             if ($constraint->isConjunctive()) {
                 foreach ($constraint->getConstraints() as $c) {
                     if (!$this->isSubsetOf($c)) {
