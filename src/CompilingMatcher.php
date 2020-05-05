@@ -24,6 +24,9 @@ class CompilingMatcher
     private static $compiledCheckerCache = array();
     private static $enabled = null;
 
+    /**
+     * @psalm-var array<Constraint::OP_*, string>
+     */
     private static $transOpInt = array(
         Constraint::OP_EQ => '==',
         Constraint::OP_LT => '<',
@@ -38,6 +41,7 @@ class CompilingMatcher
      *
      * @param ConstraintInterface $constraint
      * @param int                 $operator
+     * @psalm-param Constraint::OP_*  $operator
      * @param string              $version
      *
      * @return mixed
