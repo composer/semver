@@ -71,6 +71,9 @@ class SubsetsTest extends TestCase
             array('^1.1, !=1.5.0',   '> 1.0.0'),
             array('^1.1, !=0.5.0',   '> 1.0.0'),
             array('^2.0 || dev-foo', '> 1.0 || dev-foo || dev-bar'),
+            array('^1.0, ^1.2',      '>=1.2'),
+            array('^1.0, ^1.2',      '^1.2'),
+            array('^1.0, ^1.2 || ^1.3', '^1.2'),
         );
     }
 
