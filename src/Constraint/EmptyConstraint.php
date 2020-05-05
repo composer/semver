@@ -29,6 +29,18 @@ class EmptyConstraint implements CompilableConstraintInterface
         return true;
     }
 
+    /**
+     * Technically MultiConstraint can be equivalent to EmptyConstraints,
+     * but it is hard to detect so we only consider this to be a subset of
+     * itself
+     *
+     * {@inheritDoc}
+     */
+    public function isSubsetOf(ConstraintInterface $constraint)
+    {
+        return $constraint instanceof EmptyConstraint;
+    }
+
     public function compile($operator)
     {
         return 'true';

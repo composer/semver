@@ -133,6 +133,34 @@ class MultiConstraint implements CompilableConstraintInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function isSubsetOf(ConstraintInterface $constraint)
+    {
+        if ($constraint instanceof EmptyConstraint) {
+            return true;
+        }
+
+        if (true === $this->conjunctive) {
+            foreach ($this->constraints as $c) {
+                if (!$c->isSubsetOf($constraint)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        foreach ($this->getConstraints() as $c) {
+            if ($c->isSubsetOf($constraint)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param string|null $prettyString
      */
     public function setPrettyString($prettyString)

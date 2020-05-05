@@ -11,14 +11,30 @@
 
 namespace Composer\Semver\Constraint;
 
+/**
+ * DO NOT IMPLEMENT this interface. It is only meant for usage as a type hint
+ * where appropriate but we do not support third parties implementing this
+ * interface themselves, and will do BC breaks to the interface as we see fit.
+ */
 interface ConstraintInterface
 {
     /**
+     * Checks whether the given constraint intersects in any way with this constraint
+     *
      * @param ConstraintInterface $provider
      *
      * @return bool
      */
     public function matches(ConstraintInterface $provider);
+
+    /**
+     * Checks whether the given constraint is wholly contained within this constraint
+     *
+     * @param ConstraintInterface $constraint
+     *
+     * @return bool
+     */
+    public function isSubsetOf(ConstraintInterface $constraint);
 
     /**
      * @return Bound
