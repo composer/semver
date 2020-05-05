@@ -96,6 +96,16 @@ class Constraint implements CompilableConstraintInterface
         $this->version = $version;
     }
 
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    public function getOperator()
+    {
+        return self::$transOpInt[$this->operator];
+    }
+
     /**
      * @param ConstraintInterface $provider
      *
