@@ -129,15 +129,15 @@ class Constraint implements CompilableConstraintInterface
                 }
 
                 return true;
-            } else {
-                foreach ($constraint->getConstraints() as $c) {
-                    if ($this->isSubsetOf($c)) {
-                        return true;
-                    }
-                }
-
-                return false;
             }
+
+            foreach ($constraint->getConstraints() as $c) {
+                if ($this->isSubsetOf($c)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // constraints are subsets of themselves

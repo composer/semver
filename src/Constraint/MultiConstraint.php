@@ -141,15 +141,46 @@ class MultiConstraint implements CompilableConstraintInterface
             return true;
         }
 
-        if (true === $this->conjunctive) {
-            foreach ($this->constraints as $c) {
-                if (!$c->isSubsetOf($constraint)) {
-                    return false;
+        if ($constraint instanceof MultiConstraint) {
+            if ($this->isConjunctive()) {
+                // special case for contiguous constraints (>/>= x && < y) compared with a similar one
+                if ($constraint->isConjunctive() && $this->isContiguous() && $constraint->isContiguous()) {
+                    foreach ($this->getConstraints() as $index => $c) {
+                        if (!$c->isSubsetOf($constraint->getConstraints()[$index])) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+
+                foreach ($this->getConstraints() as $index => $c) {
+                    if (!$c->isSubsetOf($constraint)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            foreach ($this->getConstraints() as $c) {
+                if ($c->isSubsetOf($constraint)) {
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
+
+//        if ($this->isConjunctive()) {
+//            foreach ($this->getConstraints() as $c) {
+//                if (!$c->isSubsetOf($constraint)) {
+//                    return false;
+//                }
+//            }
+//
+//            return true;
+//        }
 
         foreach ($this->getConstraints() as $c) {
             if ($c->isSubsetOf($constraint)) {
@@ -158,6 +189,19 @@ class MultiConstraint implements CompilableConstraintInterface
         }
 
         return false;
+    }
+
+    public function isContiguous()
+    {
+        if (\count($this->constraints) !== 2) {
+            return false;
+        }
+
+        $constraint1 = (string) $this->constraints[0];
+        $constraint2 = (string) $this->constraints[1];
+
+        return (($constraint1[0] === '>' && $constraint1[1] === '=') || ($constraint1[0] === '>' && $constraint1[1] === ' '))
+            && (($constraint2[0] === '<' && $constraint2[1] === '=') || ($constraint2[0] === '<' && $constraint2[1] === ' '));
     }
 
     /**
