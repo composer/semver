@@ -28,6 +28,7 @@ class Constraint implements CompilableConstraintInterface
      * Operator to integer translation table.
      *
      * @var array
+     * @psalm-var array<string, self::OP_*>
      */
     private static $transOpStr = array(
         '=' => self::OP_EQ,
@@ -44,6 +45,7 @@ class Constraint implements CompilableConstraintInterface
      * Integer to operator translation table.
      *
      * @var array
+     * @psalm-var array<self::OP_*, string>
      */
     private static $transOpInt = array(
         self::OP_EQ => '==',
