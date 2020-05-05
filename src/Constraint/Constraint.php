@@ -121,9 +121,9 @@ class Constraint implements CompilableConstraintInterface
         }
 
         if ($constraint instanceof MultiConstraint) {
-            // != X is a subset of Y if Y does not intersect with X
+            // != X is a subset of Y if Y does not intersect with X, and no dev versions are involved
             if ($this->operator === self::OP_NE) {
-                return false === strpos((string) $constraint, ' dev-') && !$constraint->matches(new Constraint('=', $this->version));
+                return false === strpos((string) $constraint, ' dev-') && !$constraint->matches(new Constraint('==', $this->version));
             }
 
             if ($constraint->isConjunctive()) {
@@ -188,7 +188,7 @@ class Constraint implements CompilableConstraintInterface
         }
         // e.g. < 3 && >= 4.5, this can only be a subset of >=0
         if ($this->operator === self::OP_LT && $constraint->operator === self::OP_GE) {
-            return $this->versionCompare('0.0.0.0', $constraint->version, '=');
+            return $this->versionCompare('0.0.0.0', $constraint->version, '==');
         }
 
         // compare e.g. <= 3 && < 4.5 to see if this side is smaller than the other (and thus a subset)
@@ -201,7 +201,7 @@ class Constraint implements CompilableConstraintInterface
         }
         // e.g. <= 3 && >= 4.5, this can only be a subset of >=0
         if ($this->operator === self::OP_LE && $constraint->operator === self::OP_GE) {
-            return $this->versionCompare('0.0.0.0', $constraint->version, '=');
+            return $this->versionCompare('0.0.0.0', $constraint->version, '==');
         }
 
         // compare e.g. > 3 && >= 4.5 to see if this side is bigger or eq than the other (and thus a subset)
