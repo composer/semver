@@ -13,8 +13,9 @@ namespace Composer\Semver\Constraint;
 
 /**
  * DO NOT IMPLEMENT this interface. It is only meant for usage as a type hint
- * where appropriate but we do not support third parties implementing this
- * interface themselves, and will do BC breaks to the interface as we see fit.
+ * in libraries relying on composer/semver but creating your own constraint class
+ * that implements this interface is not a supported use case and will cause the
+ * composer/semver components to return unexpected results.
  */
 interface ConstraintInterface
 {
