@@ -56,7 +56,10 @@ class Constraint implements CompilableConstraintInterface
         self::OP_NE => '!=',
     );
 
-    /** @var int */
+    /**
+     * @var int
+     * @psalm-var self::OP_*
+     */
     protected $operator;
 
     /** @var string */
