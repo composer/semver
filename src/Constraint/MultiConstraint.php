@@ -142,20 +142,23 @@ class MultiConstraint implements CompilableConstraintInterface
         }
 
         if ($constraint instanceof MultiConstraint) {
-            if ($this->isConjunctive()) {
-                // special case for contiguous constraints (>/>= x && < y) compared with a similar one
-                if ($constraint->isConjunctive() && $this->isContiguous() && $constraint->isContiguous()) {
-                    foreach ($this->getConstraints() as $index => $c) {
-                        if (!$c->isSubsetOf($constraint->getConstraints()[$index])) {
-                            return false;
-                        }
+            // $this is a subset of x || y if it is a subset any of x or y
+            if ($constraint->isDisjunctive()) {
+                foreach ($constraint->getConstraints() as $set) {
+                    if ($this->isSubsetOf($set)) {
+                        return true;
                     }
-
-                    return true;
                 }
+            }
 
+            if ($this->isConjunctive()) {
+                // TODO could be more strict for conjunctive constraints
+            }
+
+            // special case for contiguous constraints (>/>= x && < y) compared with a similar one
+            if ($this->isContiguousFiniteRange() && $constraint->isContiguousFiniteRange()) {
                 foreach ($this->getConstraints() as $index => $c) {
-                    if (!$c->isSubsetOf($constraint)) {
+                    if (!$c->isSubsetOf($constraint->getConstraints()[$index])) {
                         return false;
                     }
                 }
@@ -163,17 +166,7 @@ class MultiConstraint implements CompilableConstraintInterface
                 return true;
             }
 
-            foreach ($this->getConstraints() as $c) {
-                if ($c->isSubsetOf($constraint)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        if ($this->isConjunctive()) {
-            foreach ($this->getConstraints() as $c) {
+            foreach ($this->getConstraints() as $index => $c) {
                 if (!$c->isSubsetOf($constraint)) {
                     return false;
                 }
@@ -182,18 +175,22 @@ class MultiConstraint implements CompilableConstraintInterface
             return true;
         }
 
+        if ($this->isConjunctive()) {
+            // TODO could be more strict for conjunctive constraints
+        }
+
         foreach ($this->getConstraints() as $c) {
-            if ($c->isSubsetOf($constraint)) {
-                return true;
+            if (!$c->isSubsetOf($constraint)) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
-    public function isContiguous()
+    public function isContiguousFiniteRange()
     {
-        if (\count($this->constraints) !== 2) {
+        if (\count($this->constraints) !== 2 || !$this->conjunctive) {
             return false;
         }
 
