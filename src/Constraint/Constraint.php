@@ -151,8 +151,13 @@ class Constraint implements CompilableConstraintInterface
         }
 
         // exact match constraint are a subset if they intersect
-        if ($this->operator === self::OP_EQ || $constraint->operator === self::OP_EQ) {
+        if ($this->operator === self::OP_EQ) {
             return $this->matches($constraint);
+        }
+
+        // exact match constraint which are not equal to $this can not be a subset
+        if ($constraint->operator === self::OP_EQ) {
+            return false;
         }
 
         if ($this->operator === $constraint->operator) {

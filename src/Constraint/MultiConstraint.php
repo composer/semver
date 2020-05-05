@@ -172,15 +172,15 @@ class MultiConstraint implements CompilableConstraintInterface
             return false;
         }
 
-//        if ($this->isConjunctive()) {
-//            foreach ($this->getConstraints() as $c) {
-//                if (!$c->isSubsetOf($constraint)) {
-//                    return false;
-//                }
-//            }
-//
-//            return true;
-//        }
+        if ($this->isConjunctive()) {
+            foreach ($this->getConstraints() as $c) {
+                if (!$c->isSubsetOf($constraint)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         foreach ($this->getConstraints() as $c) {
             if ($c->isSubsetOf($constraint)) {

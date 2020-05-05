@@ -38,7 +38,6 @@ class SubsetsTest extends TestCase
             array('^1.0 || ^2.0',    '*'),
             array('^1.0 || ^2.0',    '^1.0 || ^2.0'),
             array('^1.2',            '^1.0 || ^2.0'),
-            array('^1.0 || ^2.0',    '^1.0'),
             array('1.2.3',           '^1.0 || ^2.0'),
             array('2.0.0-dev',       '^1.0 || ^2.0'),
             array('>= 2.1.0',        '>= 2.0.0'),
@@ -56,6 +55,9 @@ class SubsetsTest extends TestCase
             array('1.3.2',           '1.3.0 || 1.3.1 || 1.3.2'),
             array('1.3.1',           '1.3.0 || 1.3.1 || 1.3.2'),
             array('1.3.1 || 1.3.1',  '1.3.1'),
+            array('^1.6',            '<1.3 || >1.5'),
+            array('>1.6',            '<1.3 || >1.5'),
+            array('>1.6',            '>1.5, >1.4, !=1.1'),
         );
     }
 
@@ -81,12 +83,16 @@ class SubsetsTest extends TestCase
             array('*',               '^1.0 || ^2.0'),
             array('^1.0 || ^2.0',    '^1.0, ^2.0'), // buggy constraint on the right here, checking it does not match
             array('^1.0 || ^2.0',    '^1.2'),
+            array('^1.0 || ^2.0',    '^1.0'),
             array('^1.0 || ^2.0',    '1.2.3'),
+            array('^1.0 || ^3.0',    '1.2.3'),
             array('3.0.0',           '^1.0 || ^2.0'),
             array('3.0.0',           '< 3.0.0'),
             array('3.0.0',           '>= 3.0.1'),
             array('!= 3.0.0',        '= 3.0.0'),
             array('!= 3.0.0',        '!= 3.0.1'),
+            array('>= 1.0.0',        '= 1.2.3'),
+            array('< 2.0.0',         '= 1.2.3'),
             array('>3',              '^2 || ^3 || >4'),
             array('^2.1',            '^2.0, !=2.1.3'),
             array('<2.0',            '>=1.1'),
@@ -94,6 +100,7 @@ class SubsetsTest extends TestCase
             array('!= dev-foo',      '!= dev-bar'),
             array('!= dev-foo',      '= dev-bar'),
             array('1.3.3',           '1.3.0 || 1.3.1 || 1.3.2'),
+            array('>1.6',            '>1.5, >1.4, !=1.7'),
         );
     }
 }
