@@ -157,8 +157,9 @@ class MultiConstraint implements CompilableConstraintInterface
 
             // special case for contiguous constraints (>/>= x && < y) compared with a similar one
             if ($this->isContiguousFiniteRange() && $constraint->isContiguousFiniteRange()) {
+                $sets = $constraint->getConstraints();
                 foreach ($this->getConstraints() as $index => $c) {
-                    if (!$c->isSubsetOf($constraint->getConstraints()[$index])) {
+                    if (!$c->isSubsetOf($sets[$index])) {
                         return false;
                     }
                 }
