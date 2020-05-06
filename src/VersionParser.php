@@ -114,6 +114,11 @@ class VersionParser
             $version = $match[1];
         }
 
+        // normalize master/trunk/default branches to dev-name for BC with 1.x as these used to be valid constraints
+        if (\in_array($version, array('master', 'trunk', 'default'), true)) {
+            $version = 'dev-' . $version;
+        }
+
         // if requirement is branch-like, use full name
         if (stripos($version, 'dev-') === 0) {
             return 'dev-' . substr($version, 4);
