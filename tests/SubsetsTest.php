@@ -9,10 +9,9 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace Composer\Semver\Constraint;
+namespace Composer\Semver;
 
 use PHPUnit\Framework\TestCase;
-use Composer\Semver\VersionParser;
 
 class SubsetsTest extends TestCase
 {
@@ -25,7 +24,7 @@ class SubsetsTest extends TestCase
         $a = $versionParser->parseConstraints($aStr);
         $b = $versionParser->parseConstraints($bStr);
 
-        $this->assertTrue($a->isSubsetOf($b), $aStr.' ('.$a.') should be seen as a subset of '.$bStr.' ('.$b.')');
+        $this->assertTrue(Intervals::isSubsetOf($a, $b), $aStr.' ('.$a.') should be seen as a subset of '.$bStr.' ('.$b.')');
     }
 
     public function subsets()
@@ -33,12 +32,14 @@ class SubsetsTest extends TestCase
         return array(
             // x is subset of y
             array('*',               '*'),
+            array('*',               '>= 1 || < 1'),
             array('1.0.0',           '*'),
             array('1.0.*',           '*'),
             array('^1.0 || ^2.0',    '*'),
             array('^3.0',            '^3.2 || *'),
             array('^1.0 || ^2.0',    '^1.0 || ^2.0'),
             array('^1.0 || ^2.0',    '^1.0 || ^2.0 || ^4.0'),
+            array('^1.0 || ^2.1',    '^1.0 || ^2.1 || ^4.0'),
             array('^1.2',            '^1.0 || ^2.0'),
             array('1.2.3',           '^1.0 || ^2.0'),
             array('2.0.0-dev',       '^1.0 || ^2.0'),
@@ -49,8 +50,8 @@ class SubsetsTest extends TestCase
             array('!= 3.0.0',        '*'),
             array('!= 3.0.0',        '!= 3.0'),
             array('!= 3.0, != 2.0',  '!= 2.0, != 3.0'),
-            array('!= 3.0.0',        '> 3.0 || < 3.0'),
-            array('!= 3.0.0',        '^2.0 || <2 || >3'),
+            array('!= 3.0.0',        '> 3.0.0 || < 3.0.0-stable'),
+            array('!= 3.0.0-dev',    '^2.0 || <2 || >3.0-dev'),
             array('>3',              '^2 || ^3 || >=4'),
             array('>3',              '>=3'),
             array('<3',              '<=3'),
@@ -86,7 +87,7 @@ class SubsetsTest extends TestCase
         $a = $versionParser->parseConstraints($aStr);
         $b = $versionParser->parseConstraints($bStr);
 
-        $this->assertFalse($a->isSubsetOf($b), $aStr.' ('.$a.') should not be seen as a subset of '.$bStr.' ('.$b.')');
+        $this->assertFalse(Intervals::isSubsetOf($a, $b), $aStr.' ('.$a.') should not be seen as a subset of '.$bStr.' ('.$b.')');
     }
 
     public function notSubsets()
@@ -95,7 +96,6 @@ class SubsetsTest extends TestCase
             // x is subset of y
             array('*',               '1.0.0'),
             array('*',               '1.0.*'),
-            array('*',               '>= 1 || < 1'), // technically this should be a subset
             array('*',               '^1.0 || ^2.0'),
             array('^1.0 || ^2.0',    '^1.0, ^2.0'), // buggy constraint on the right here, checking it does not match
             array('^1.0 || ^2.0',    '^1.2'),

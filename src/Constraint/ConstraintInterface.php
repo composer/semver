@@ -29,15 +29,6 @@ interface ConstraintInterface
     public function matches(ConstraintInterface $provider);
 
     /**
-     * Checks whether the given constraint is wholly contained within this constraint
-     *
-     * @param ConstraintInterface $constraint
-     *
-     * @return bool
-     */
-    public function isSubsetOf(ConstraintInterface $constraint);
-
-    /**
      * @return Bound
      */
     public function getUpperBound();
