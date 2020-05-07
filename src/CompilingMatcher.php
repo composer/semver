@@ -25,7 +25,7 @@ class CompilingMatcher
     private static $enabled = null;
 
     /**
-     * @psalm-var array<Constraint::OP_*, string>
+     * @phpstan-var array<Constraint::OP_*, string>
      */
     private static $transOpInt = array(
         Constraint::OP_EQ => '==',
@@ -41,7 +41,7 @@ class CompilingMatcher
      *
      * @param ConstraintInterface $constraint
      * @param int                 $operator
-     * @psalm-param Constraint::OP_*  $operator
+     * @phpstan-param Constraint::OP_*  $operator
      * @param string              $version
      *
      * @return mixed
