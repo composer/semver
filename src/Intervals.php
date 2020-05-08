@@ -220,11 +220,12 @@ class Intervals
 
         $opSortOrder = self::$opSortOrder;
         usort($dev, function ($a, $b) use ($opSortOrder) {
-            if ($a->getVersion() === $b->getVersion()) {
+            $order = version_compare($a->getVersion(), $b->getVersion());
+            if ($order === 0) {
                 return $opSortOrder[$a->getOperator()] - $opSortOrder[$b->getOperator()];
             }
 
-            return version_compare($a->getVersion(), $b->getVersion());
+            return $order;
         });
 
         if (count($intervalGroups) === 1) {
@@ -241,15 +242,17 @@ class Intervals
 
         $opSortOrder = self::$opSortOrder;
         usort($borders, function ($a, $b) use ($opSortOrder) {
-            if ($a['version'] === $b['version']) {
+            $order = version_compare($a['version'], $b['version']);
+            if ($order === 0) {
                 return $opSortOrder[$a['operator']] - $opSortOrder[$b['operator']];
             }
 
-            return version_compare($a['version'], $b['version']);
+            return $order;
         });
 
         $activeIntervals = 0;
         $intervals = array();
+        $index = 0;
         $activationThreshold = $constraint->isConjunctive() ? \count($intervalGroups) : 1;
         $active = false;
         foreach ($borders as $border) {
@@ -259,30 +262,29 @@ class Intervals
                 $activeIntervals--;
             }
             if (!$active && $activeIntervals >= $activationThreshold) {
-                $intervals[] = array('start' => new Constraint($border['operator'], $border['version']));
+                $intervals[$index] = array('start' => new Constraint($border['operator'], $border['version']));
                 $active = true;
             }
             if ($active && $activeIntervals < $activationThreshold) {
-                $intervals[count($intervals)-1]['end'] = new Constraint($border['operator'], $border['version']);
                 $active = false;
+
+                // filter out invalid intervals like > x - <= x, or >= x - < x
+                if (
+                    version_compare($intervals[$index]['start']->getVersion(), $border['version'], '=')
+                    && (
+                        ($intervals[$index]['start']->getOperator() === '>' && $border['operator'] === '<=')
+                        || ($intervals[$index]['start']->getOperator() === '>=' && $border['operator'] === '<')
+                    )
+                ) {
+                    unset($intervals[$index]);
+                } else {
+                    $intervals[$index]['end'] = new Constraint($border['operator'], $border['version']);
+                    $index++;
+                }
             }
         }
 
-        // filter out invalid intervals like > x - <= x, or >= x - < x
-        $intervals = array_filter($intervals, function ($interval) {
-            if ($interval['start']->getVersion() === $interval['end']->getVersion()) {
-                if (
-                    ($interval['start']->getOperator() === '>' && $interval['end']->getOperator() === '<=')
-                    || ($interval['start']->getOperator() === '>=' && $interval['end']->getOperator() === '<')
-                ) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        return array('intervals' => array_values($intervals), 'devConstraints' => $dev);
+        return array('intervals' => $intervals, 'devConstraints' => $dev);
     }
 
     public static function zero()
