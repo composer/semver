@@ -32,7 +32,7 @@ class SubsetsTest extends TestCase
         return array(
             // x is subset of y
             array('*',               '*'),
-            array('*',               '>= 1 || < 1'),
+            array('*',               '!= 1 || == 1'),
             array('1.0.0',           '*'),
             array('1.0.*',           '*'),
             array('^1.0 || ^2.0',    '*'),
@@ -50,8 +50,6 @@ class SubsetsTest extends TestCase
             array('!= 3.0.0',        '*'),
             array('!= 3.0.0',        '!= 3.0'),
             array('!= 3.0, != 2.0',  '!= 2.0, != 3.0'),
-            array('!= 3.0.0',        '> 3.0.0 || < 3.0.0-stable'),
-            array('!= 3.0.0-dev',    '^2.0 || <2 || >3.0-dev'),
             array('>3',              '^2 || ^3 || >=4'),
             array('>3',              '>=3'),
             array('<3',              '<=3'),
@@ -94,6 +92,7 @@ class SubsetsTest extends TestCase
     {
         return array(
             // x is subset of y
+            array('*',               '>= 1 || < 1'), // it is a subset of the numeric interval, but * allows dev- branches while the latter does not
             array('*',               '1.0.0'),
             array('*',               '1.0.*'),
             array('*',               '^1.0 || ^2.0'),
@@ -105,6 +104,8 @@ class SubsetsTest extends TestCase
             array('3.0.0',           '^1.0 || ^2.0'),
             array('3.0.0',           '< 3.0.0'),
             array('3.0.0',           '>= 3.0.1'),
+            array('!= 3.0.0',        '> 3.0.0 || < 3.0.0-stable'), // it is a subset of the numeric interval, but != x allows dev- branches while the right side does not
+            array('!= 3.0.0-dev',    '^2.0 || <2 || >3.0-dev'), // it is a subset of the numeric interval, but != x allows dev- branches while the right side does not
             array('!= 3.0.0',        '= 3.0.0'),
             array('!= 3.0.0',        '!= 3.0.1'),
             array('!= 3.0.0',        'dev-foo || dev-bar'),
