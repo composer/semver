@@ -78,6 +78,17 @@ class Intervals
         return true;
     }
 
+    public static function isIntersectionOf(ConstraintInterface $a, ConstraintInterface $b)
+    {
+        if ($a instanceof EmptyConstraint || $b instanceof EmptyConstraint) {
+            return true;
+        }
+
+        $intersectionIntervals = self::generateIntervals(new MultiConstraint(array($a, $b), true), true);
+
+        return \count($intersectionIntervals['intervals']) > 0 || \count($intersectionIntervals['devConstraints']) > 0;
+    }
+
     /**
      * @return array
      */
@@ -92,7 +103,7 @@ class Intervals
         return self::$intervalsCache[$key];
     }
 
-    private static function generateIntervals(ConstraintInterface $constraint)
+    private static function generateIntervals(ConstraintInterface $constraint, $stopOnFirstValidInterval = false)
     {
         if ($constraint instanceof EmptyConstraint) {
             return array('intervals' => array(array('start' => self::zero(), 'end' => self::positiveInfinity())), 'devConstraints' => array(self::anyDev()));
@@ -280,6 +291,10 @@ class Intervals
                 } else {
                     $intervals[$index]['end'] = new Constraint($border['operator'], $border['version']);
                     $index++;
+
+                    if ($stopOnFirstValidInterval) {
+                        break;
+                    }
                 }
             }
         }

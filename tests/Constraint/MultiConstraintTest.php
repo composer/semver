@@ -13,6 +13,7 @@ namespace Composer\Semver\Constraint;
 
 use Composer\Semver\VersionParser;
 use PHPUnit\Framework\TestCase;
+use Composer\Semver\Intervals;
 
 class MultiConstraintTest extends TestCase
 {
@@ -54,6 +55,7 @@ class MultiConstraintTest extends TestCase
         $this->assertTrue($multiRequire->matches($versionProvide));
         $this->assertTrue($versionProvide->matches($multiRequire));
         $this->assertTrue($this->matchCompiled($multiRequire, '==', 1.1));
+        $this->assertTrue(Intervals::isIntersectionOf($multiRequire, $versionProvide));
     }
 
     public function testMultiVersionProvidedMatchSucceeds()
@@ -89,6 +91,7 @@ class MultiConstraintTest extends TestCase
         $this->assertFalse($multiRequire->matches($versionProvide));
         $this->assertFalse($versionProvide->matches($multiRequire));
         $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.2));
+        $this->assertFalse(Intervals::isIntersectionOf($multiRequire, $versionProvide));
     }
 
     public function testGetPrettyString()
@@ -406,6 +409,7 @@ class MultiConstraintTest extends TestCase
         $this->assertFalse($multiRequire->matches($versionProvide));
         $this->assertFalse($versionProvide->matches($multiRequire));
         $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.1));
+        $this->assertFalse(Intervals::isIntersectionOf($multiRequire, $versionProvide));
     }
 
     public function testMultiConstraintConjunctiveFillWithTrue()
@@ -419,6 +423,7 @@ class MultiConstraintTest extends TestCase
         $this->assertTrue($multiRequire->matches($versionProvide));
         $this->assertTrue($versionProvide->matches($multiRequire));
         $this->assertTrue($this->matchCompiled($multiRequire, '!=', 1.1));
+        $this->assertTrue(Intervals::isIntersectionOf($multiRequire, $versionProvide));
     }
 
     private function matchCompiled(CompilableConstraintInterface $constraint, $operator, $version)
