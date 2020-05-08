@@ -142,6 +142,10 @@ class Intervals
             ), 'devConstraints' => array());
         }
 
+        if (!$constraint instanceof MultiConstraint) {
+            throw new \UnexpectedValueException('The constraint passed in should be an EmptyConstraint, Constraint or MultiConstraint instance, got '.get_class($constraint).'.');
+        }
+
         $constraints = $constraint->getConstraints();
 
         $intervalGroups = array();
