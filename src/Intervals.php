@@ -233,16 +233,6 @@ class Intervals
 
         $dev = array_values($dev);
 
-        $opSortOrder = self::$opSortOrder;
-        usort($dev, function ($a, $b) use ($opSortOrder) {
-            $order = version_compare($a->getVersion(), $b->getVersion());
-            if ($order === 0) {
-                return $opSortOrder[$a->getOperator()] - $opSortOrder[$b->getOperator()];
-            }
-
-            return $order;
-        });
-
         if (count($intervalGroups) === 1) {
             return array('intervals' => $intervalGroups[0], 'devConstraints' => $dev);
         }

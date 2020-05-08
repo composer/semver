@@ -379,7 +379,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array('< dev-foo', '!= dev-foo')),
+                ), 'devConstraints' => array('!= dev-foo', '< dev-foo')),
                 '!= 1.4.5 || ^1.0 || != dev-foo || < dev-foo'
             ),
             'disjunctive constraints with exclusions, if matches * in number scope and dev scope, then no dev constraints returned' => array(
