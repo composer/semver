@@ -103,7 +103,7 @@ class Bound
      */
     public static function zero()
     {
-        return new Bound('0', true);
+        return new Bound('0.0.0.0-dev', true);
     }
 
     /**
@@ -111,6 +111,6 @@ class Bound
      */
     public static function positiveInfinity()
     {
-        return new Bound((string) PHP_INT_MAX, false);
+        return new Bound(PHP_INT_MAX.'.0.0.0', false);
     }
 }
