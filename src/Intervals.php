@@ -106,6 +106,54 @@ class Intervals
     }
 
     /**
+     * Attempts to optimize a MultiConstraint
+     *
+     * When merging MultiConstraints together they can get very large, this will
+     * compact it by looking at the real intervals covered by all the constraints
+     * and then creates a new constraint containing only the smallest amount of rules
+     * to match the same intervals.
+     *
+     * @return ConstraintInterface
+     */
+    public static function compactConstraint(ConstraintInterface $constraint)
+    {
+        if (!$constraint instanceof MultiConstraint) {
+            return $constraint;
+        }
+
+        $intervals = self::generateIntervals($constraint);
+        $constraints = array();
+        foreach ($intervals['numeric'] as $interval) {
+            if ($interval->getStart() === Interval::zero()) {
+                $constraints[] = $interval->getEnd();
+            } elseif ($interval->getEnd() === Interval::positiveInfinity()) {
+                $constraints[] = $interval->getStart();
+            } else {
+                $constraints[] = new MultiConstraint(array($interval->getStart(), $interval->getEnd()), true);
+            }
+        }
+        foreach ($intervals['branches'] as $branchConstraint) {
+            if ($branchConstraint === self::anyDev()) {
+                // TODO this needs a real AnyDevConstraint which only matches == dev-foo
+                continue;
+            }
+
+            $constraints[] = $dev;
+        }
+
+        if (\count($constraints) > 1) {
+            return new MultiConstraint($constraints, false);
+        }
+
+        if (\count($constraints) === 1) {
+            return $constraints[0];
+        }
+
+        // TODO verify it matches no dev-* constraint or anything, or create a new MatchNoneConstraint
+        return new Constraint('<', '0.0.0.0-dev');
+    }
+
+    /**
      * Creates an array of numeric intervals and branch constraints representing a given constraint
      *
      * if the returned numeric array is empty it means the constraint matches nothing in the numeric range (0 - +inf)

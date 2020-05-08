@@ -22,6 +22,39 @@ class IntervalsTest extends TestCase
     const INTERVAL_ANY_NODEV = '*';
     const INTERVAL_NONE = '';
 
+    public function testCompactConstraint()
+    {
+        $parser = new VersionParser;
+
+        $original = new MultiConstraint(array(
+            new MultiConstraint(array( // 1.0 - 1.2 || ^1.5
+                new MultiConstraint(array(
+                    new Constraint('>=', '1.0.0.0-dev'),
+                    new Constraint('<', '1.3.0.0-dev'),
+                ), true),
+                new MultiConstraint(array(
+                    new Constraint('>=', '1.5.0.0-dev'),
+                    new Constraint('<', '2.0.0.0-dev'),
+                ), true),
+            ), false),
+            new MultiConstraint(array( // 1.8 - 1.9 || ^1.12
+                new MultiConstraint(array(
+                    new Constraint('>=', '1.8.0.0-dev'),
+                    new Constraint('<', '1.10.0.0-dev'),
+                ), true),
+                new MultiConstraint(array(
+                    new Constraint('>=', '1.12.0.0-dev'),
+                    new Constraint('<', '2.0.0.0-dev'),
+                ), true),
+            ), false),
+        ), false);
+
+        $expected = $parser->parseConstraints('1.0 - 1.2 || ^1.5');
+
+        $new = Intervals::compactConstraint($original);
+        $this->assertSame((string) $expected, (string) $new);
+    }
+
     /**
      * @dataProvider intervalsProvider
      */
