@@ -255,7 +255,21 @@ class Intervals
             }
         }
 
-        return array('intervals' => $intervals, 'devConstraints' => $dev);
+        // filter out invalid intervals like > x - <= x, or >= x - < x
+        $intervals = array_filter($intervals, function ($interval) {
+            if ($interval['start']->getVersion() === $interval['end']->getVersion()) {
+                if (
+                    ($interval['start']->getOperator() === '>' && $interval['end']->getOperator() === '<=')
+                    || ($interval['start']->getOperator() === '>=' && $interval['end']->getOperator() === '<')
+                ) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        return array('intervals' => array_values($intervals), 'devConstraints' => $dev);
     }
 
     public static function zero()

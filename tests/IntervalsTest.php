@@ -216,6 +216,10 @@ class IntervalsTest extends TestCase
                 self::INTERVAL_NONE,
                 '^1.0, ^3.0'
             ),
+            'conjunctive constraints result in no interval if conflicting/3' => array(
+                self::INTERVAL_NONE,
+                '== 1.0, != 1.0'
+            ),
             'conjunctive constraints should be intersected' => array(
                 array('intervals' => array(
                     array(
