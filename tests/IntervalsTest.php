@@ -19,6 +19,7 @@ use Composer\Semver\Constraint\Constraint;
 class IntervalsTest extends TestCase
 {
     const INTERVAL_ANY = '*';
+    const INTERVAL_NONE = '';
 
     /**
      * @dataProvider intervalsProvider
@@ -46,6 +47,10 @@ class IntervalsTest extends TestCase
                     'end' => '< '.PHP_INT_MAX.'.0.0.0',
                 ),
             ), 'devConstraints' => array());
+        }
+
+        if ($expected === self::INTERVAL_NONE) {
+            $expected = array('intervals' => array(), 'devConstraints' => array());
         }
 
         $this->assertSame($expected, $result);
@@ -190,7 +195,7 @@ class IntervalsTest extends TestCase
                 ), 'devConstraints' => array()),
                 '< 2.0 || < 1.2'
             ),
-            'weird input order should still be a good result/matches everything' => array(
+            'weird input order should still be a good result, matches everything' => array(
                 self::INTERVAL_ANY,
                 '< 2.0 || >= 1'
             ),
@@ -202,6 +207,14 @@ class IntervalsTest extends TestCase
                     ),
                 ), 'devConstraints' => array()),
                 '< 2.0, >= 1'
+            ),
+            'conjunctive constraints result in no interval if conflicting' => array(
+                self::INTERVAL_NONE,
+                '^1.0, ^2.0'
+            ),
+            'conjunctive constraints result in no interval if conflicting/2' => array(
+                self::INTERVAL_NONE,
+                '^1.0, ^3.0'
             ),
             'conjunctive constraints should be intersected' => array(
                 array('intervals' => array(
@@ -221,7 +234,7 @@ class IntervalsTest extends TestCase
                 ), 'devConstraints' => array()),
                 '^1.0, ^1.2, 1.4 - 1.8, 1.5 - 1.6, 1.5 - 2'
             ),
-            'conjunctive constraints should be intersected/not flattened by version parser' => array(
+            'conjunctive constraints should be intersected, not flattened by version parser' => array(
                 array('intervals' => array(
                     array(
                         'start' => '>= 1.5.0.0-dev',
@@ -251,7 +264,7 @@ class IntervalsTest extends TestCase
                     ), true),
                 ), true),
             ),
-            'conjunctive constraints with disjunctive subcomponents should be intersected/not flattened by version parser' => array(
+            'conjunctive constraints with disjunctive subcomponents should be intersected, not flattened by version parser' => array(
                 array('intervals' => array(
                     array(
                         'start' => '>= 1.8.0.0-dev',
@@ -327,23 +340,80 @@ class IntervalsTest extends TestCase
                 ), 'devConstraints' => array('!= dev-foo', '!= dev-master')),
                 '!= 1.4.5, ^1.0, != 1.2.3, != 2.3, != dev-foo, != dev-master'
             ),
-            'disjunctive constraints with exclusions' => array(
+            'disjunctive constraints with exclusions in dev constraints makes the number scope match *' => array(
                 array('intervals' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array('!= dev-foo', '!= dev-master')),
-                '!= 1.4.5 || ^1.0 || != dev-foo || != dev-master'
+                ), 'devConstraints' => array('!= dev-foo')),
+                '^1.0 || != dev-foo'
             ),
-            'conjunctive constraints with exact versions' => array(
+            'disjunctive constraints with exclusions in dev constraints makes number scope match *' => array(
+                array('intervals' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'devConstraints' => array('< dev-foo', '!= dev-foo')),
+                '!= 1.4.5 || ^1.0 || != dev-foo || < dev-foo'
+            ),
+            'disjunctive constraints with exclusions, if matches * in number scope and dev scope, then no dev constraints returned' => array(
+                array('intervals' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'devConstraints' => array()),
+                '!= 1.4.5 || ^1.0 || != dev-foo || != dev-master || == dev-master'
+            ),
+            'disjunctive constraints with exclusions, if dev constraints match *, then * is returned for everything' => array(
+                array('intervals' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'devConstraints' => array()),
+                '^1.0 || != dev-master || == dev-master'
+            ),
+            'disjunctive constraints with exclusions, if dev constraints match * except in dev scope, then * is returned for number scope' => array(
+                array('intervals' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'devConstraints' => array('!= dev-foo')),
+                '^1.0 || != dev-foo || == dev-master'
+            ),
+            'disjunctive constraints with exact dev matches returns number scope as it should and unique dev constraints' => array(
                 array('intervals' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array('== dev-master')),
+                ), 'devConstraints' => array('== dev-foo', '== dev-master')),
+                '^1.0 || == dev-foo || == dev-master || == dev-master'
+            ),
+            'conjunctive constraints with exact versions' => array(
+                self::INTERVAL_NONE,
                 'dev-master, ^1.0'
+            ),
+            'conjunctive constraints with exact versions, dev only, diff version should result in no interval and no constraints' => array(
+                self::INTERVAL_NONE,
+                'dev-master, dev-foo'
+            ),
+            'conjunctive constraints with exact versions, dev only, same version should pass through' => array(
+                array('intervals' => array(), 'devConstraints' => array('== dev-master')),
+                'dev-master, dev-master'
+            ),
+            'conjunctive constraints with dev exclusion, should result in * with dev exclusion' => array(
+                array('intervals' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'devConstraints' => array('!= dev-master')),
+                '!= dev-master, != dev-master'
             ),
             'disjunctive constraints with exact versions' => array(
                 array('intervals' => array(
@@ -352,7 +422,7 @@ class IntervalsTest extends TestCase
                         'end' => '< 2.0.0.0-dev',
                     ),
                 ), 'devConstraints' => array('== dev-master', '== dev-foo')),
-                'dev-master || ^1.0 || dev-foo'
+                'dev-master || ^1.0 || dev-foo || dev-master'
             ),
             'conjunctive constraints with * should skip it' => array(
                 array('intervals' => array(

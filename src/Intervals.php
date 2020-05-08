@@ -27,10 +27,12 @@ class Intervals
      * @psalm-var array<string, int>
      */
     private static $opSortOrder = array(
-        '>=' => -2,
-        '<' => -1,
-        '>' => 1,
-        '<=' => 2,
+        '>=' => -3,
+        '<' => -2,
+        '==' => -1,
+        '!=' => 1,
+        '>' => 2,
+        '<=' => 3,
     );
 
     public static function clear()
@@ -46,7 +48,6 @@ class Intervals
 
         $intersectionIntervals = self::get(new MultiConstraint(array($candidate, $constraint), true));
         $candidateIntervals = self::get($candidate);
-//var_Dump((string) new MultiConstraint(array($candidate, $constraint), true), $intersectionIntervals['intervals'], $candidateIntervals['intervals']);
         if (\count($intersectionIntervals['intervals']) !== \count($candidateIntervals['intervals'])) {
             return false;
         }
@@ -61,6 +62,15 @@ class Intervals
             }
 
             if ((string) $candidateIntervals['intervals'][$index]['end'] !== (string) $interval['end']) {
+                return false;
+            }
+        }
+
+        if (\count($intersectionIntervals['devConstraints']) !== \count($candidateIntervals['devConstraints'])) {
+            return false;
+        }
+        foreach ($intersectionIntervals['devConstraints'] as $index => $c) {
+            if ((string) $c !== (string) $candidateIntervals['devConstraints'][$index]) {
                 return false;
             }
         }
@@ -89,11 +99,18 @@ class Intervals
         }
 
         if ($constraint instanceof Constraint) {
+            $op = $constraint->getOperator();
             if (substr($constraint->getVersion(), 0, 4) === 'dev-') {
-                return array('intervals' => array(), 'devConstraints' => array($constraint));
+                $intervals = array();
+
+                // != dev-foo means any numeric version may match
+                if ($op === '!=') {
+                    $intervals[] = array('start' => self::zero(), 'end' => self::positiveInfinity());
+                }
+
+                return array('intervals' => $intervals, 'devConstraints' => array($constraint));
             }
 
-            $op = $constraint->getOperator();
             if ($op[0] === '>') { // > & >=
                 return array('intervals' => array(array('start' => $constraint, 'end' => self::positiveInfinity())), 'devConstraints' => array());
             }
@@ -117,16 +134,85 @@ class Intervals
         $constraints = $constraint->getConstraints();
 
         $intervalGroups = array();
-        $dev = array();
+        $devGroups = array();
         foreach ($constraints as $c) {
             $res = self::get($c);
-            if ($res['intervals']) {
-                $intervalGroups[] = $res['intervals'];
-            }
+            $intervalGroups[] = $res['intervals'];
             if ($res['devConstraints']) {
-                $dev = array_merge($dev, $res['devConstraints']);
+                $devGroups[] = $res['devConstraints'];
             }
         }
+
+        $dev = array();
+        if ($constraint->isDisjunctive()) {
+            foreach ($devGroups as $group) {
+                foreach ($group as $c) {
+                    if (!isset($dev[(string) $c])) {
+                        $dev[(string) $c] = $c;
+                    }
+                }
+            }
+
+            foreach ($dev as $i => $c) {
+                if ($c->getOperator() === '!=') {
+                    foreach ($dev as $j => $c2) {
+                        if ($i === $j) {
+                            continue;
+                        }
+                        $op = $c2->getOperator();
+                        // != dev-foo || != dev-bar -> *
+                        if ($op === '!=' && $c->getVersion() !== $c2->getVersion()) {
+                            $dev = array();
+                            break 2;
+                        }
+                        // != dev-foo || == dev-foo -> *
+                        if ($op === '==' && $c->getVersion() === $c2->getVersion()) {
+                            $dev = array();
+                            break 2;
+                        }
+                        // != dev-foo || == dev-master -> != dev-foo
+                        if ($op === '==') {
+                            unset($dev[$j]);
+                            continue;
+                        }
+                    }
+                }
+            }
+        } else {
+            foreach ($devGroups as $i => $group) {
+                foreach ($group as $c) {
+                    // all != constraints are kept
+                    if ($c->getOperator() === '!=') {
+                        $dev[(string) $c] = $c;
+                        continue;
+                    }
+
+                    // only keep == constraints which appear in all conjunctive sub-constraints
+                    foreach ($devGroups as $j => $group2) {
+                        if ($j === $i) {
+                            continue;
+                        }
+
+                        foreach ($group2 as $c2) {
+                            if ((string) $c2 === (string) $c) {
+                                $dev[(string) $c] = $c;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $dev = array_values($dev);
+
+        $opSortOrder = self::$opSortOrder;
+        usort($dev, function ($a, $b) use ($opSortOrder) {
+            if ($a->getVersion() === $b->getVersion()) {
+                return $opSortOrder[$a->getOperator()] - $opSortOrder[$b->getOperator()];
+            }
+
+            return version_compare($a->getVersion(), $b->getVersion());
+        });
 
         if (count($intervalGroups) === 1) {
             return array('intervals' => $intervalGroups[0], 'devConstraints' => $dev);
