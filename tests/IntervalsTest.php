@@ -18,7 +18,8 @@ use Composer\Semver\Constraint\Constraint;
 
 class IntervalsTest extends TestCase
 {
-    const INTERVAL_ANY = '*';
+    const INTERVAL_ANY = '*/dev*';
+    const INTERVAL_ANY_NODEV = '*';
     const INTERVAL_NONE = '';
 
     /**
@@ -41,6 +42,15 @@ class IntervalsTest extends TestCase
         }
 
         if ($expected === self::INTERVAL_ANY) {
+            $expected = array('intervals' => array(
+                array(
+                    'start' => '>= 0.0.0.0-dev',
+                    'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                ),
+            ), 'devConstraints' => array('== dev*'));
+        }
+
+        if ($expected === self::INTERVAL_ANY_NODEV) {
             $expected = array('intervals' => array(
                 array(
                     'start' => '>= 0.0.0.0-dev',
@@ -130,7 +140,7 @@ class IntervalsTest extends TestCase
                 '>= 5,< 6 || < 5'
             ),
             'consecutive intervals representing everything should become *' => array(
-                self::INTERVAL_ANY,
+                self::INTERVAL_ANY_NODEV,
                 '>= 5 || < 5'
             ),
             'intervals should be sorted and overlapping ones merged' => array(
@@ -174,7 +184,7 @@ class IntervalsTest extends TestCase
                 '>= 5,< 6 || < 5.3'
             ),
             'overlapping intervals representing everything should become *' => array(
-                self::INTERVAL_ANY,
+                self::INTERVAL_ANY_NODEV,
                 '>= 5 || <= 5'
             ),
             'equal intervals should be merged' => array(
@@ -196,7 +206,7 @@ class IntervalsTest extends TestCase
                 '< 2.0 || < 1.2'
             ),
             'weird input order should still be a good result, matches everything' => array(
-                self::INTERVAL_ANY,
+                self::INTERVAL_ANY_NODEV,
                 '< 2.0 || >= 1'
             ),
             'weird input order should still be a good result, conjunctive' => array(
@@ -327,7 +337,7 @@ class IntervalsTest extends TestCase
                 ), 'devConstraints' => array()),
                 '1.5 - 2'
             ),
-            'conjunctive constraints with exclusions' => array(
+            'conjunctive constraints with dev exclusions' => array(
                 array('intervals' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
@@ -343,6 +353,16 @@ class IntervalsTest extends TestCase
                     ),
                 ), 'devConstraints' => array('!= dev-foo', '!= dev-master')),
                 '!= 1.4.5, ^1.0, != 1.2.3, != 2.3, != dev-foo, != dev-master'
+            ),
+            'conjunctive constraints with dev exact versions suppresses the number scope matches' => array(
+                array('intervals' => array(
+                ), 'devConstraints' => array()),
+                '!= 1.4.5, ^1.0, != 1.2.3, != 2.3, == dev-foo, == dev-foo'
+            ),
+            'conjunctive constraints with dev exact versions suppresses the number scope matches, but keeps dev- match if number constraints allowed dev*' => array(
+                array('intervals' => array(
+                ), 'devConstraints' => array('== dev-foo')),
+                '!= 1.2.3, != 2.3, == dev-foo, == dev-foo'
             ),
             'disjunctive constraints with exclusions in dev constraints makes the number scope match *' => array(
                 array('intervals' => array(
@@ -445,8 +465,8 @@ class IntervalsTest extends TestCase
                 self::INTERVAL_ANY,
                 '*, *'
             ),
-            'conjunctive constraints with only one * should result in *' => array(
-                self::INTERVAL_ANY,
+            'conjunctive constraints equivalent of * should result in *' => array(
+                self::INTERVAL_ANY_NODEV,
                 new MultiConstraint(array(new Constraint('>=', '0.0.0.0-dev'), new Constraint('<', PHP_INT_MAX.'.0.0.0'))),
             ),
         );

@@ -95,7 +95,7 @@ class Intervals
     private static function generateIntervals(ConstraintInterface $constraint)
     {
         if ($constraint instanceof EmptyConstraint) {
-            return array('intervals' => array(array('start' => self::zero(), 'end' => self::positiveInfinity())), 'devConstraints' => array());
+            return array('intervals' => array(array('start' => self::zero(), 'end' => self::positiveInfinity())), 'devConstraints' => array(self::anyDev()));
         }
 
         if ($constraint instanceof Constraint) {
@@ -118,11 +118,11 @@ class Intervals
                 return array('intervals' => array(array('start' => self::zero(), 'end' => $constraint)), 'devConstraints' => array());
             }
             if ($op === '!=') {
-                // convert !=x to intervals of 0 - <x && >x - +inf
+                // convert !=x to intervals of 0 - <x && >x - +inf + dev*
                 return array('intervals' => array(
                     array('start' => self::zero(), 'end' => new Constraint('<', $constraint->getVersion())),
                     array('start' => new Constraint('>', $constraint->getVersion()), 'end' => self::positiveInfinity()),
-                ), 'devConstraints' => array());
+                ), 'devConstraints' => array(self::anyDev()));
             }
 
             // convert ==x to an interval of >=x - <=x
@@ -138,9 +138,7 @@ class Intervals
         foreach ($constraints as $c) {
             $res = self::get($c);
             $intervalGroups[] = $res['intervals'];
-            if ($res['devConstraints']) {
-                $devGroups[] = $res['devConstraints'];
-            }
+            $devGroups[] = $res['devConstraints'];
         }
 
         $dev = array();
@@ -179,27 +177,42 @@ class Intervals
                 }
             }
         } else {
+            $blacklist = array();
             foreach ($devGroups as $i => $group) {
-                foreach ($group as $c) {
+                foreach ($group as $j => $c) {
                     // all != constraints are kept
                     if ($c->getOperator() === '!=') {
                         $dev[(string) $c] = $c;
                         continue;
                     }
 
-                    // only keep == constraints which appear in all conjunctive sub-constraints
-                    foreach ($devGroups as $j => $group2) {
-                        if ($j === $i) {
+                    $otherGroupMatches = 0;
+                    foreach ($devGroups as $i2 => $group2) {
+                        if ($i2 === $i) {
                             continue;
                         }
 
-                        foreach ($group2 as $c2) {
-                            if ((string) $c2 === (string) $c) {
-                                $dev[(string) $c] = $c;
+                        foreach ($group2 as $j2 => $c2) {
+                            if ((string) $c2 === (string) $c || $c2 === self::anyDev()) {
+                                $otherGroupMatches++;
+                            }
+
+                            // != x && == x cancel each other, make sure none of these appears in the output
+                            if ($c->getOperator() === '==' && $c2->getOperator() === '!=' && $c->getVersion() === $c2->getVersion()) {
+                                $blacklist[] = (string) $c;
+                                $blacklist[] = (string) $c2;
                             }
                         }
                     }
+
+                    // only keep == constraints which appear in all conjunctive sub-constraints
+                    if ($otherGroupMatches === \count($devGroups) - 1) {
+                        $dev[(string) $c] = $c;
+                    }
                 }
+            }
+            foreach ($blacklist as $c) {
+                unset($dev[$c]);
             }
         }
 
@@ -292,5 +305,18 @@ class Intervals
         }
 
         return $positiveInfinity;
+    }
+
+    public static function anyDev()
+    {
+        static $anyDev;
+
+        if (null === $anyDev) {
+            // this ideally should be an EmptyConstraint but the code expects Constraint instances so
+            // this makes it work with less workarounds/checks above
+            $anyDev = new Constraint('==', 'dev*');
+        }
+
+        return $anyDev;
     }
 }
