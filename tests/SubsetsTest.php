@@ -12,6 +12,8 @@
 namespace Composer\Semver;
 
 use PHPUnit\Framework\TestCase;
+use Composer\Semver\Constraint\MatchNoneConstraint;
+use Composer\Semver\Constraint\EmptyConstraint;
 
 class SubsetsTest extends TestCase
 {
@@ -129,5 +131,31 @@ class SubsetsTest extends TestCase
             array('^1.3 || ^3.2',    '>1.4'),
             array('^2.0 || dev-foo', '> 1.0 || dev-bar'),
         );
+    }
+
+    public function testMatchNoneIsNoSubsetNorSupersetExceptOfMatchAll()
+    {
+        $versionParser = new VersionParser;
+        $matchNone = new MatchNoneConstraint;
+
+        $notSubsets = array(
+            '1.0.0',
+            '^1.0',
+            '>3',
+            '<3',
+            'dev-foo',
+            '!= 1',
+            '!= dev-foo',
+            '<= dev-foo',
+        );
+        foreach ($notSubsets as $constraint) {
+            $c = $versionParser->parseConstraints($constraint);
+            $this->assertFalse(Intervals::isSubsetOf($c, $matchNone), $constraint.' ('.$c.') should not be seen as a subset of '.$matchNone);
+            $this->assertFalse(Intervals::isSubsetOf($matchNone, $c), $matchNone.' should not be seen as a subset of '.$constraint.' ('.$c.')');
+        }
+
+        $empty = new EmptyConstraint;
+        $this->assertFalse(Intervals::isSubsetOf($empty, $matchNone), $empty.' should not be seen as a subset of '.$matchNone);
+        $this->assertTrue(Intervals::isSubsetOf($matchNone, $empty), $matchNone.' should be seen as a subset of '.$empty);
     }
 }

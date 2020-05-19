@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Semver\Constraint\MultiConstraint;
 use Composer\Semver\Constraint\Constraint;
+use Composer\Semver\Constraint\MatchNoneConstraint;
 
 class IntervalsTest extends TestCase
 {

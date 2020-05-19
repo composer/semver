@@ -14,6 +14,7 @@ namespace Composer\Semver;
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Semver\Constraint\MatchAllConstraint;
+use Composer\Semver\Constraint\MatchNoneConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
 
 /**
@@ -57,6 +58,10 @@ class Intervals
             return true;
         }
 
+        if ($candidate instanceof MatchNoneConstraint || $constraint instanceof MatchNoneConstraint) {
+            return false;
+        }
+
         $intersectionIntervals = self::get(new MultiConstraint(array($candidate, $constraint), true));
         $candidateIntervals = self::get($candidate);
         if (\count($intersectionIntervals['numeric']) !== \count($candidateIntervals['numeric'])) {
@@ -98,6 +103,10 @@ class Intervals
     {
         if ($a instanceof MatchAllConstraint || $b instanceof MatchAllConstraint) {
             return true;
+        }
+
+        if ($a instanceof MatchNoneConstraint || $b instanceof MatchNoneConstraint) {
+            return false;
         }
 
         $intersectionIntervals = self::generateIntervals(new MultiConstraint(array($a, $b), true), true);
@@ -181,6 +190,10 @@ class Intervals
     {
         if ($constraint instanceof MatchAllConstraint) {
             return array('numeric' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'branches' => array(Interval::anyDev()));
+        }
+
+        if ($constraint instanceof MatchNoneConstraint) {
+            return array('numeric' => array(), 'branches' => array());
         }
 
         if ($constraint instanceof Constraint) {
