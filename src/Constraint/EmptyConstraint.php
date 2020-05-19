@@ -11,7 +11,7 @@
 
 namespace Composer\Semver\Constraint;
 
-@trigger_error(E_USER_DEPRECATED, 'Composer\Semver\Constraint\EmptyConstraint is deprecated and will be removed in 3.0, use MatchAllConstraint instead.');
+@trigger_error('Composer\Semver\Constraint\EmptyConstraint is deprecated and will be removed in 3.0, use MatchAllConstraint instead.', E_USER_DEPRECATED);
 
 /**
  * Defines the absence of a constraint.
