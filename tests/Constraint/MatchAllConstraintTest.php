@@ -22,17 +22,17 @@ class MatchAllConstraintTest extends TestCase
     /**
      * @var MatchAllConstraint
      */
-    protected $MatchAllConstraint;
+    protected $matchAllConstraint;
 
     protected function setUp()
     {
         $this->versionProvide = new Constraint('==', '1.1');
-        $this->MatchAllConstraint = new MatchAllConstraint();
+        $this->matchAllConstraint = new MatchAllConstraint();
     }
 
     public function testMatches()
     {
-        $result = $this->MatchAllConstraint->matches($this->versionProvide);
+        $result = $this->matchAllConstraint->matches($this->versionProvide);
 
         $this->assertTrue($result);
     }
@@ -40,14 +40,14 @@ class MatchAllConstraintTest extends TestCase
     public function testGetPrettyString()
     {
         $expectedString = 'pretty-string';
-        $this->MatchAllConstraint->setPrettyString($expectedString);
-        $result = $this->MatchAllConstraint->getPrettyString();
+        $this->matchAllConstraint->setPrettyString($expectedString);
+        $result = $this->matchAllConstraint->getPrettyString();
 
         $this->assertSame($expectedString, $result);
 
         $expectedString = '*';
-        $this->MatchAllConstraint->setPrettyString(null);
-        $result = $this->MatchAllConstraint->getPrettyString();
+        $this->matchAllConstraint->setPrettyString(null);
+        $result = $this->matchAllConstraint->getPrettyString();
 
         $this->assertSame($expectedString, $result);
     }
