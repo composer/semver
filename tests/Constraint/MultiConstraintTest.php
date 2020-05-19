@@ -260,9 +260,9 @@ class MultiConstraintTest extends TestCase
         $this->assertEquals(new Bound('8.0.0.0-dev', false), $constraint->getUpperBound(), 'Expected upper bound does not match');
     }
 
-    public function testCreatesEmptyConstraintIfNoneGiven()
+    public function testCreatesMatchAllConstraintIfNoneGiven()
     {
-        $this->assertInstanceOf('Composer\Semver\Constraint\EmptyConstraint', MultiConstraint::create(array()));
+        $this->assertInstanceOf('Composer\Semver\Constraint\MatchAllConstraint', MultiConstraint::create(array()));
     }
 
     /**

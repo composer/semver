@@ -11,70 +11,13 @@
 
 namespace Composer\Semver\Constraint;
 
+@trigger_error(E_USER_DEPRECATED, 'Composer\Semver\Constraint\EmptyConstraint is deprecated and will be removed in 3.0, use MatchAllConstraint instead.');
+
 /**
  * Defines the absence of a constraint.
+ *
+ * @deprecated Use MatchAllConstraint instead
  */
-class EmptyConstraint implements CompilableConstraintInterface
+class EmptyConstraint extends MatchAllConstraint
 {
-    /** @var string|null */
-    protected $prettyString;
-
-    /**
-     * @param ConstraintInterface $provider
-     *
-     * @return bool
-     */
-    public function matches(ConstraintInterface $provider)
-    {
-        return true;
-    }
-
-    public function compile($operator)
-    {
-        return 'true';
-    }
-
-    /**
-     * @param string|null $prettyString
-     */
-    public function setPrettyString($prettyString)
-    {
-        $this->prettyString = $prettyString;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPrettyString()
-    {
-        if ($this->prettyString) {
-            return $this->prettyString;
-        }
-
-        return (string) $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return '[]';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getUpperBound()
-    {
-        return Bound::positiveInfinity();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getLowerBound()
-    {
-        return Bound::zero();
-    }
 }

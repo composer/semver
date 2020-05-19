@@ -86,7 +86,7 @@ class Interval
         static $anyDev;
 
         if (null === $anyDev) {
-            // this ideally should be an EmptyConstraint but the code expects Constraint instances so
+            // this ideally should be an MatchAllConstraint but the code expects Constraint instances so
             // this makes it work with less workarounds/checks above
             $anyDev = new Constraint('==', 'dev*');
         }

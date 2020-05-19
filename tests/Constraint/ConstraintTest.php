@@ -362,13 +362,13 @@ class ConstraintTest extends TestCase
             ->getMock()
         ;
 
-        $emptyConstraint = $this
-            ->getMockBuilder('Composer\Semver\Constraint\EmptyConstraint')
+        $MatchAllConstraint = $this
+            ->getMockBuilder('Composer\Semver\Constraint\MatchAllConstraint')
             ->setMethods(array('matches'))
             ->getMock()
         ;
 
-        foreach (array($multiConstraint, $emptyConstraint) as $mock) {
+        foreach (array($multiConstraint, $MatchAllConstraint) as $mock) {
             $mock
                 ->expects($this->once())
                 ->method('matches')
@@ -380,7 +380,7 @@ class ConstraintTest extends TestCase
         // @phpstan-ignore-next-line
         $this->assertTrue($constraint->matches($multiConstraint));
         // @phpstan-ignore-next-line
-        $this->assertTrue($constraint->matches($emptyConstraint));
+        $this->assertTrue($constraint->matches($MatchAllConstraint));
     }
 
     public function testComparableBranches()

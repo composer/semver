@@ -11,7 +11,7 @@
 
 namespace Composer\Semver;
 
-use Composer\Semver\Constraint\EmptyConstraint;
+use Composer\Semver\Constraint\MatchAllConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
 use Composer\Semver\Constraint\Constraint;
 use PHPUnit\Framework\TestCase;
@@ -226,11 +226,11 @@ class VersionParserTest extends TestCase
     public function simpleConstraints()
     {
         return array(
-            'match any' => array('*', new EmptyConstraint()),
-            'match any/2' => array('*.*',  new EmptyConstraint()),
-            'match any/2v' => array('v*.*', new EmptyConstraint()),
-            'match any/3' => array('*.x.*', new EmptyConstraint()),
-            'match any/4' => array('x.X.x.*', new EmptyConstraint()),
+            'match any' => array('*', new MatchAllConstraint()),
+            'match any/2' => array('*.*',  new MatchAllConstraint()),
+            'match any/2v' => array('v*.*', new MatchAllConstraint()),
+            'match any/3' => array('*.x.*', new MatchAllConstraint()),
+            'match any/4' => array('x.X.x.*', new MatchAllConstraint()),
             'not equal' => array('<>1.0.0', new Constraint('<>', '1.0.0.0')),
             'not equal/2' => array('!=1.0.0', new Constraint('!=', '1.0.0.0')),
             'greater than' => array('>1.0.0', new Constraint('>', '1.0.0.0')),

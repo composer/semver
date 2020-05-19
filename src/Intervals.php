@@ -13,7 +13,7 @@ namespace Composer\Semver;
 
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\ConstraintInterface;
-use Composer\Semver\Constraint\EmptyConstraint;
+use Composer\Semver\Constraint\MatchAllConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
 
 /**
@@ -53,7 +53,7 @@ class Intervals
      */
     public static function isSubsetOf(ConstraintInterface $candidate, ConstraintInterface $constraint)
     {
-        if ($constraint instanceof EmptyConstraint) {
+        if ($constraint instanceof MatchAllConstraint) {
             return true;
         }
 
@@ -96,7 +96,7 @@ class Intervals
      */
     public static function haveIntersections(ConstraintInterface $a, ConstraintInterface $b)
     {
-        if ($a instanceof EmptyConstraint || $b instanceof EmptyConstraint) {
+        if ($a instanceof MatchAllConstraint || $b instanceof MatchAllConstraint) {
             return true;
         }
 
@@ -131,7 +131,7 @@ class Intervals
      */
     private static function generateIntervals(ConstraintInterface $constraint, $stopOnFirstValidInterval = false)
     {
-        if ($constraint instanceof EmptyConstraint) {
+        if ($constraint instanceof MatchAllConstraint) {
             return array('numeric' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'branches' => array(Interval::anyDev()));
         }
 
@@ -140,7 +140,7 @@ class Intervals
         }
 
         if (!$constraint instanceof MultiConstraint) {
-            throw new \UnexpectedValueException('The constraint passed in should be an EmptyConstraint, Constraint or MultiConstraint instance, got '.get_class($constraint).'.');
+            throw new \UnexpectedValueException('The constraint passed in should be an MatchAllConstraint, Constraint or MultiConstraint instance, got '.get_class($constraint).'.');
         }
 
         $constraints = $constraint->getConstraints();
