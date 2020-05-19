@@ -12,6 +12,7 @@
 namespace Composer\Semver\Constraint;
 
 use PHPUnit\Framework\TestCase;
+use Composer\Semver\Intervals;
 
 class ConstraintTest extends TestCase
 {
@@ -169,9 +170,11 @@ class ConstraintTest extends TestCase
 
         $this->assertTrue($versionRequire->matches($versionProvide));
         $this->assertTrue($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
+        $this->assertTrue(Intervals::haveIntersections($versionRequire, $versionProvide));
         // the operation should be commutative
         $this->assertTrue($versionProvide->matches($versionRequire));
         $this->assertTrue($this->matchCompiled($versionProvide, $requireOperator, $requireVersion));
+        $this->assertTrue(Intervals::haveIntersections($versionProvide, $versionRequire));
     }
 
     public static function failingVersionMatches()
@@ -338,6 +341,16 @@ class ConstraintTest extends TestCase
         // the operation should be commutative
         $this->assertFalse($versionProvide->matches($versionRequire));
         $this->assertFalse($this->matchCompiled($versionProvide, $requireOperator, $requireVersion));
+
+        // do not test >/</>=/<= for dev versions as these are not supported
+        if (substr($requireVersion, 0, 4) === 'dev-' && $requireOperator !== '==' && $requireOperator !== '!=') {
+            return;
+        }
+        if (substr($provideVersion, 0, 4) === 'dev-' && $provideOperator !== '==' && $provideOperator !== '!=') {
+            return;
+        }
+        $this->assertFalse(Intervals::haveIntersections($versionRequire, $versionProvide));
+        $this->assertFalse(Intervals::haveIntersections($versionProvide, $versionRequire));
     }
 
     public function testInverseMatchingOtherConstraints()
@@ -378,12 +391,14 @@ class ConstraintTest extends TestCase
 
         $this->assertFalse($versionRequire->matches($this->versionProvide));
         $this->assertFalse($this->matchCompiled($versionRequire, '==', 'dev-foo'));
+        $this->assertFalse(Intervals::haveIntersections($versionRequire, $this->versionProvide));
         $this->assertFalse($versionRequire->matchSpecific($this->versionProvide, true));
 
         $versionRequire = new Constraint('<', '0.12');
 
         $this->assertFalse($versionRequire->matches($this->versionProvide));
         $this->assertFalse($this->matchCompiled($versionRequire, '==', 'dev-foo'));
+        $this->assertFalse(Intervals::haveIntersections($versionRequire, $this->versionProvide));
         $this->assertTrue($versionRequire->matchSpecific($this->versionProvide, true));
     }
 
@@ -486,7 +501,16 @@ class ConstraintTest extends TestCase
         $provide = new Constraint($provideOperator, $provideVersion);
 
         // Asserts Compiled version returns the same result than standard
-        $this->assertSame($require->matches($provide), $this->matchCompiled($require, $provideOperator, $provideVersion));
+        $this->assertSame($m = $require->matches($provide), $this->matchCompiled($require, $provideOperator, $provideVersion));
+
+        // do not test >/</>=/<= for dev versions as these are not supported
+        if (substr($requireVersion, 0, 4) === 'dev-' && $requireOperator !== '==' && $requireOperator !== '!=') {
+            return;
+        }
+        if (substr($provideVersion, 0, 4) === 'dev-' && $provideOperator !== '==' && $provideOperator !== '!=') {
+            return;
+        }
+        $this->assertSame($m, Intervals::haveIntersections($require, $provide));
     }
 
     public function matrix()

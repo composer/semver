@@ -75,6 +75,38 @@ class Constraint implements CompilableConstraintInterface
     protected $upperBound;
 
     /**
+     * Sets operator and version to compare with.
+     *
+     * @param string $operator
+     * @param string $version
+     *
+     * @throws \InvalidArgumentException if invalid operator is given.
+     */
+    public function __construct($operator, $version)
+    {
+        if (!isset(self::$transOpStr[$operator])) {
+            throw new \InvalidArgumentException(sprintf(
+                'Invalid operator "%s" given, expected one of: %s',
+                $operator,
+                implode(', ', self::getSupportedOperators())
+            ));
+        }
+
+        $this->operator = self::$transOpStr[$operator];
+        $this->version = $version;
+    }
+
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    public function getOperator()
+    {
+        return self::$transOpInt[$this->operator];
+    }
+
+    /**
      * @param ConstraintInterface $provider
      *
      * @return bool
@@ -120,28 +152,6 @@ class Constraint implements CompilableConstraintInterface
     }
 
     /**
-     * Sets operator and version to compare with.
-     *
-     * @param string $operator
-     * @param string $version
-     *
-     * @throws \InvalidArgumentException if invalid operator is given.
-     */
-    public function __construct($operator, $version)
-    {
-        if (!isset(self::$transOpStr[$operator])) {
-            throw new \InvalidArgumentException(sprintf(
-                'Invalid operator "%s" given, expected one of: %s',
-                $operator,
-                implode(', ', self::getSupportedOperators())
-            ));
-        }
-
-        $this->operator = self::$transOpStr[$operator];
-        $this->version = $version;
-    }
-
-    /**
      * @param string $a
      * @param string $b
      * @param string $operator
@@ -180,7 +190,8 @@ class Constraint implements CompilableConstraintInterface
         return \version_compare($a, $b, $operator);
     }
 
-    public function compile($otherOperator) {
+    public function compile($otherOperator)
+    {
         if ($this->version[0] === 'd' && 'dev-' === substr($this->version, 0, 4)) {
             if (self::OP_EQ === $this->operator) {
                 if (self::OP_EQ === $otherOperator) {

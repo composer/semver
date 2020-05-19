@@ -233,7 +233,7 @@ class MultiConstraint implements CompilableConstraintInterface
             $left = $constraints[0];
             $mergedConstraints = array();
             $optimized = false;
-            for ($i = 1, $l = \count($constraints); $i <$l; $i++) {
+            for ($i = 1, $l = \count($constraints); $i < $l; $i++) {
                 $right = $constraints[$i];
                 if (
                     $left instanceof MultiConstraint
