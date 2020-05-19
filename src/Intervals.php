@@ -21,10 +21,13 @@ use Composer\Semver\Constraint\MultiConstraint;
  */
 class Intervals
 {
+    /**
+     * @phpstan-var array<string, array{'intervals': array<int, array{'start': Constraint, 'end': Constraint}>, 'devConstraints': Constraint[]}>
+     */
     private static $intervalsCache = array();
 
     /**
-     * @psalm-var array<string, int>
+     * @phpstan-var array<string, int>
      */
     private static $opSortOrder = array(
         '>=' => -3,
@@ -35,11 +38,21 @@ class Intervals
         '<=' => 3,
     );
 
+    /**
+     * Clears the memoization cache once you are done
+     *
+     * @return void
+     */
     public static function clear()
     {
         self::$intervalsCache = array();
     }
 
+    /**
+     * Checks whether $candidate is a subset of $constraint
+     *
+     * @return bool
+     */
     public static function isSubsetOf(ConstraintInterface $candidate, ConstraintInterface $constraint)
     {
         if ($constraint instanceof EmptyConstraint) {
@@ -78,6 +91,11 @@ class Intervals
         return true;
     }
 
+    /**
+     * Checks whether $a and $b have any intersection, equivalent to $a->matches($b)
+     *
+     * @return bool
+     */
     public static function haveIntersections(ConstraintInterface $a, ConstraintInterface $b)
     {
         if ($a instanceof EmptyConstraint || $b instanceof EmptyConstraint) {
@@ -90,6 +108,12 @@ class Intervals
     }
 
     /**
+     * Creates an array of intervals and dev constraints representing a given constraint
+     *
+     * if the returned intervals array is empty it means the constraint matches nothing in the numeric range (0 - +inf)
+     * if the returned devConstraints array is empty it means no dev-* versions are matched
+     * if a constraint matches all possible dev-* versions, devConstraints will contain self::anyDev() as a constraint
+     *
      * @return array
      * @phpstan-return array{'intervals': array<int, array{'start': Constraint, 'end': Constraint}>, 'devConstraints': Constraint[]}
      */
@@ -104,6 +128,9 @@ class Intervals
         return self::$intervalsCache[$key];
     }
 
+    /**
+     * @phpstan-return array{'intervals': array<int, array{'start': Constraint, 'end': Constraint}>, 'devConstraints': Constraint[]}
+     */
     private static function generateIntervals(ConstraintInterface $constraint, $stopOnFirstValidInterval = false)
     {
         if ($constraint instanceof EmptyConstraint) {
@@ -111,36 +138,7 @@ class Intervals
         }
 
         if ($constraint instanceof Constraint) {
-            $op = $constraint->getOperator();
-            if (substr($constraint->getVersion(), 0, 4) === 'dev-') {
-                $intervals = array();
-
-                // != dev-foo means any numeric version may match
-                if ($op === '!=') {
-                    $intervals[] = array('start' => self::zero(), 'end' => self::positiveInfinity());
-                }
-
-                return array('intervals' => $intervals, 'devConstraints' => array($constraint));
-            }
-
-            if ($op[0] === '>') { // > & >=
-                return array('intervals' => array(array('start' => $constraint, 'end' => self::positiveInfinity())), 'devConstraints' => array());
-            }
-            if ($op[0] === '<') { // < & <=
-                return array('intervals' => array(array('start' => self::zero(), 'end' => $constraint)), 'devConstraints' => array());
-            }
-            if ($op === '!=') {
-                // convert !=x to intervals of 0 - <x && >x - +inf + dev*
-                return array('intervals' => array(
-                    array('start' => self::zero(), 'end' => new Constraint('<', $constraint->getVersion())),
-                    array('start' => new Constraint('>', $constraint->getVersion()), 'end' => self::positiveInfinity()),
-                ), 'devConstraints' => array(self::anyDev()));
-            }
-
-            // convert ==x to an interval of >=x - <=x
-            return array('intervals' => array(
-                array('start' => new Constraint('>=', $constraint->getVersion()), 'end' => new Constraint('<=', $constraint->getVersion())),
-            ), 'devConstraints' => array());
+            return self::generateSingleConstraintIntervals($constraint);
         }
 
         if (!$constraint instanceof MultiConstraint) {
@@ -295,6 +293,43 @@ class Intervals
         }
 
         return array('intervals' => $intervals, 'devConstraints' => $dev);
+    }
+
+    /**
+     * @phpstan-return array{'intervals': array<int, array{'start': Constraint, 'end': Constraint}>, 'devConstraints': Constraint[]}
+     */
+    private static function generateSingleConstraintIntervals(Constraint $constraint)
+    {
+        $op = $constraint->getOperator();
+        if (substr($constraint->getVersion(), 0, 4) === 'dev-') {
+            $intervals = array();
+
+            // != dev-foo means any numeric version may match
+            if ($op === '!=') {
+                $intervals[] = array('start' => self::zero(), 'end' => self::positiveInfinity());
+            }
+
+            return array('intervals' => $intervals, 'devConstraints' => array($constraint));
+        }
+
+        if ($op[0] === '>') { // > & >=
+            return array('intervals' => array(array('start' => $constraint, 'end' => self::positiveInfinity())), 'devConstraints' => array());
+        }
+        if ($op[0] === '<') { // < & <=
+            return array('intervals' => array(array('start' => self::zero(), 'end' => $constraint)), 'devConstraints' => array());
+        }
+        if ($op === '!=') {
+            // convert !=x to intervals of 0 - <x && >x - +inf + dev*
+            return array('intervals' => array(
+                array('start' => self::zero(), 'end' => new Constraint('<', $constraint->getVersion())),
+                array('start' => new Constraint('>', $constraint->getVersion()), 'end' => self::positiveInfinity()),
+            ), 'devConstraints' => array(self::anyDev()));
+        }
+
+        // convert ==x to an interval of >=x - <=x
+        return array('intervals' => array(
+            array('start' => new Constraint('>=', $constraint->getVersion()), 'end' => new Constraint('<=', $constraint->getVersion())),
+        ), 'devConstraints' => array());
     }
 
     public static function zero()
