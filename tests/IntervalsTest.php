@@ -35,6 +35,9 @@ class IntervalsTest extends TestCase
         $result = Intervals::get($constraint);
         if (is_array($result)) {
             array_walk_recursive($result, function (&$c) {
+                if ($c instanceof Interval) {
+                    $c = array('start' => (string) $c->getStart(), 'end' => (string) $c->getEnd());
+                }
                 if ($c instanceof ConstraintInterface) {
                     $c = (string) $c;
                 }
