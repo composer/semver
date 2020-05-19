@@ -91,6 +91,7 @@ class Intervals
 
     /**
      * @return array
+     * @phpstan-return array{'intervals': array<int, array{'start': Constraint, 'end': Constraint}>, 'devConstraints': Constraint[]}
      */
     public static function get(ConstraintInterface $constraint)
     {
