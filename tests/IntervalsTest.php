@@ -23,37 +23,79 @@ class IntervalsTest extends TestCase
     const INTERVAL_ANY_NODEV = '*';
     const INTERVAL_NONE = '';
 
-    public function testCompactConstraint()
+    const COMPACT_NONE = '';
+
+    /**
+     * @dataProvider compactProvider
+     */
+    public function testCompactConstraint($expected, $toCompact, $conjunctive)
     {
         $parser = new VersionParser;
 
-        $original = new MultiConstraint(array(
-            new MultiConstraint(array( // 1.0 - 1.2 || ^1.5
-                new MultiConstraint(array(
-                    new Constraint('>=', '1.0.0.0-dev'),
-                    new Constraint('<', '1.3.0.0-dev'),
-                ), true),
-                new MultiConstraint(array(
-                    new Constraint('>=', '1.5.0.0-dev'),
-                    new Constraint('<', '2.0.0.0-dev'),
-                ), true),
-            ), false),
-            new MultiConstraint(array( // 1.8 - 1.9 || ^1.12
-                new MultiConstraint(array(
-                    new Constraint('>=', '1.8.0.0-dev'),
-                    new Constraint('<', '1.10.0.0-dev'),
-                ), true),
-                new MultiConstraint(array(
-                    new Constraint('>=', '1.12.0.0-dev'),
-                    new Constraint('<', '2.0.0.0-dev'),
-                ), true),
-            ), false),
-        ), false);
+        $parts = array();
+        foreach ($toCompact as $part) {
+            $parts[] = $parser->parseConstraints($part);
+        }
 
-        $expected = $parser->parseConstraints('1.0 - 1.2 || ^1.5');
+        if ($expected === self::COMPACT_NONE) {
+            $expected = new MatchNoneConstraint;
+        } else {
+            $expected = $parser->parseConstraints($expected);
+        }
 
-        $new = Intervals::compactConstraint($original);
+        $new = Intervals::compactConstraint(new MultiConstraint($parts, $conjunctive));
         $this->assertSame((string) $expected, (string) $new);
+    }
+
+    public function compactProvider()
+    {
+        return array(
+            'simple disjunctive multi' => array(
+                '1.0 - 1.2 || ^1.5',
+                array('1.0 - 1.2 || ^1.5', '1.8 - 1.9 || ^1.12'),
+                false
+            ),
+            'simple conjunctive multi' => array(
+                '1.8 - 1.9 || ^1.12',
+                array('1.0 - 1.2 || ^1.5', '1.8 - 1.9 || ^1.12'),
+                true
+            ),
+            'dev constraints propagate, disjunctive' => array(
+                '1.8 - 1.9 || ^1.12 || dev-master || dev-foo',
+                array('1.8 - 1.9 || ^1.12', 'dev-master', 'dev-foo'),
+                false
+            ),
+            'dev constraints + numeric constraint, conjunctive results in match-none' => array(
+                self::COMPACT_NONE,
+                array('1.8 - 1.9 || ^1.12', 'dev-master', 'dev-foo'),
+                true
+            ),
+            'conflicting numeric constraint, conjunctive results in match-none' => array(
+                self::COMPACT_NONE,
+                array('1.0', '2.0'),
+                true
+            ),
+            'simple disjunctive results in same output' => array(
+                '1.0 || 2.0',
+                array('1.0', '2.0'),
+                false
+            ),
+            'simple conjunctive results in same output' => array(
+                '!= 2.0, > 1.5',
+                array('!= 2.0', '> 1.5'),
+                true
+            ),
+            'simple conjunctive results in same output/2' => array(
+                '!= 1.0, != 2.0',
+                array('!= 1.0', '!= 2.0'),
+                true
+            ),
+            'simple disjunctive with negation' => array(
+                '!= 1.0',
+                array('!= 1.0', '!= 1.0'),
+                false
+            ),
+        );
     }
 
     /**
@@ -503,6 +545,21 @@ class IntervalsTest extends TestCase
             'disjunctive constraints with * and dev exclusion should not return the dev exclusion' => array(
                 self::INTERVAL_ANY,
                 '!= dev-foo || *'
+            ),
+            'match-none constraints result in no interval' => array(
+                self::INTERVAL_NONE,
+                new MatchNoneConstraint
+            ),
+            'match-none constraint inside conjunctive multi results in no interval' => array(
+                self::INTERVAL_NONE,
+                new MultiConstraint(array(
+                    new MultiConstraint(array(
+                        new Constraint('==', '1.3.1.0-dev'),
+                        new Constraint('==', '1.3.2.0-dev'),
+                        new Constraint('==', '1.3.3.0-dev'),
+                    ), false),
+                    new MatchNoneConstraint,
+                ), true),
             ),
         );
     }

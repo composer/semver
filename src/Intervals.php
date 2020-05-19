@@ -132,34 +132,69 @@ class Intervals
 
         $intervals = self::generateIntervals($constraint);
         $constraints = array();
-        foreach ($intervals['numeric'] as $interval) {
-            if ($interval->getStart() === Interval::zero()) {
+        $hasNumericMatchAll = false;
+        $isConjunctive = false;
+        for ($i = 0, $count = \count($intervals['numeric']); $i < $count; $i++) {
+            $interval = $intervals['numeric'][$i];
+            if ((string) $interval->getStart() === (string) Interval::zero() && (string) $interval->getEnd() === (string) Interval::positiveInfinity()) {
+                // if we matched != x then no need to add a constraint matching the whole numeric range
+                if ($isConjunctive) {
+                    break;
+                }
+                $constraints[] = $interval->getStart();
+                $hasNumericMatchAll = true;
+                break;
+            }
+
+            // convert back >= x - <= x intervals to == x
+            if ($interval->getStart()->getVersion() === $interval->getEnd()->getVersion() && $interval->getStart()->getOperator() === '>=' && $interval->getEnd()->getOperator() === '<=') {
+                $constraints[] = new Constraint('==', $interval->getStart()->getVersion());
+                continue;
+            }
+
+            // convert back 0 - <x + >x - +inf to != x
+            if (isset($intervals['numeric'][$i+1]) && $interval->getEnd()->getVersion() === $intervals['numeric'][$i+1]->getStart()->getVersion() && $interval->getEnd()->getOperator() === '<' && $intervals['numeric'][$i+1]->getStart()->getOperator() === '>') {
+                $constraints[] = new Constraint('!=', $interval->getEnd()->getVersion());
+                $intervals['numeric'][$i+1] = new Interval($interval->getStart(), $intervals['numeric'][$i+1]->getEnd());
+                $isConjunctive = true;
+                continue;
+            }
+
+            if ((string) $interval->getStart() === (string) Interval::zero()) {
                 $constraints[] = $interval->getEnd();
-            } elseif ($interval->getEnd() === Interval::positiveInfinity()) {
+            } elseif ((string) $interval->getEnd() === (string) Interval::positiveInfinity()) {
                 $constraints[] = $interval->getStart();
             } else {
                 $constraints[] = new MultiConstraint(array($interval->getStart(), $interval->getEnd()), true);
             }
         }
+
         foreach ($intervals['branches'] as $branchConstraint) {
-            if ($branchConstraint === self::anyDev()) {
-                // TODO this needs a real AnyDevConstraint which only matches == dev-foo
-                continue;
+            if ($branchConstraint === Interval::anyDev()) {
+                if ($hasNumericMatchAll) {
+                    return new EmptyConstraint;
+                }
+
+                // if we matched != x then no need to add a constraint matching all branches
+                if ($isConjunctive) {
+                    continue;
+                }
+
+                throw new \LogicException('It should not be possible to create a constraint which has a numeric interval  and yet matches any dev branch version');
             }
 
-            $constraints[] = $dev;
+            $constraints[] = $branchConstraint;
         }
 
         if (\count($constraints) > 1) {
-            return new MultiConstraint($constraints, false);
+            return new MultiConstraint($constraints, $isConjunctive);
         }
 
         if (\count($constraints) === 1) {
             return $constraints[0];
         }
 
-        // TODO verify it matches no dev-* constraint or anything, or create a new MatchNoneConstraint
-        return new Constraint('<', '0.0.0.0-dev');
+        return new MatchNoneConstraint;
     }
 
     /**
