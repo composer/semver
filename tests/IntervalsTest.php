@@ -45,25 +45,25 @@ class IntervalsTest extends TestCase
         }
 
         if ($expected === self::INTERVAL_ANY) {
-            $expected = array('intervals' => array(
+            $expected = array('numeric' => array(
                 array(
                     'start' => '>= 0.0.0.0-dev',
                     'end' => '< '.PHP_INT_MAX.'.0.0.0',
                 ),
-            ), 'devConstraints' => array('== dev*'));
+            ), 'branches' => array('== dev*'));
         }
 
         if ($expected === self::INTERVAL_ANY_NODEV) {
-            $expected = array('intervals' => array(
+            $expected = array('numeric' => array(
                 array(
                     'start' => '>= 0.0.0.0-dev',
                     'end' => '< '.PHP_INT_MAX.'.0.0.0',
                 ),
-            ), 'devConstraints' => array());
+            ), 'branches' => array());
         }
 
         if ($expected === self::INTERVAL_NONE) {
-            $expected = array('intervals' => array(), 'devConstraints' => array());
+            $expected = array('numeric' => array(), 'branches' => array());
         }
 
         $this->assertSame($expected, $result);
@@ -73,25 +73,25 @@ class IntervalsTest extends TestCase
     {
         return array(
             'simple case' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^1.0'
             ),
             'simple case/2' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '> 1.0.0.0',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '> 1.0'
             ),
             'intervals should be sorted' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 0.9.0.0-dev',
                         'end' => '< 1.0.0.0-dev',
@@ -108,11 +108,11 @@ class IntervalsTest extends TestCase
                         'start' => '> 2.3.0.0',
                         'end' => '< 2.5.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '1.3.4 || 1.2.3 || >2.3,<2.5 || <1,>=0.9'
             ),
             'intervals should be sorted and consecutive ones merged' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
@@ -121,25 +121,25 @@ class IntervalsTest extends TestCase
                         'start' => '>= 3.0.0.0-dev',
                         'end' => '< 5.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^4.0 || ^1.0 || ^3.0'
             ),
             'consecutive intervals should be merged even if one has no end' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 4.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^4.0 || >= 5'
             ),
             'consecutive intervals should be merged even if one has no start' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< 6.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '>= 5,< 6 || < 5'
             ),
             'consecutive intervals representing everything should become *' => array(
@@ -147,7 +147,7 @@ class IntervalsTest extends TestCase
                 '>= 5 || < 5'
             ),
             'intervals should be sorted and overlapping ones merged' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.1.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
@@ -156,34 +156,34 @@ class IntervalsTest extends TestCase
                         'start' => '>= 3.0.0.0-dev',
                         'end' => '< 5.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^4.0 || ^1.1 || ^3.0 || ^1.2'
             ),
             'intervals should be sorted and overlapping ones merged/2' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 1.5.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '1.2 - 1.4 || 1.0 - 1.3'
             ),
             'overlapping intervals should be merged even if the last has no end' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 4.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^4.0 || >= 4.5'
             ),
             'overlapping intervals should be merged even if the first has no start' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< 6.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '>= 5,< 6 || < 5.3'
             ),
             'overlapping intervals representing everything should become *' => array(
@@ -191,21 +191,21 @@ class IntervalsTest extends TestCase
                 '>= 5 || <= 5'
             ),
             'equal intervals should be merged' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^1.0 || ^1.0'
             ),
             'weird input order should still be a good result' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '< 2.0 || < 1.2'
             ),
             'weird input order should still be a good result, matches everything' => array(
@@ -213,12 +213,12 @@ class IntervalsTest extends TestCase
                 '< 2.0 || >= 1'
             ),
             'weird input order should still be a good result, conjunctive' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '< 2.0, >= 1'
             ),
             'conjunctive constraints result in no interval if conflicting' => array(
@@ -234,30 +234,30 @@ class IntervalsTest extends TestCase
                 '== 1.0, != 1.0'
             ),
             'conjunctive constraints should be intersected' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.2.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^1.0, ^1.2'
             ),
             'conjunctive constraints should be intersected/2' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.5.0.0-dev',
                         'end' => '< 1.7.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^1.0, ^1.2, 1.4 - 1.8, 1.5 - 1.6, 1.5 - 2'
             ),
             'conjunctive constraints should be intersected, not flattened by version parser' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.5.0.0-dev',
                         'end' => '< 1.7.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 new MultiConstraint(array(
                     new MultiConstraint(array(
                         new Constraint('>=', '1.0.0.0-dev'),
@@ -282,7 +282,7 @@ class IntervalsTest extends TestCase
                 ), true),
             ),
             'conjunctive constraints with disjunctive subcomponents should be intersected, not flattened by version parser' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.8.0.0-dev',
                         'end' => '< 1.10.0.0-dev',
@@ -291,7 +291,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.12.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 new MultiConstraint(array(
                     new MultiConstraint(array( // 1.0 - 1.2 || ^1.5
                         new MultiConstraint(array(
@@ -316,12 +316,12 @@ class IntervalsTest extends TestCase
                 ), true),
             ),
             'conjunctive constraints with equal constraints' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.3.2.0-dev',
                         'end' => '<= 1.3.2.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 new MultiConstraint(array(
                     new MultiConstraint(array(
                         new Constraint('==', '1.3.1.0-dev'),
@@ -332,16 +332,16 @@ class IntervalsTest extends TestCase
                 ), true),
             ),
             'conjunctive constraints simple' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.5.0.0-dev',
                         'end' => '< 3.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '1.5 - 2'
             ),
             'conjunctive constraints with dev exclusions' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 1.2.3.0',
@@ -354,7 +354,7 @@ class IntervalsTest extends TestCase
                         'start' => '> 1.4.5.0',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array('!= dev-foo', '!= dev-master')),
+                ), 'branches' => array('!= dev-foo', '!= dev-master')),
                 '!= 1.4.5, ^1.0, != 1.2.3, != 2.3, != dev-foo, != dev-master'
             ),
             'conjunctive constraints with dev exact versions suppresses the number scope matches' => array(
@@ -362,26 +362,26 @@ class IntervalsTest extends TestCase
                 '!= 1.4.5, ^1.0, != 1.2.3, != 2.3, == dev-foo, == dev-foo'
             ),
             'conjunctive constraints with dev exact versions suppresses the number scope matches, but keeps dev- match if number constraints allowed dev*' => array(
-                array('intervals' => array(
-                ), 'devConstraints' => array('== dev-foo')),
+                array('numeric' => array(
+                ), 'branches' => array('== dev-foo')),
                 '!= 1.2.3, != 2.3, == dev-foo, == dev-foo'
             ),
             'disjunctive constraints with exclusions in dev constraints makes the number scope match *' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array('!= dev-foo')),
+                ), 'branches' => array('!= dev-foo')),
                 '^1.0 || != dev-foo'
             ),
             'disjunctive constraints with exclusions in dev constraints makes number scope match *' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array('!= dev-foo', '< dev-foo')),
+                ), 'branches' => array('!= dev-foo', '< dev-foo')),
                 '^1.0 || != dev-foo || < dev-foo'
             ),
             'disjunctive constraints with exclusions, if matches * in number scope and dev scope, then * is returned' => array(
@@ -389,30 +389,30 @@ class IntervalsTest extends TestCase
                 '!= 1.4.5 || ^1.0 || != dev-foo || != dev-master || == dev-master'
             ),
             'disjunctive constraints with exclusions, if dev constraints match *, then * is returned for everything' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^1.0 || != dev-master || == dev-master'
             ),
             'disjunctive constraints with exclusions, if dev constraints match * except in dev scope, then * is returned for number scope' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array('!= dev-foo')),
+                ), 'branches' => array('!= dev-foo')),
                 '^1.0 || != dev-foo || == dev-master'
             ),
             'disjunctive constraints with exact dev matches returns number scope as it should and unique dev constraints' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array('== dev-foo', '== dev-master')),
+                ), 'branches' => array('== dev-foo', '== dev-master')),
                 '^1.0 || == dev-foo || == dev-master || == dev-master'
             ),
             'conjunctive constraints with exact versions' => array(
@@ -424,34 +424,34 @@ class IntervalsTest extends TestCase
                 'dev-master, dev-foo'
             ),
             'conjunctive constraints with exact versions, dev only, same version should pass through' => array(
-                array('intervals' => array(), 'devConstraints' => array('== dev-master')),
+                array('numeric' => array(), 'branches' => array('== dev-master')),
                 'dev-master, dev-master'
             ),
             'conjunctive constraints with dev exclusion, should result in * with dev exclusion' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'devConstraints' => array('!= dev-master')),
+                ), 'branches' => array('!= dev-master')),
                 '!= dev-master, != dev-master'
             ),
             'disjunctive constraints with exact versions' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array('== dev-master', '== dev-foo')),
+                ), 'branches' => array('== dev-master', '== dev-foo')),
                 'dev-master || ^1.0 || dev-foo || dev-master'
             ),
             'conjunctive constraints with * should skip it' => array(
-                array('intervals' => array(
+                array('numeric' => array(
                     array(
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'devConstraints' => array()),
+                ), 'branches' => array()),
                 '^1.0, *'
             ),
             'disjunctive constraints with * should result in *' => array(

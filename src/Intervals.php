@@ -22,7 +22,7 @@ use Composer\Semver\Constraint\MultiConstraint;
 class Intervals
 {
     /**
-     * @phpstan-var array<string, array{'intervals': Interval[], 'devConstraints': Constraint[]}>
+     * @phpstan-var array<string, array{'numeric': Interval[], 'branches': Constraint[]}>
      */
     private static $intervalsCache = array();
 
@@ -59,29 +59,29 @@ class Intervals
 
         $intersectionIntervals = self::get(new MultiConstraint(array($candidate, $constraint), true));
         $candidateIntervals = self::get($candidate);
-        if (\count($intersectionIntervals['intervals']) !== \count($candidateIntervals['intervals'])) {
+        if (\count($intersectionIntervals['numeric']) !== \count($candidateIntervals['numeric'])) {
             return false;
         }
 
-        foreach ($intersectionIntervals['intervals'] as $index => $interval) {
-            if (!isset($candidateIntervals['intervals'][$index])) {
+        foreach ($intersectionIntervals['numeric'] as $index => $interval) {
+            if (!isset($candidateIntervals['numeric'][$index])) {
                 return false;
             }
 
-            if ((string) $candidateIntervals['intervals'][$index]->getStart() !== (string) $interval->getStart()) {
+            if ((string) $candidateIntervals['numeric'][$index]->getStart() !== (string) $interval->getStart()) {
                 return false;
             }
 
-            if ((string) $candidateIntervals['intervals'][$index]->getEnd() !== (string) $interval->getEnd()) {
+            if ((string) $candidateIntervals['numeric'][$index]->getEnd() !== (string) $interval->getEnd()) {
                 return false;
             }
         }
 
-        if (\count($intersectionIntervals['devConstraints']) !== \count($candidateIntervals['devConstraints'])) {
+        if (\count($intersectionIntervals['branches']) !== \count($candidateIntervals['branches'])) {
             return false;
         }
-        foreach ($intersectionIntervals['devConstraints'] as $index => $c) {
-            if ((string) $c !== (string) $candidateIntervals['devConstraints'][$index]) {
+        foreach ($intersectionIntervals['branches'] as $index => $c) {
+            if ((string) $c !== (string) $candidateIntervals['branches'][$index]) {
                 return false;
             }
         }
@@ -102,18 +102,18 @@ class Intervals
 
         $intersectionIntervals = self::generateIntervals(new MultiConstraint(array($a, $b), true), true);
 
-        return \count($intersectionIntervals['intervals']) > 0 || \count($intersectionIntervals['devConstraints']) > 0;
+        return \count($intersectionIntervals['numeric']) > 0 || \count($intersectionIntervals['branches']) > 0;
     }
 
     /**
-     * Creates an array of intervals and dev constraints representing a given constraint
+     * Creates an array of numeric intervals and branch constraints representing a given constraint
      *
-     * if the returned intervals array is empty it means the constraint matches nothing in the numeric range (0 - +inf)
-     * if the returned devConstraints array is empty it means no dev-* versions are matched
-     * if a constraint matches all possible dev-* versions, devConstraints will contain Interval::anyDev() as a constraint
+     * if the returned numeric array is empty it means the constraint matches nothing in the numeric range (0 - +inf)
+     * if the returned branches array is empty it means no dev-* versions are matched
+     * if a constraint matches all possible dev-* versions, branches will contain Interval::anyDev() as a constraint
      *
      * @return array
-     * @phpstan-return array{'intervals': Interval[], 'devConstraints': Constraint[]}
+     * @phpstan-return array{'numeric': Interval[], 'branches': Constraint[]}
      */
     public static function get(ConstraintInterface $constraint)
     {
@@ -127,12 +127,12 @@ class Intervals
     }
 
     /**
-     * @phpstan-return array{'intervals': Interval[], 'devConstraints': Constraint[]}
+     * @phpstan-return array{'numeric': Interval[], 'branches': Constraint[]}
      */
     private static function generateIntervals(ConstraintInterface $constraint, $stopOnFirstValidInterval = false)
     {
         if ($constraint instanceof EmptyConstraint) {
-            return array('intervals' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'devConstraints' => array(Interval::anyDev()));
+            return array('numeric' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'branches' => array(Interval::anyDev()));
         }
 
         if ($constraint instanceof Constraint) {
@@ -145,49 +145,49 @@ class Intervals
 
         $constraints = $constraint->getConstraints();
 
-        $intervalGroups = array();
-        $devGroups = array();
+        $numericGroups = array();
+        $branchesGroups = array();
         foreach ($constraints as $c) {
             $res = self::get($c);
-            $intervalGroups[] = $res['intervals'];
-            $devGroups[] = $res['devConstraints'];
+            $numericGroups[] = $res['numeric'];
+            $branchesGroups[] = $res['branches'];
         }
 
-        $dev = array();
+        $branchConstraints = array();
         if ($constraint->isDisjunctive()) {
-            foreach ($devGroups as $group) {
+            foreach ($branchesGroups as $group) {
                 foreach ($group as $c) {
-                    if (!isset($dev[(string) $c])) {
-                        $dev[(string) $c] = $c;
+                    if (!isset($branchConstraints[(string) $c])) {
+                        $branchConstraints[(string) $c] = $c;
                     }
                 }
             }
 
-            foreach ($dev as $i => $c) {
+            foreach ($branchConstraints as $i => $c) {
                 if ($c === Interval::anyDev()) {
-                    $dev = array($c);
+                    $branchConstraints = array($c);
                     break;
                 }
 
                 if ($c->getOperator() === '!=') {
-                    foreach ($dev as $j => $c2) {
+                    foreach ($branchConstraints as $j => $c2) {
                         if ($i === $j) {
                             continue;
                         }
                         $op = $c2->getOperator();
                         // != dev-foo || != dev-bar -> *
                         if ($op === '!=' && $c->getVersion() !== $c2->getVersion()) {
-                            $dev = array();
+                            $branchConstraints = array();
                             break 2;
                         }
                         // != dev-foo || == dev-foo -> *
                         if ($op === '==' && $c->getVersion() === $c2->getVersion()) {
-                            $dev = array();
+                            $branchConstraints = array();
                             break 2;
                         }
                         // != dev-foo || == dev-master -> != dev-foo
                         if ($op === '==') {
-                            unset($dev[$j]);
+                            unset($branchConstraints[$j]);
                             continue;
                         }
                     }
@@ -195,16 +195,16 @@ class Intervals
             }
         } else {
             $disallowlist = array();
-            foreach ($devGroups as $i => $group) {
+            foreach ($branchesGroups as $i => $group) {
                 foreach ($group as $j => $c) {
                     // all != constraints are kept
                     if ($c->getOperator() === '!=') {
-                        $dev[(string) $c] = $c;
+                        $branchConstraints[(string) $c] = $c;
                         continue;
                     }
 
                     $otherGroupMatches = 0;
-                    foreach ($devGroups as $i2 => $group2) {
+                    foreach ($branchesGroups as $i2 => $group2) {
                         if ($i2 === $i) {
                             continue;
                         }
@@ -223,24 +223,24 @@ class Intervals
                     }
 
                     // only keep == constraints which appear in all conjunctive sub-constraints
-                    if ($otherGroupMatches === \count($devGroups) - 1) {
-                        $dev[(string) $c] = $c;
+                    if ($otherGroupMatches === \count($branchesGroups) - 1) {
+                        $branchConstraints[(string) $c] = $c;
                     }
                 }
             }
             foreach ($disallowlist as $c => $dummy) {
-                unset($dev[$c]);
+                unset($branchConstraints[$c]);
             }
         }
 
-        $dev = array_values($dev);
+        $branchConstraints = array_values($branchConstraints);
 
-        if (count($intervalGroups) === 1) {
-            return array('intervals' => $intervalGroups[0], 'devConstraints' => $dev);
+        if (count($numericGroups) === 1) {
+            return array('numeric' => $numericGroups[0], 'branches' => $branchConstraints);
         }
 
         $borders = array();
-        foreach ($intervalGroups as $group) {
+        foreach ($numericGroups as $group) {
             foreach ($group as $interval) {
                 $borders[] = array('version' => $interval->getStart()->getVersion(), 'operator' => $interval->getStart()->getOperator(), 'side' => 'start');
                 $borders[] = array('version' => $interval->getEnd()->getVersion(), 'operator' => $interval->getEnd()->getOperator(), 'side' => 'end');
@@ -260,7 +260,7 @@ class Intervals
         $activeIntervals = 0;
         $intervals = array();
         $index = 0;
-        $activationThreshold = $constraint->isConjunctive() ? \count($intervalGroups) : 1;
+        $activationThreshold = $constraint->isConjunctive() ? \count($numericGroups) : 1;
         $active = false;
         $start = null;
         foreach ($borders as $border) {
@@ -298,15 +298,17 @@ class Intervals
             }
         }
 
-        return array('intervals' => $intervals, 'devConstraints' => $dev);
+        return array('numeric' => $intervals, 'branches' => $branchConstraints);
     }
 
     /**
-     * @phpstan-return array{'intervals': Interval[], 'devConstraints': Constraint[]}
+     * @phpstan-return array{'numeric': Interval[], 'branches': Constraint[]}
      */
     private static function generateSingleConstraintIntervals(Constraint $constraint)
     {
         $op = $constraint->getOperator();
+
+        // handle branch constraints first
         if (substr($constraint->getVersion(), 0, 4) === 'dev-') {
             $intervals = array();
 
@@ -315,26 +317,26 @@ class Intervals
                 $intervals[] = new Interval(Interval::zero(), Interval::positiveInfinity());
             }
 
-            return array('intervals' => $intervals, 'devConstraints' => array($constraint));
+            return array('numeric' => $intervals, 'branches' => array($constraint));
         }
 
         if ($op[0] === '>') { // > & >=
-            return array('intervals' => array(new Interval($constraint, Interval::positiveInfinity())), 'devConstraints' => array());
+            return array('numeric' => array(new Interval($constraint, Interval::positiveInfinity())), 'branches' => array());
         }
         if ($op[0] === '<') { // < & <=
-            return array('intervals' => array(new Interval(Interval::zero(), $constraint)), 'devConstraints' => array());
+            return array('numeric' => array(new Interval(Interval::zero(), $constraint)), 'branches' => array());
         }
         if ($op === '!=') {
             // convert !=x to intervals of 0 - <x && >x - +inf + dev*
-            return array('intervals' => array(
+            return array('numeric' => array(
                 new Interval(Interval::zero(), new Constraint('<', $constraint->getVersion())),
                 new Interval(new Constraint('>', $constraint->getVersion()), Interval::positiveInfinity()),
-            ), 'devConstraints' => array(Interval::anyDev()));
+            ), 'branches' => array(Interval::anyDev()));
         }
 
         // convert ==x to an interval of >=x - <=x
-        return array('intervals' => array(
+        return array('numeric' => array(
             new Interval(new Constraint('>=', $constraint->getVersion()), new Constraint('<=', $constraint->getVersion())),
-        ), 'devConstraints' => array());
+        ), 'branches' => array());
     }
 }
