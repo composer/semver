@@ -355,8 +355,7 @@ class IntervalsTest extends TestCase
                 '!= 1.4.5, ^1.0, != 1.2.3, != 2.3, != dev-foo, != dev-master'
             ),
             'conjunctive constraints with dev exact versions suppresses the number scope matches' => array(
-                array('intervals' => array(
-                ), 'devConstraints' => array()),
+                self::INTERVAL_NONE,
                 '!= 1.4.5, ^1.0, != 1.2.3, != 2.3, == dev-foo, == dev-foo'
             ),
             'conjunctive constraints with dev exact versions suppresses the number scope matches, but keeps dev- match if number constraints allowed dev*' => array(
@@ -380,15 +379,10 @@ class IntervalsTest extends TestCase
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
                 ), 'devConstraints' => array('!= dev-foo', '< dev-foo')),
-                '!= 1.4.5 || ^1.0 || != dev-foo || < dev-foo'
+                '^1.0 || != dev-foo || < dev-foo'
             ),
-            'disjunctive constraints with exclusions, if matches * in number scope and dev scope, then no dev constraints returned' => array(
-                array('intervals' => array(
-                    array(
-                        'start' => '>= 0.0.0.0-dev',
-                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
-                    ),
-                ), 'devConstraints' => array()),
+            'disjunctive constraints with exclusions, if matches * in number scope and dev scope, then * is returned' => array(
+                self::INTERVAL_ANY,
                 '!= 1.4.5 || ^1.0 || != dev-foo || != dev-master || == dev-master'
             ),
             'disjunctive constraints with exclusions, if dev constraints match *, then * is returned for everything' => array(
@@ -468,6 +462,10 @@ class IntervalsTest extends TestCase
             'conjunctive constraints equivalent of * should result in *' => array(
                 self::INTERVAL_ANY_NODEV,
                 new MultiConstraint(array(new Constraint('>=', '0.0.0.0-dev'), new Constraint('<', PHP_INT_MAX.'.0.0.0'))),
+            ),
+            'disjunctive constraints with * and dev exclusion should not return the dev exclusion' => array(
+                self::INTERVAL_ANY,
+                '!= dev-foo || *'
             ),
         );
     }

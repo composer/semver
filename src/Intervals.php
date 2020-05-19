@@ -32,8 +32,6 @@ class Intervals
     private static $opSortOrder = array(
         '>=' => -3,
         '<' => -2,
-        '==' => -1,
-        '!=' => 1,
         '>' => 2,
         '<=' => 3,
     );
@@ -166,6 +164,11 @@ class Intervals
             }
 
             foreach ($dev as $i => $c) {
+                if ($c === self::anyDev()) {
+                    $dev = array($c);
+                    break;
+                }
+
                 if ($c->getOperator() === '!=') {
                     foreach ($dev as $j => $c2) {
                         if ($i === $j) {
@@ -191,7 +194,7 @@ class Intervals
                 }
             }
         } else {
-            $blacklist = array();
+            $disallowlist = array();
             foreach ($devGroups as $i => $group) {
                 foreach ($group as $j => $c) {
                     // all != constraints are kept
@@ -213,8 +216,8 @@ class Intervals
 
                             // != x && == x cancel each other, make sure none of these appears in the output
                             if ($c->getOperator() === '==' && $c2->getOperator() === '!=' && $c->getVersion() === $c2->getVersion()) {
-                                $blacklist[] = (string) $c;
-                                $blacklist[] = (string) $c2;
+                                $disallowlist[(string) $c] = true;
+                                $disallowlist[(string) $c2] = true;
                             }
                         }
                     }
@@ -225,7 +228,7 @@ class Intervals
                     }
                 }
             }
-            foreach ($blacklist as $c) {
+            foreach ($disallowlist as $c => $dummy) {
                 unset($dev[$c]);
             }
         }
