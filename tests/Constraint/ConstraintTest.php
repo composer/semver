@@ -31,11 +31,9 @@ class ConstraintTest extends TestCase
         $this->versionProvide = new Constraint('==', 'dev-foo');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testVersionCompareInvalidArgumentException()
     {
+        $this->doExpectException('InvalidArgumentException');
         $result = $this->constraint->versionCompare('1.1', '1.2', '!==');
     }
 
@@ -407,17 +405,11 @@ class ConstraintTest extends TestCase
      *
      * @param string $version
      * @param string $operator
-     * @param bool   $expected
+     * @param string $expected
      */
     public function testInvalidOperators($version, $operator, $expected)
     {
-        if (method_exists($this, 'expectException')) {
-            // @phpstan-ignore-next-line
-            $this->expectException($expected);
-        } else {
-            // @phpstan-ignore-next-line
-            $this->setExpectedException($expected);
-        }
+        $this->doExpectException($expected);
 
         new Constraint($operator, $version);
     }
@@ -550,5 +542,15 @@ class ConstraintTest extends TestCase
         $b = 'dev-' === substr($v, 0, 4);
 
         return eval("return $code;");
+    }
+
+    private function doExpectException($class)
+    {
+        if (method_exists($this, 'expectException')) {
+            $this->expectException($class);
+        } else {
+            // @phpstan-ignore-next-line
+            $this->setExpectedException($class);
+        }
     }
 }

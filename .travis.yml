@@ -7,9 +7,11 @@ cache:
 
 git:
   depth: 5
-  
+
 env:
-  - REMOVE_PHPSTAN: 1
+  global:
+    - SYMFONY_PHPUNIT_REMOVE_RETURN_TYPEHINT=1
+    - RUN_PHPSTAN=0
 
 matrix:
   include:
@@ -32,19 +34,31 @@ matrix:
     - php: 7.4
       dist: bionic
       env:
-        - REMOVE_PHPSTAN=0
+        - RUN_PHPSTAN=1
     - php: nightly
       dist: bionic
   fast_finish: true
 
-before_script:
-  - if [[ $REMOVE_PHPSTAN = '1' ]]; then composer remove phpstan/phpstan --dev --no-update; fi
-  - if [ "$TRAVIS_PHP_VERSION" != "nightly" ]; then composer update --no-interaction --no-progress --prefer-dist --ansi; fi
-  - if [ "$TRAVIS_PHP_VERSION" == "nightly" ]; then composer update --no-interaction --no-progress --prefer-dist --ansi --ignore-platform-reqs; fi
+install: |
+    if [[ $RUN_PHPSTAN = '0' ]]; then
+      composer remove phpstan/phpstan --dev --no-update
+    fi
+    if [[ $TRAVIS_PHP_VERSION = "7.4" ]]; then
+      export SYMFONY_PHPUNIT_VERSION=7.5
+    fi
+    if [[ $TRAVIS_PHP_VERSION = nightly ]]; then
+      export SYMFONY_PHPUNIT_VERSION=8.5
+      # install the phpunit-bridge with PHP 7.4 when testing nightly
+      (cd / && wget https://storage.googleapis.com/travis-ci-language-archives/php/binaries/ubuntu/18.04/x86_64/php-7.4.tar.bz2 -O - | tar -xj)
+      phpenv global 7.4
+      composer update --no-interaction --no-progress --prefer-dist --ansi
+      vendor/bin/simple-phpunit install
+      phpenv global nightly
+    else
+      composer update --no-interaction --no-progress --prefer-dist --ansi
+    fi
+    composer show
 
 script:
-  - vendor/bin/phpunit --coverage-clover=coverage.xml
-  - if [[ $REMOVE_PHPSTAN = '0' ]]; then vendor/bin/phpstan analyse; fi
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - vendor/bin/simple-phpunit
+  - if [[ $RUN_PHPSTAN = '1' ]]; then composer require phpunit/phpunit:^7.5 --dev; vendor/bin/phpstan analyse; fi

@@ -108,10 +108,10 @@ class VersionParserTest extends TestCase
 
     /**
      * @dataProvider failingNormalizedVersions
-     * @expectedException \UnexpectedValueException
      */
     public function testNormalizeFails($input)
     {
+        $this->doExpectException('UnexpectedValueException');
         $parser = new VersionParser();
         $parser->normalize($input);
     }
@@ -133,20 +133,16 @@ class VersionParserTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
     public function testNormalizeFailsWithExtraMessage()
     {
+        $this->doExpectException('UnexpectedValueException');
         $parser = new VersionParser();
         $parser->normalize('', '  as ');
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
     public function testNormalizeFailsWithOtherExtraMessage()
     {
+        $this->doExpectException('UnexpectedValueException');
         $parser = new VersionParser();
         $parser->normalize('', '  as  123');
     }
@@ -195,23 +191,18 @@ class VersionParserTest extends TestCase
         $this->assertSame((string) new Constraint('=', '1.0.9999999.9999999-dev'), (string) $parser->parseConstraints('1.0.x-dev#trunk/@123'));
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
     public function testParseConstraintsFailsOnBadReference()
     {
+        $this->doExpectException('UnexpectedValueException');
         $parser = new VersionParser();
 
         $this->assertSame((string) new Constraint('=', '1.0.0.0'), (string) $parser->parseConstraints('1.0#abcd123'));
         $this->assertSame((string) new Constraint('=', '1.0.0.0'), (string) $parser->parseConstraints('1.0#trunk/@123'));
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     * @expectedExceptionMessage Invalid operator "~>", you probably meant to use the "~" operator
-     */
     public function testParseConstraintsNudgesRubyDevsTowardsThePathOfRighteousness()
     {
+        $this->doExpectException('UnexpectedValueException', 'Invalid operator "~>", you probably meant to use the "~" operator');
         $parser = new VersionParser();
         $parser->parseConstraints('~>1.2');
     }
@@ -525,12 +516,12 @@ class VersionParserTest extends TestCase
 
     /**
      * @dataProvider failingConstraints
-     * @expectedException \UnexpectedValueException
      *
      * @param string $input
      */
     public function testParseConstraintsFails($input)
     {
+        $this->doExpectException('UnexpectedValueException');
         $parser = new VersionParser();
         $parser->parseConstraints($input);
     }
@@ -628,5 +619,18 @@ class VersionParserTest extends TestCase
         $parsed = $parser->parseConstraints('~0.1 || ~1.0 !=1.0.1');
 
         $this->assertFalse($parsed->matches($version), '"~0.1 || ~1.0 !=1.0.1" should not allow version "1.0.1.0"');
+    }
+
+    private function doExpectException($class, $message = null)
+    {
+        if (method_exists($this, 'expectException')) {
+            $this->expectException($class);
+            if ($message) {
+                $this->expectExceptionMessage($message);
+            }
+        } else {
+            // @phpstan-ignore-next-line
+            $this->setExpectedException($class, $message);
+        }
     }
 }
