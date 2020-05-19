@@ -78,7 +78,7 @@ class Intervals
         return true;
     }
 
-    public static function isIntersectionOf(ConstraintInterface $a, ConstraintInterface $b)
+    public static function haveIntersections(ConstraintInterface $a, ConstraintInterface $b)
     {
         if ($a instanceof EmptyConstraint || $b instanceof EmptyConstraint) {
             return true;
@@ -240,8 +240,8 @@ class Intervals
         $borders = array();
         foreach ($intervalGroups as $group) {
             foreach ($group as $interval) {
-                $borders[] = array('version' => $interval['start']->getVersion(), 'operator' => $interval['start']->getOperator(), 'side' =>'start');
-                $borders[] = array('version' => $interval['end']->getVersion(), 'operator' => $interval['end']->getOperator(), 'side' =>'end');
+                $borders[] = array('version' => $interval['start']->getVersion(), 'operator' => $interval['start']->getOperator(), 'side' => 'start');
+                $borders[] = array('version' => $interval['end']->getVersion(), 'operator' => $interval['end']->getOperator(), 'side' => 'end');
             }
         }
 
