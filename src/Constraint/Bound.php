@@ -51,12 +51,12 @@ class Bound
 
     public function isZero()
     {
-        return $this->getVersion() === '0' && $this->isInclusive();
+        return $this->getVersion() === '0.0.0.0-dev' && $this->isInclusive();
     }
 
     public function isPositiveInfinity()
     {
-        return $this->getVersion() === (string) PHP_INT_MAX && !$this->isInclusive();
+        return $this->getVersion() === PHP_INT_MAX.'.0.0.0' && !$this->isInclusive();
     }
 
     /**
