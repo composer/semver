@@ -45,7 +45,7 @@ class MatchAllConstraintTest extends TestCase
 
         $this->assertSame($expectedString, $result);
 
-        $expectedString = '[]';
+        $expectedString = '*';
         $this->MatchAllConstraint->setPrettyString(null);
         $result = $this->MatchAllConstraint->getPrettyString();
 

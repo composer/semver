@@ -61,7 +61,7 @@ class MatchAllConstraint implements CompilableConstraintInterface
      */
     public function __toString()
     {
-        return '[]';
+        return '*';
     }
 
     /**
