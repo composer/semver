@@ -298,7 +298,11 @@ class VersionParser
             }
         }
 
-        if (preg_match('{^v?[xX*](\.[xX*])*$}i', $constraint)) {
+        if (preg_match('{^(v)?[xX*](\.[xX*])*$}i', $constraint, $match)) {
+            if (!empty($match[1]) || !empty($match[2])) {
+                return array(new Constraint('>=', '0.0.0.0-dev'));
+            }
+
             return array(new MatchAllConstraint());
         }
 

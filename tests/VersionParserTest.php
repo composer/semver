@@ -227,10 +227,11 @@ class VersionParserTest extends TestCase
     {
         return array(
             'match any' => array('*', new MatchAllConstraint()),
-            'match any/2' => array('*.*',  new MatchAllConstraint()),
-            'match any/2v' => array('v*.*', new MatchAllConstraint()),
-            'match any/3' => array('*.x.*', new MatchAllConstraint()),
-            'match any/4' => array('x.X.x.*', new MatchAllConstraint()),
+            'match any/v' => array('v*', new Constraint('>=', '0.0.0.0-dev')),
+            'match any/2' => array('*.*',  new Constraint('>=', '0.0.0.0-dev')),
+            'match any/2v' => array('v*.*', new Constraint('>=', '0.0.0.0-dev')),
+            'match any/3' => array('*.x.*', new Constraint('>=', '0.0.0.0-dev')),
+            'match any/4' => array('x.X.x.*', new Constraint('>=', '0.0.0.0-dev')),
             'not equal' => array('<>1.0.0', new Constraint('<>', '1.0.0.0')),
             'not equal/2' => array('!=1.0.0', new Constraint('!=', '1.0.0.0')),
             'greater than' => array('>1.0.0', new Constraint('>', '1.0.0.0')),
