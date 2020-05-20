@@ -172,7 +172,7 @@ class Intervals
         foreach ($intervals['branches'] as $branchConstraint) {
             if ($branchConstraint === Interval::anyDev()) {
                 if ($hasNumericMatchAll) {
-                    return new EmptyConstraint;
+                    return new MatchAllConstraint;
                 }
 
                 // if we matched != x then no need to add a constraint matching all branches

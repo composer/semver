@@ -13,7 +13,7 @@ namespace Composer\Semver;
 
 use PHPUnit\Framework\TestCase;
 use Composer\Semver\Constraint\MatchNoneConstraint;
-use Composer\Semver\Constraint\EmptyConstraint;
+use Composer\Semver\Constraint\MatchAllConstraint;
 
 class SubsetsTest extends TestCase
 {
@@ -154,7 +154,7 @@ class SubsetsTest extends TestCase
             $this->assertFalse(Intervals::isSubsetOf($matchNone, $c), $matchNone.' should not be seen as a subset of '.$constraint.' ('.$c.')');
         }
 
-        $empty = new EmptyConstraint;
+        $empty = new MatchAllConstraint;
         $this->assertFalse(Intervals::isSubsetOf($empty, $matchNone), $empty.' should not be seen as a subset of '.$matchNone);
         $this->assertTrue(Intervals::isSubsetOf($matchNone, $empty), $matchNone.' should be seen as a subset of '.$empty);
     }
