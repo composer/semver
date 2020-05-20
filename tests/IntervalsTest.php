@@ -81,7 +81,12 @@ class IntervalsTest extends TestCase
                 false
             ),
             'simple conjunctive results in same output' => array(
-                '!= 2.0, > 1.5',
+                '!= 1.2, != 1.6',
+                array('!= 1.2', '!= 1.6'),
+                true
+            ),
+            'does not switch to conjunctive if more than != x is present' => array(
+                '> 1.5, < 2.0-stable || > 2.0',
                 array('!= 2.0', '> 1.5'),
                 true
             ),
@@ -93,6 +98,11 @@ class IntervalsTest extends TestCase
             'simple disjunctive with negation' => array(
                 '!= 1.0',
                 array('!= 1.0', '!= 1.0'),
+                false
+            ),
+            'does not switch to conjunctive when too complex' => array(
+                '<3-stable || >3-stable, <5 || >=6, <9',
+                array('!= 3, <5', '>=6, <9'),
                 false
             ),
         );
@@ -126,7 +136,7 @@ class IntervalsTest extends TestCase
                     'start' => '>= 0.0.0.0-dev',
                     'end' => '< '.PHP_INT_MAX.'.0.0.0',
                 ),
-            ), 'branches' => array('== dev*'));
+            ), 'branches' => array('dev*'));
         }
 
         if ($expected === self::INTERVAL_ANY_NODEV) {
@@ -465,12 +475,7 @@ class IntervalsTest extends TestCase
                 '!= 1.4.5 || ^1.0 || != dev-foo || != dev-master || == dev-master'
             ),
             'disjunctive constraints with exclusions, if dev constraints match *, then * is returned for everything' => array(
-                array('numeric' => array(
-                    array(
-                        'start' => '>= 0.0.0.0-dev',
-                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
-                    ),
-                ), 'branches' => array()),
+                self::INTERVAL_ANY,
                 '^1.0 || != dev-master || == dev-master'
             ),
             'disjunctive constraints with exclusions, if dev constraints match * except in dev scope, then * is returned for number scope' => array(

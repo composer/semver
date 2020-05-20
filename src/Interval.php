@@ -12,6 +12,7 @@
 namespace Composer\Semver;
 
 use Composer\Semver\Constraint\Constraint;
+use Composer\Semver\Constraint\AnyDevConstraint;
 
 class Interval
 {
@@ -86,9 +87,7 @@ class Interval
         static $anyDev;
 
         if (null === $anyDev) {
-            // this ideally should be an MatchAllConstraint but the code expects Constraint instances so
-            // this makes it work with less workarounds/checks above
-            $anyDev = new Constraint('==', 'dev*');
+            $anyDev = new AnyDevConstraint;
         }
 
         return $anyDev;

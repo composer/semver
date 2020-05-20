@@ -113,7 +113,7 @@ class Constraint implements CompilableConstraintInterface
      */
     public function matches(ConstraintInterface $provider)
     {
-        if ($provider instanceof $this) {
+        if ($provider instanceof self) {
             return $this->matchSpecific($provider);
         }
 
