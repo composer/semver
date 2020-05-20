@@ -12,7 +12,7 @@
 namespace Composer\Semver;
 
 use Composer\Semver\Constraint\ConstraintInterface;
-use Composer\Semver\Constraint\EmptyConstraint;
+use Composer\Semver\Constraint\MatchAllConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
 use Composer\Semver\Constraint\Constraint;
 
@@ -299,7 +299,7 @@ class VersionParser
         }
 
         if (preg_match('{^v?[xX*](\.[xX*])*$}i', $constraint)) {
-            return array(new EmptyConstraint());
+            return array(new MatchAllConstraint());
         }
 
         $versionRegex = 'v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?' . self::$modifierRegex . '(?:\+[^\s]+)?';

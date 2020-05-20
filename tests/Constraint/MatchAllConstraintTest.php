@@ -13,26 +13,26 @@ namespace Composer\Semver\Constraint;
 
 use PHPUnit\Framework\TestCase;
 
-class EmptyConstraintTest extends TestCase
+class MatchAllConstraintTest extends TestCase
 {
     /**
      * @var Constraint
      */
     protected $versionProvide;
     /**
-     * @var EmptyConstraint
+     * @var MatchAllConstraint
      */
-    protected $emptyConstraint;
+    protected $matchAllConstraint;
 
     protected function setUp()
     {
         $this->versionProvide = new Constraint('==', '1.1');
-        $this->emptyConstraint = new EmptyConstraint();
+        $this->matchAllConstraint = new MatchAllConstraint();
     }
 
     public function testMatches()
     {
-        $result = $this->emptyConstraint->matches($this->versionProvide);
+        $result = $this->matchAllConstraint->matches($this->versionProvide);
 
         $this->assertTrue($result);
     }
@@ -40,14 +40,14 @@ class EmptyConstraintTest extends TestCase
     public function testGetPrettyString()
     {
         $expectedString = 'pretty-string';
-        $this->emptyConstraint->setPrettyString($expectedString);
-        $result = $this->emptyConstraint->getPrettyString();
+        $this->matchAllConstraint->setPrettyString($expectedString);
+        $result = $this->matchAllConstraint->getPrettyString();
 
         $this->assertSame($expectedString, $result);
 
-        $expectedString = '[]';
-        $this->emptyConstraint->setPrettyString(null);
-        $result = $this->emptyConstraint->getPrettyString();
+        $expectedString = '*';
+        $this->matchAllConstraint->setPrettyString(null);
+        $result = $this->matchAllConstraint->getPrettyString();
 
         $this->assertSame($expectedString, $result);
     }

@@ -45,7 +45,7 @@ class MultiConstraint implements CompilableConstraintInterface
         if (\count($constraints) < 2) {
             throw new \InvalidArgumentException(
                 'Must provide at least two constraints for a MultiConstraint. Use '.
-                'the regular Constraint class for one constraint only or EmptyConstraint for none. You may use '.
+                'the regular Constraint class for one constraint only or MatchAllConstraint for none. You may use '.
                 'MultiConstraint::create() which optimizes and handles those cases automatically.'
             );
         }
@@ -203,7 +203,7 @@ class MultiConstraint implements CompilableConstraintInterface
     public static function create(array $constraints, $conjunctive = true)
     {
         if (0 === \count($constraints)) {
-            return new EmptyConstraint();
+            return new MatchAllConstraint();
         }
 
         if (1 === \count($constraints)) {
