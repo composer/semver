@@ -169,10 +169,12 @@ class ConstraintTest extends TestCase
         $this->assertTrue($versionRequire->matches($versionProvide));
         $this->assertTrue($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
         $this->assertTrue(Intervals::haveIntersections($versionRequire, $versionProvide));
+        $this->assertTrue(Intervals::compactConstraint($versionRequire)->matches(Intervals::compactConstraint($versionProvide)));
         // the operation should be commutative
         $this->assertTrue($versionProvide->matches($versionRequire));
         $this->assertTrue($this->matchCompiled($versionProvide, $requireOperator, $requireVersion));
         $this->assertTrue(Intervals::haveIntersections($versionProvide, $versionRequire));
+        $this->assertTrue(Intervals::compactConstraint($versionProvide)->matches(Intervals::compactConstraint($versionRequire)));
     }
 
     public static function failingVersionMatches()
@@ -336,11 +338,13 @@ class ConstraintTest extends TestCase
 
         $this->assertFalse($versionRequire->matches($versionProvide));
         $this->assertFalse($this->matchCompiled($versionRequire, $provideOperator, $provideVersion));
+        $this->assertFalse(Intervals::compactConstraint($versionRequire)->matches(Intervals::compactConstraint($versionProvide)));
         // the operation should be commutative
         $this->assertFalse($versionProvide->matches($versionRequire));
         $this->assertFalse($this->matchCompiled($versionProvide, $requireOperator, $requireVersion));
+        $this->assertFalse(Intervals::compactConstraint($versionProvide)->matches(Intervals::compactConstraint($versionRequire)));
 
-        // do not test >/</>=/<= for dev versions as these are not supported
+        // do not test intersections with >/</>=/<= for dev versions as these are not supported
         if (substr($requireVersion, 0, 4) === 'dev-' && $requireOperator !== '==' && $requireOperator !== '!=') {
             return;
         }
@@ -390,6 +394,7 @@ class ConstraintTest extends TestCase
         $this->assertFalse($versionRequire->matches($this->versionProvide));
         $this->assertFalse($this->matchCompiled($versionRequire, '==', 'dev-foo'));
         $this->assertFalse(Intervals::haveIntersections($versionRequire, $this->versionProvide));
+        $this->assertFalse(Intervals::compactConstraint($versionRequire)->matches(Intervals::compactConstraint($this->versionProvide)));
         $this->assertFalse($versionRequire->matchSpecific($this->versionProvide, true));
 
         $versionRequire = new Constraint('<', '0.12');
@@ -397,6 +402,7 @@ class ConstraintTest extends TestCase
         $this->assertFalse($versionRequire->matches($this->versionProvide));
         $this->assertFalse($this->matchCompiled($versionRequire, '==', 'dev-foo'));
         $this->assertFalse(Intervals::haveIntersections($versionRequire, $this->versionProvide));
+        $this->assertFalse(Intervals::compactConstraint($versionRequire)->matches(Intervals::compactConstraint($this->versionProvide)));
         $this->assertTrue($versionRequire->matchSpecific($this->versionProvide, true));
     }
 
@@ -494,6 +500,8 @@ class ConstraintTest extends TestCase
 
         // Asserts Compiled version returns the same result than standard
         $this->assertSame($m = $require->matches($provide), $this->matchCompiled($require, $provideOperator, $provideVersion));
+        $this->assertSame($m, Intervals::compactConstraint($require)->matches(Intervals::compactConstraint($provide)));
+        $this->assertSame($m, $this->matchCompiled(Intervals::compactConstraint($require), $provideOperator, $provideVersion));
 
         // do not test >/</>=/<= for dev versions as these are not supported
         if (substr($requireVersion, 0, 4) === 'dev-' && $requireOperator !== '==' && $requireOperator !== '!=') {

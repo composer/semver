@@ -152,6 +152,17 @@ class Constraint implements CompilableConstraintInterface
     }
 
     /**
+     * @param  string $operator
+     * @return int
+     *
+     * @phpstan-return self::OP_*
+     */
+    public static function getOperatorConstant($operator)
+    {
+        return self::$transOpStr[$operator];
+    }
+
+    /**
      * @param string $a
      * @param string $b
      * @param string $operator
