@@ -136,17 +136,14 @@ class Intervals
         $hasNumericMatchAll = false;
         $isConjunctive = false;
 
-        $numeric = $intervals['numeric'];
-        $count = \count($numeric);
+        $count = \count($intervals['numeric']);
         // attempt to convert back 0 - <x + >x - +inf to != x as long as we only have some of those, otherwise bail out of this optimization
-        if ($count > 1 && (string) $numeric[0]->getStart() === (string) Interval::zero() && (string) $numeric[$count-1]->getEnd() === (string) Interval::positiveInfinity()) {
+        if ($count > 1 && (string) $intervals['numeric'][0]->getStart() === (string) Interval::zero() && (string) $intervals['numeric'][$count-1]->getEnd() === (string) Interval::positiveInfinity()) {
             $isConjunctive = true;
             for ($i = 0; $i < $count-1; $i++) {
-                $interval = $numeric[$i];
-                if (isset($numeric[$i+1]) && $interval->getEnd()->getVersion() === $numeric[$i+1]->getStart()->getVersion() && $interval->getEnd()->getOperator() === '<' && $numeric[$i+1]->getStart()->getOperator() === '>') {
+                $interval = $intervals['numeric'][$i];
+                if ($interval->getEnd()->getVersion() === $intervals['numeric'][$i+1]->getStart()->getVersion() && $interval->getEnd()->getOperator() === '<' && $intervals['numeric'][$i+1]->getStart()->getOperator() === '>') {
                     $constraints[] = new Constraint('!=', $interval->getEnd()->getVersion());
-                    $numeric[$i+1] = new Interval($interval->getStart(), $numeric[$i+1]->getEnd());
-                    $isConjunctive = true;
                     continue;
                 }
 
