@@ -140,7 +140,7 @@ class Intervals
         }
 
         if (!$constraint instanceof MultiConstraint) {
-            throw new \UnexpectedValueException('The constraint passed in should be an MatchAllConstraint, Constraint or MultiConstraint instance, got '.get_class($constraint).'.');
+            throw new \UnexpectedValueException('The constraint passed in should be an MatchAllConstraint, Constraint or MultiConstraint instance, got '.\get_class($constraint).'.');
         }
 
         $constraints = $constraint->getConstraints();
@@ -235,7 +235,7 @@ class Intervals
 
         $branchConstraints = array_values($branchConstraints);
 
-        if (count($numericGroups) === 1) {
+        if (\count($numericGroups) === 1) {
             return array('numeric' => $numericGroups[0], 'branches' => $branchConstraints);
         }
 
