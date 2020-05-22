@@ -33,9 +33,9 @@ class AnyDevConstraint implements CompilableConstraintInterface
         if ($provider instanceof Constraint) {
             $version = $provider->getVersion();
 
-            // for dev versions this matches all == dev-x
+            // for dev versions this matches all == dev-x / != dev-x
             if ($version[0] === 'd' && 'dev-' === substr($version, 0, 4)) {
-                return $provider->getOperator() === '==';
+                return $provider->getOperator() === '!=' || $provider->getOperator() === '==';
             }
 
             // for numeric versions this matches only != x.y
@@ -52,7 +52,7 @@ class AnyDevConstraint implements CompilableConstraintInterface
             return '$b';
         }
         if (Constraint::OP_NE === $otherOperator) {
-            return '!$b';
+            return 'true';
         }
         return 'false';
     }
