@@ -57,6 +57,7 @@ class SubsetsTest extends TestCase
             array('<3',              '<=3'),
             array('= dev-foo',       '= dev-foo'),
             array('!= dev-foo',      '!= dev-foo'),
+            array('< dev-foo',       '= dev-foo'), // invalid range matches nothing so is a subset of any other
             array('1.5.*',           '^1.4'),
             array('1.5.*',           '1.3 - 1.6 || 1.8 - 1.9'),
             array('1.3.2',           '1.3.0 || 1.3.1 || 1.3.2'),
@@ -119,7 +120,6 @@ class SubsetsTest extends TestCase
             array('<=3',             '<3'),
             array('^2.1',            '^2.0, !=2.1.3'),
             array('<2.0',            '>=1.1'),
-            array('< dev-foo',       '= dev-foo'),
             array('!= dev-foo',      '!= dev-bar'),
             array('!= dev-foo',      '= dev-bar'),
             array('1.3.3',           '1.3.0 || 1.3.1 || 1.3.2'),

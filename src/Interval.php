@@ -80,16 +80,20 @@ class Interval
     }
 
     /**
-     * @return Constraint
+     * @return array{'names': string[], 'exclude': bool}
      */
     public static function anyDev()
     {
-        static $anyDev;
+        // any == exclude nothing
+        return array('names' => array(), 'exclude' => true);
+    }
 
-        if (null === $anyDev) {
-            $anyDev = new AnyDevConstraint;
-        }
-
-        return $anyDev;
+    /**
+     * @return array{'names': string[], 'exclude': bool}
+     */
+    public static function noDev()
+    {
+        // nothing == no names included
+        return array('names' => array(), 'exclude' => false);
     }
 }

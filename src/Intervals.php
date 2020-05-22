@@ -16,7 +16,6 @@ use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Semver\Constraint\CompilableConstraintInterface;
 use Composer\Semver\Constraint\MatchAllConstraint;
 use Composer\Semver\Constraint\MatchNoneConstraint;
-use Composer\Semver\Constraint\AnyDevConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
 
 /**
@@ -25,7 +24,7 @@ use Composer\Semver\Constraint\MultiConstraint;
 class Intervals
 {
     /**
-     * @phpstan-var array<string, array{'numeric': Interval[], 'branches': array<AnyDevConstraint|Constraint>}>
+     * @phpstan-var array<string, array{'numeric': Interval[], 'branches': array{'names': string[], 'exclude': bool}}>
      */
     private static $intervalsCache = array();
 
@@ -84,11 +83,14 @@ class Intervals
             }
         }
 
-        if (\count($intersectionIntervals['branches']) !== \count($candidateIntervals['branches'])) {
+        if ($intersectionIntervals['branches']['exclude'] !== $candidateIntervals['branches']['exclude']) {
             return false;
         }
-        foreach ($intersectionIntervals['branches'] as $index => $c) {
-            if ((string) $c !== (string) $candidateIntervals['branches'][$index]) {
+        if (\count($intersectionIntervals['branches']['names']) !== \count($candidateIntervals['branches']['names'])) {
+            return false;
+        }
+        foreach ($intersectionIntervals['branches']['names'] as $index => $name) {
+            if ($name !== $candidateIntervals['branches']['names'][$index]) {
                 return false;
             }
         }
@@ -113,7 +115,7 @@ class Intervals
 
         $intersectionIntervals = self::generateIntervals(new MultiConstraint(array($a, $b), true), true);
 
-        return \count($intersectionIntervals['numeric']) > 0 || \count($intersectionIntervals['branches']) > 0;
+        return \count($intersectionIntervals['numeric']) > 0 || $intersectionIntervals['branches']['exclude'] || \count($intersectionIntervals['branches']['names']) > 0;
     }
 
     /**
@@ -180,41 +182,46 @@ class Intervals
         }
 
         $devConstraints = array();
-        $allDevConstraintsAreNegations = true;
-        foreach ($intervals['branches'] as $branchConstraint) {
-            if ($branchConstraint instanceof AnyDevConstraint) {
+
+        if (0 === \count($intervals['branches']['names'])) {
+            if ($intervals['branches']['exclude']) {
                 if ($hasNumericMatchAll) {
                     return new MatchAllConstraint;
                 }
-
-                // if we matched != x then no need to add a constraint matching all branches
-                if ($isConjunctive) {
-                    continue;
+                // if conjunctive, then the constraint consists only of != operators, we already match all dev versions
+                if (!$isConjunctive) {
+                    // exclude nothing so allow all dev versions, this should not be possible while disallowing all numeric versions
+                    throw new \RuntimeException("Unexpected constraint compaction: cannot represent constraint matching any branch but no numeric version.");
+                }
+            }
+        } else {
+            foreach ($intervals['branches']['names'] as $branchName) {
+                if ($intervals['branches']['exclude']) {
+                    $devConstraints[] = new Constraint('!=', $branchName);
+                } else {
+                    $devConstraints[] = new Constraint('==', $branchName);
                 }
             }
 
-            if ($branchConstraint->getOperator() !== '!=') {
-                $allDevConstraintsAreNegations = false;
-            }
-            $devConstraints[] = $branchConstraint;
-        }
+            if ($intervals['branches']['exclude']) {
+                if (!$isConjunctive) {
+                    if (\count($devConstraints) > 1) {
+                        $devConstraint = new MultiConstraint($devConstraints, true);
+                    } else {
+                        $devConstraint = $devConstraints[0];
+                    }
 
-        if (\count($devConstraints) === 0) {
-            // noop
-        } elseif ($allDevConstraintsAreNegations && !$isConjunctive) {
-            if (\count($devConstraints) > 1) {
-                $devConstraint = new MultiConstraint($devConstraints, true);
+                    if (\count($constraints) === 1 && (string)$constraints[0] === (string)Interval::zero()) {
+                        return $devConstraint;
+                    }
+
+                    $constraints[] = $devConstraint;
+                } else {
+                    $constraints = array_merge($constraints, $devConstraints);
+                }
             } else {
-                $devConstraint = $devConstraints[0];
+                $constraints = array_merge($constraints, $devConstraints);
             }
-
-            if (\count($constraints) === 1 && (string) $constraints[0] === (string) Interval::zero()) {
-                return $devConstraint;
-            }
-
-            $constraints[] = $devConstraint;
-        } else {
-            $constraints = array_merge($constraints, $devConstraints);
         }
 
         if (\count($constraints) > 1) {
@@ -233,10 +240,10 @@ class Intervals
      *
      * if the returned numeric array is empty it means the constraint matches nothing in the numeric range (0 - +inf)
      * if the returned branches array is empty it means no dev-* versions are matched
-     * if a constraint matches all possible dev-* versions, branches will contain Interval::anyDev() as a constraint
+     * if a constraint matches all possible dev-* versions, branches will contain Interval::anyDev()
      *
      * @return array
-     * @phpstan-return array{'numeric': Interval[], 'branches': array<AnyDevConstraint|Constraint>}
+     * @phpstan-return array{'numeric': Interval[], 'branches': array{'names': string[], 'exclude': bool}}
      */
     public static function get(ConstraintInterface $constraint)
     {
@@ -250,24 +257,20 @@ class Intervals
     }
 
     /**
-     * @phpstan-return array{'numeric': Interval[], 'branches': array<AnyDevConstraint|Constraint>}
+     * @phpstan-return array{'numeric': Interval[], 'branches': array{'names': string[], 'exclude': bool}}
      */
     private static function generateIntervals(ConstraintInterface $constraint, $stopOnFirstValidInterval = false)
     {
         if ($constraint instanceof MatchAllConstraint) {
-            return array('numeric' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'branches' => array(Interval::anyDev()));
+            return array('numeric' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'branches' => Interval::anyDev());
         }
 
         if ($constraint instanceof MatchNoneConstraint) {
-            return array('numeric' => array(), 'branches' => array());
+            return array('numeric' => array(), 'branches' => array('names' => array(), 'exclude' => false));
         }
 
         if ($constraint instanceof Constraint) {
             return self::generateSingleConstraintIntervals($constraint);
-        }
-
-        if ($constraint instanceof AnyDevConstraint) {
-            return array('numeric' => array(), 'branches' => array($constraint));
         }
 
         if (!$constraint instanceof MultiConstraint) {
@@ -277,153 +280,71 @@ class Intervals
         $constraints = $constraint->getConstraints();
 
         $numericGroups = array();
-        $branchesGroups = array();
+        $constraintBranches = array();
         foreach ($constraints as $c) {
             $res = self::get($c);
             $numericGroups[] = $res['numeric'];
-            $branchesGroups[] = $res['branches'];
+            $constraintBranches[] = $res['branches'];
         }
 
-        $branchConstraints = array();
         if ($constraint->isDisjunctive()) {
-            $disallowlist = array();
-            foreach ($branchesGroups as $i => $group) {
-                foreach ($group as $j => $c) {
-                    // if any of the groups matches all that overrules everything else
-                    if ($c instanceof AnyDevConstraint) {
-                        $branchConstraints = array($c);
-                        break 2;
+            $branches = Interval::noDev();
+            foreach ($constraintBranches as $b) {
+                if ($b['exclude']) {
+                    if ($branches['exclude']) {
+                        // disjunctive constraint, so only exclude what's excluded in all constraints
+                        // !=a,!=b || !=b,!=c => !=b
+                        $branches['names'] = array_intersect($branches['names'], $b['names']);
+                    } else {
+                        // disjunctive constraint so exclude all names which are not explicitly included in the alternative
+                        // (==b || ==c) || !=a,!=b => !=a
+                        $branches['exclude'] = true;
+                        $branches['names'] = array_diff($b['names'], $branches['names']);
                     }
-
-                    // all == constraints are kept as long as no != constraint exists in another group, in which case it gets unset later
-                    if ($c instanceof Constraint && $c->getOperator() === '==') {
-                        $branchConstraints[(string) $c] = $c;
-                        continue;
-                    }
-
-                    $otherGroupMatches = 0;
-                    foreach ($branchesGroups as $i2 => $group2) {
-                        if ($i2 === $i) {
-                            continue;
-                        }
-
-                        // empty groups without dev constraints should not constrain what is returned by those with dev constraints
-                        if (\count($group2) === 0) {
-                            $otherGroupMatches++;
-                            continue;
-                        }
-
-                        foreach ($group2 as $j2 => $c2) {
-                            // same constraint found, ignore it
-                            if ((string) $c2 === (string) $c) {
-                                $otherGroupMatches++;
-                                continue;
-                            }
-
-                            // != x || == x turns into *
-                            if (
-                                // implicitly true: $c instanceof Constraint && $c->getOperator() === '!='
-                                $c2 instanceof Constraint && $c2->getOperator() === '=='
-                                && $c->getVersion() === $c2->getVersion()
-                            ) {
-                                return array('numeric' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'branches' => array(new AnyDevConstraint));
-                            }
-
-                            // != x || != y turns into *, but only if a single constraint on each side
-                            if (
-                                // implicitly true: $c instanceof Constraint && $c->getOperator() === '!='
-                                $c2 instanceof Constraint && $c2->getOperator() === '!='
-                                && \count($branchesGroups[$i]) === 1 && \count($branchesGroups[$i2]) === 1
-                                && $c->getVersion() !== $c2->getVersion()
-                            ) {
-                                return array('numeric' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'branches' => array(new AnyDevConstraint));
-                            }
-
-                            // != x || == y turns into != x
-                            if (
-                                // implicitly true: $c instanceof Constraint && $c->getOperator() === '!='
-                                $c2 instanceof Constraint && $c2->getOperator() === '=='
-                                && $c->getVersion() !== $c2->getVersion()
-                            ) {
-                                $otherGroupMatches++;
-                                $disallowlist[(string) $c2] = true;
-                            }
-                        }
-                    }
-
-                    // only keep != constraints which appear in all sub-constraints
-                    if ($otherGroupMatches >= \count($branchesGroups) - 1) {
-                        $branchConstraints[(string) $c] = $c;
+                } else {
+                    if ($branches['exclude']) {
+                        // disjunctive constraint so exclude all names which are not explicitly included in the alternative
+                        // !=a,!=b || (==b || ==c) => !=a
+                        $branches['names'] = array_diff($branches['names'], $b['names']);
+                    } else {
+                        // disjunctive constraint, so just add all the other branches
+                        // (==a || ==b) || ==c => ==a || ==b || ==c
+                        $branches['names'] = array_merge($branches['names'], $b['names']);
                     }
                 }
-            }
-            foreach ($disallowlist as $c => $dummy) {
-                unset($branchConstraints[$c]);
             }
         } else {
-            $disallowlist = array();
-            foreach ($branchesGroups as $i => $group) {
-                foreach ($group as $j => $c) {
-                    $otherGroupMatches = 0;
-                    foreach ($branchesGroups as $i2 => $group2) {
-                        if ($i2 === $i) {
-                            continue;
-                        }
-
-                        foreach ($group2 as $j2 => $c2) {
-                            if (
-                                // any constraint matches itself
-                                (string) $c2 === (string) $c
-                                // any constraint matches dev*
-                                || $c2 instanceof AnyDevConstraint
-                                // != dev-* + != dev-* matches as long as they don't get unset later
-                                || ($c instanceof Constraint && $c->getOperator() === '!=' && $c2->getOperator() === '!=')
-                            ) {
-                                $otherGroupMatches++;
-                                continue;
-                            }
-
-                            if ($c instanceof AnyDevConstraint) {
-                                continue;
-                            }
-
-                            // == x && != x cancel each other, make sure none of these appears in the output
-                            if (
-                                $c->getOperator() === '=='
-                                && $c2->getOperator() === '!='
-                                && $c->getVersion() === $c2->getVersion()
-                            ) {
-                                $disallowlist[(string) $c] = true;
-                                $disallowlist[(string) $c2] = true;
-                            }
-
-                            // == x && != y turns into == x if != y group has a single constraint
-                            if (
-                                $c->getOperator() === '=='
-                                && $c2->getOperator() === '!='
-                                && $c->getVersion() !== $c2->getVersion()
-                            ) {
-                                $otherGroupMatches++;
-                                $disallowlist[(string) $c2] = true;
-                            }
-                        }
+            $branches = Interval::anyDev();
+            foreach ($constraintBranches as $b) {
+                if ($b['exclude']) {
+                    if ($branches['exclude']) {
+                        // conjunctive, so just add all branch names to be excluded
+                        // !=a && !=b => !=a,!=b
+                        $branches['names'] = array_merge($branches['names'], $b['names']);
+                    } else {
+                        // conjunctive, so only keep included names which are not excluded
+                        // (==a||==c) && !=a,!=b => ==c
+                        $branches['names'] = array_diff($branches['names'], $b['names']);
                     }
-
-                    // only keep constraints which appear in all conjunctive sub-constraints
-                    if ($otherGroupMatches >= \count($branchesGroups) - 1) {
-                        $branchConstraints[(string) $c] = $c;
+                } else {
+                    if ($branches['exclude']) {
+                        // conjunctive, so only keep included names which are not excluded
+                        // !=a,!=b && (==a||==c) => ==c
+                        $branches['names'] = array_diff($b['names'], $branches['names']);
+                        $branches['exclude'] = false;
+                    } else {
+                        // conjunctive, so only keep names that are included in both
+                        // (==a||==b) && (==a||==c) => ==a
+                        $branches['names'] = array_intersect($branches['names'], $b['names']);
                     }
                 }
             }
-            foreach ($disallowlist as $c => $dummy) {
-                unset($branchConstraints[$c]);
-            }
         }
 
-        $branchConstraints = array_values($branchConstraints);
+        $branches['names'] = array_unique($branches['names']);
 
         if (count($numericGroups) === 1) {
-            return array('numeric' => $numericGroups[0], 'branches' => $branchConstraints);
+            return array('numeric' => $numericGroups[0], 'branches' => $branches);
         }
 
         $borders = array();
@@ -485,11 +406,11 @@ class Intervals
             }
         }
 
-        return array('numeric' => $intervals, 'branches' => $branchConstraints);
+        return array('numeric' => $intervals, 'branches' => $branches);
     }
 
     /**
-     * @phpstan-return array{'numeric': Interval[], 'branches': array<AnyDevConstraint|Constraint>}
+     * @phpstan-return array{'numeric': Interval[], 'branches': array{'names': string[], 'exclude': bool}}}
      */
     private static function generateSingleConstraintIntervals(Constraint $constraint)
     {
@@ -498,32 +419,39 @@ class Intervals
         // handle branch constraints first
         if (substr($constraint->getVersion(), 0, 4) === 'dev-') {
             $intervals = array();
+            $branches = array('names' => array(), 'exclude' => false);
 
-            // != dev-foo means any numeric version may match
+            // != dev-foo means any numeric version may match, we treat >/< like != they are not really defined for branches
             if ($op === '!=') {
                 $intervals[] = new Interval(Interval::zero(), Interval::positiveInfinity());
+                $branches = array('names' => array($constraint->getVersion()), 'exclude' => true);
+            } elseif ($op === '==') {
+                $branches['names'][] = $constraint->getVersion();
             }
 
-            return array('numeric' => $intervals, 'branches' => array($constraint));
+            return array(
+                'numeric' => $intervals,
+                'branches' => $branches,
+            );
         }
 
         if ($op[0] === '>') { // > & >=
-            return array('numeric' => array(new Interval($constraint, Interval::positiveInfinity())), 'branches' => array());
+            return array('numeric' => array(new Interval($constraint, Interval::positiveInfinity())), 'branches' => Interval::noDev());
         }
         if ($op[0] === '<') { // < & <=
-            return array('numeric' => array(new Interval(Interval::zero(), $constraint)), 'branches' => array());
+            return array('numeric' => array(new Interval(Interval::zero(), $constraint)), 'branches' => Interval::noDev());
         }
         if ($op === '!=') {
             // convert !=x to intervals of 0 - <x && >x - +inf + dev*
             return array('numeric' => array(
                 new Interval(Interval::zero(), new Constraint('<', $constraint->getVersion())),
                 new Interval(new Constraint('>', $constraint->getVersion()), Interval::positiveInfinity()),
-            ), 'branches' => array(Interval::anyDev()));
+            ), 'branches' => Interval::anyDev());
         }
 
         // convert ==x to an interval of >=x - <=x
         return array('numeric' => array(
             new Interval(new Constraint('>=', $constraint->getVersion()), new Constraint('<=', $constraint->getVersion())),
-        ), 'branches' => array());
+        ), 'branches' => Interval::noDev());
     }
 }
