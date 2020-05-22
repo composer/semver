@@ -285,55 +285,17 @@ class Intervals
 
         $branchConstraints = array();
         if ($constraint->isDisjunctive()) {
-            foreach ($branchesGroups as $group) {
-                foreach ($group as $c) {
-                    if (!isset($branchConstraints[(string) $c])) {
-                        $branchConstraints[(string) $c] = $c;
-                    }
-                }
-            }
-
-            foreach ($branchConstraints as $i => $c) {
-                if ($c instanceof AnyDevConstraint) {
-                    $branchConstraints = array($c);
-                    break;
-                }
-
-                if ($c->getOperator() === '!=') {
-                    foreach ($branchConstraints as $j => $c2) {
-                        if ($i === $j) {
-                            continue;
-                        }
-                        // != dev-foo || dev* -> *
-                        if ($c2 instanceof AnyDevConstraint) {
-                            $branchConstraints = array($c2);
-                            break 2;
-                        }
-                        $op = $c2->getOperator();
-                        // != dev-foo || != dev-bar -> *
-                        if ($op === '!=' && $c->getVersion() !== $c2->getVersion()) {
-                            $branchConstraints = array(Interval::anyDev());
-                            break 2;
-                        }
-                        // != dev-foo || == dev-foo -> *
-                        if ($op === '==' && $c->getVersion() === $c2->getVersion()) {
-                            $branchConstraints = array(Interval::anyDev());
-                            break 2;
-                        }
-                        // != dev-foo || == dev-master -> != dev-foo
-                        if ($op === '==') {
-                            unset($branchConstraints[$j]);
-                            continue;
-                        }
-                    }
-                }
-            }
-        } else {
             $disallowlist = array();
             foreach ($branchesGroups as $i => $group) {
                 foreach ($group as $j => $c) {
-                    // all != constraints are kept
-                    if ($c instanceof Constraint && $c->getOperator() === '!=') {
+                    // if any of the groups matches all that overrules everything else
+                    if ($c instanceof AnyDevConstraint) {
+                        $branchConstraints = array($c);
+                        break 2;
+                    }
+
+                    // all == constraints are kept as long as no != constraint exists in another group, in which case it gets unset later
+                    if ($c instanceof Constraint && $c->getOperator() === '==') {
                         $branchConstraints[(string) $c] = $c;
                         continue;
                     }
@@ -344,25 +306,110 @@ class Intervals
                             continue;
                         }
 
+                        // empty groups without dev constraints should not constrain what is returned by those with dev constraints
+                        if (\count($group2) === 0) {
+                            $otherGroupMatches++;
+                            continue;
+                        }
+
                         foreach ($group2 as $j2 => $c2) {
-                            if ((string) $c2 === (string) $c || $c2 instanceof AnyDevConstraint) {
+                            // same constraint found, ignore it
+                            if ((string) $c2 === (string) $c) {
                                 $otherGroupMatches++;
+                                continue;
                             }
 
-                            // != x && == x cancel each other, make sure none of these appears in the output
+                            // != x || == x turns into *
                             if (
-                                $c instanceof Constraint && $c->getOperator() === '=='
-                                && $c2 instanceof Constraint && $c2->getOperator() === '!='
+                                // implicitly true: $c instanceof Constraint && $c->getOperator() === '!='
+                                $c2 instanceof Constraint && $c2->getOperator() === '=='
                                 && $c->getVersion() === $c2->getVersion()
                             ) {
-                                $disallowlist[(string) $c] = true;
+                                return array('numeric' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'branches' => array(new AnyDevConstraint));
+                            }
+
+                            // != x || != y turns into *, but only if a single constraint on each side
+                            if (
+                                // implicitly true: $c instanceof Constraint && $c->getOperator() === '!='
+                                $c2 instanceof Constraint && $c2->getOperator() === '!='
+                                && \count($branchesGroups[$i]) === 1 && \count($branchesGroups[$i2]) === 1
+                                && $c->getVersion() !== $c2->getVersion()
+                            ) {
+                                return array('numeric' => array(new Interval(Interval::zero(), Interval::positiveInfinity())), 'branches' => array(new AnyDevConstraint));
+                            }
+
+                            // != x || == y turns into != x
+                            if (
+                                // implicitly true: $c instanceof Constraint && $c->getOperator() === '!='
+                                $c2 instanceof Constraint && $c2->getOperator() === '=='
+                                && $c->getVersion() !== $c2->getVersion()
+                            ) {
+                                $otherGroupMatches++;
                                 $disallowlist[(string) $c2] = true;
                             }
                         }
                     }
 
-                    // only keep == constraints which appear in all conjunctive sub-constraints
-                    if ($otherGroupMatches === \count($branchesGroups) - 1) {
+                    // only keep != constraints which appear in all sub-constraints
+                    if ($otherGroupMatches >= \count($branchesGroups) - 1) {
+                        $branchConstraints[(string) $c] = $c;
+                    }
+                }
+            }
+            foreach ($disallowlist as $c => $dummy) {
+                unset($branchConstraints[$c]);
+            }
+        } else {
+            $disallowlist = array();
+            foreach ($branchesGroups as $i => $group) {
+                foreach ($group as $j => $c) {
+                    $otherGroupMatches = 0;
+                    foreach ($branchesGroups as $i2 => $group2) {
+                        if ($i2 === $i) {
+                            continue;
+                        }
+
+                        foreach ($group2 as $j2 => $c2) {
+                            if (
+                                // any constraint matches itself
+                                (string) $c2 === (string) $c
+                                // any constraint matches dev*
+                                || $c2 instanceof AnyDevConstraint
+                                // != dev-* + != dev-* matches as long as they don't get unset later
+                                || ($c instanceof Constraint && $c->getOperator() === '!=' && $c2->getOperator() === '!=')
+                            ) {
+                                $otherGroupMatches++;
+                                continue;
+                            }
+
+                            if ($c instanceof AnyDevConstraint) {
+                                continue;
+                            }
+
+                            // == x && != x cancel each other, make sure none of these appears in the output
+                            if (
+                                $c->getOperator() === '=='
+                                && $c2->getOperator() === '!='
+                                && $c->getVersion() === $c2->getVersion()
+                            ) {
+                                $disallowlist[(string) $c] = true;
+                                $disallowlist[(string) $c2] = true;
+                            }
+
+                            // == x && != y turns into == x if != y group has a single constraint
+                            if (
+                                $c->getOperator() === '=='
+                                && $c2->getOperator() === '!='
+                                && $c->getVersion() !== $c2->getVersion()
+                            ) {
+                                $otherGroupMatches++;
+                                $disallowlist[(string) $c2] = true;
+                            }
+                        }
+                    }
+
+                    // only keep constraints which appear in all conjunctive sub-constraints
+                    if ($otherGroupMatches >= \count($branchesGroups) - 1) {
                         $branchConstraints[(string) $c] = $c;
                     }
                 }
