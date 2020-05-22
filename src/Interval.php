@@ -46,7 +46,7 @@ class Interval
     /**
      * @return Constraint
      */
-    public static function zero()
+    public static function fromZero()
     {
         static $zero;
 
@@ -60,7 +60,7 @@ class Interval
     /**
      * @return Constraint
      */
-    public static function positiveInfinity()
+    public static function untilPositiveInfinity()
     {
         static $positiveInfinity;
 
@@ -76,7 +76,7 @@ class Interval
      */
     public static function any()
     {
-        return new self(self::zero(), self::positiveInfinity());
+        return new self(self::fromZero(), self::untilPositiveInfinity());
     }
 
     /**
