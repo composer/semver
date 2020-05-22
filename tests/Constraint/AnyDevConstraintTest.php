@@ -50,7 +50,9 @@ class AnyDevConstraintTest extends TestCase
             array(new AnyDevConstraint()),
             array(new Constraint('!=', '1.1')),
             array(new Constraint('==', 'dev-foo')),
+            array(new Constraint('!=', 'dev-foo')),
             array(new MultiConstraint(array(new Constraint('==', 'dev-foo'), new Constraint('==', 'dev-bar')), false)),
+            array(new MultiConstraint(array(new Constraint('==', 'dev-foo'), new Constraint('!=', 'dev-bar')), true)),
         );
     }
 
@@ -74,7 +76,6 @@ class AnyDevConstraintTest extends TestCase
     public function provideNotMatchingConstraints()
     {
         return array(
-            array(new Constraint('!=', 'dev-foo')),
             array(new Constraint('<=', 'dev-foo')),
             array(new Constraint('<', 'dev-foo')),
             array(new Constraint('>=', 'dev-foo')),
@@ -83,7 +84,6 @@ class AnyDevConstraintTest extends TestCase
             array(new Constraint('<', '1.0.0')),
             array(new Constraint('>=', '1.0.0')),
             array(new Constraint('>', '1.0.0')),
-            array(new MultiConstraint(array(new Constraint('==', 'dev-foo'), new Constraint('!=', 'dev-bar')), true)),
         );
     }
 

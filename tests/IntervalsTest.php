@@ -16,6 +16,7 @@ use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Semver\Constraint\MultiConstraint;
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\MatchNoneConstraint;
+use Composer\Semver\Constraint\AnyDevConstraint;
 
 class IntervalsTest extends TestCase
 {
@@ -85,12 +86,17 @@ class IntervalsTest extends TestCase
                 array('!= 1.2', '!= 1.6'),
                 true
             ),
+            'simple conjunctive results in same output/2' => array(
+                '!= 1.0, != 2.0',
+                array('!= 1.0', '!= 2.0'),
+                true
+            ),
             'does not switch to conjunctive if more than != x is present' => array(
                 '> 1.5, < 2.0-stable || > 2.0',
                 array('!= 2.0', '> 1.5'),
                 true
             ),
-            'simple conjunctive results in same output/2' => array(
+            'complex conjunctive with dev' => array(
                 '!= 1.0, != 2.0',
                 array('!= 1.0', '!= 2.0'),
                 true
@@ -99,6 +105,76 @@ class IntervalsTest extends TestCase
                 '!= 1.0',
                 array('!= 1.0', '!= 1.0'),
                 false
+            ),
+            'disjunctive with complex negation' => array(
+                '*',
+                array('!= 1.0', '!= 1.0', '!= dev-foo', '1.0.5.*'),
+                false
+            ),
+            'conjunctive with complex negation' => array(
+                '1.0.5.*',
+                array('!= 1.0', '!= 1.0', '!= dev-foo', '1.0.5.*'),
+                true
+            ),
+            'conjunctive with complex negation/2' => array(
+                '>= 1.0-dev, <1.2-stable || >1.2-stable <2',
+                array('!= 1.2', '!= dev-foo', '!= dev-bar', '1.*'),
+                true
+            ),
+            'conjunctive with complex negation/3' => array(
+                '!= 1.2, != dev-foo, != dev-bar',
+                array('!= 1.2', '!= dev-foo', '!= dev-bar'),
+                true
+            ),
+            'disjunctive with complex negation/3' => array(
+                '*',
+                array('!= 1.2', '!= dev-foo', '!= dev-bar'),
+                false
+            ),
+            'conjunctive with complex negation/4' => array(
+                '== dev-foo',
+                array('!= 1.2', '== dev-foo', '!= dev-bar'),
+                true
+            ),
+            'disjunctive with complex negation and dev ==' => array(
+                '*',
+                array('!= 1.0', '!= 1.0', '!= dev-foo', '1.0.5.*', '== dev-bla'),
+                false
+            ),
+            'conjunctive with complex negation and dev ==' => array(
+                'dev-bla',
+                array('!= 1.0', '!= 1.0', '!= dev-foo', '== dev-bla'),
+                true
+            ),
+            'complex conjunctive which can not match anything' => array(
+                self::COMPACT_NONE,
+                array('!= 1.0', '!= 1.0', '!= dev-foo', '1.0.5.*', '== dev-bla'),
+                true
+            ),
+            'conjunctive with more than one dev negation' => array(
+                '!= dev-master, != dev-foo',
+                array('!= dev-master', '!= dev-foo'),
+                true
+            ),
+            'conjunctive with mix of devs' => array(
+                '== dev-foo',
+                array('!= dev-master', '== dev-foo'),
+                true
+            ),
+            'disjunctive with mix of devs' => array(
+                '!= dev-master',
+                array('!= dev-master', '== dev-foo'),
+                false
+            ),
+            'conjunctive with more than one dev negation, and numeric constraint' => array(
+                '> 5',
+                array('!= dev-master', '!= dev-foo', '> 5'),
+                true
+            ),
+            'conjunctive with more than one of the same dev negation' => array(
+                '!= dev-foo',
+                array('!= dev-foo', '!= dev-foo'),
+                true
             ),
             'does not switch to conjunctive when too complex' => array(
                 '<3-stable || >3-stable, <5 || >=6, <9',
@@ -319,6 +395,41 @@ class IntervalsTest extends TestCase
                 self::INTERVAL_NONE,
                 '== 1.0, != 1.0'
             ),
+            'conjunctive constraints result in no interval if conflicting/4' => array(
+                self::INTERVAL_NONE,
+                '> 1.0, dev-master'
+            ),
+            'conjunctive constraints result in no branches interval if numeric is provided' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '> 5.0.0.0',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array()),
+                '!= dev-master, != dev-foo, > 5'
+            ),
+            'conjunctive constraints result in no branches interval if numeric is provided, even if one matches dev*' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '> 5.0.0.0',
+                        'end' => '< 6.0.0.0',
+                    ),
+                    array(
+                        'start' => '> 6.0.0.0',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array()),
+                '!= 6, > 5'
+            ),
+            'disjunctive constraints keeps branch intervals if numeric is provided' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('!= dev-master', '!= dev-foo')),
+                '!= dev-master, != dev-foo || > 5'
+            ),
             'conjunctive constraints should be intersected' => array(
                 array('numeric' => array(
                     array(
@@ -440,7 +551,7 @@ class IntervalsTest extends TestCase
                         'start' => '> 1.4.5.0',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array('!= dev-foo', '!= dev-master')),
+                ), 'branches' => array()),
                 '!= 1.4.5, ^1.0, != 1.2.3, != 2.3, != dev-foo, != dev-master'
             ),
             'conjunctive constraints with dev exact versions suppresses the number scope matches' => array(
@@ -467,8 +578,8 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-foo', '< dev-foo')),
-                '^1.0 || != dev-foo || < dev-foo'
+                ), 'branches' => array('!= dev-foo')),
+                '^1.0 || != dev-foo'
             ),
             'disjunctive constraints with exclusions, if matches * in number scope and dev scope, then * is returned' => array(
                 self::INTERVAL_ANY,
@@ -508,7 +619,7 @@ class IntervalsTest extends TestCase
                 array('numeric' => array(), 'branches' => array('== dev-master')),
                 'dev-master, dev-master'
             ),
-            'conjunctive constraints with dev exclusion, should result in * with dev exclusion' => array(
+            'conjunctive constraints with same dev exclusion, should result in * with dev exclusion' => array(
                 array('numeric' => array(
                     array(
                         'start' => '>= 0.0.0.0-dev',
@@ -516,6 +627,15 @@ class IntervalsTest extends TestCase
                     ),
                 ), 'branches' => array('!= dev-master')),
                 '!= dev-master, != dev-master'
+            ),
+            'conjunctive constraints with different dev exclusion, should result in * with dev exclusions' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('!= dev-master', '!= dev-foo')),
+                '!= dev-master, != dev-foo'
             ),
             'disjunctive constraints with exact versions' => array(
                 array('numeric' => array(
@@ -550,6 +670,127 @@ class IntervalsTest extends TestCase
             'disjunctive constraints with * and dev exclusion should not return the dev exclusion' => array(
                 self::INTERVAL_ANY,
                 '!= dev-foo || *'
+            ),
+            'conjunctive constraints with various dev constraints' => array(
+                array('numeric' => array(), 'branches' => array('!= dev-foo')),
+                new MultiConstraint(array(
+                    new Constraint('!=', 'dev-foo'),
+                    new AnyDevConstraint(),
+                ), true)
+            ),
+            'conjunctive constraints with various dev constraints/2' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '> 5.0.0.0',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array()),
+                '> 5, *'
+            ),
+            'conjunctive constraints with various dev constraints/3' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '> 5.0.0.0',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array()),
+                '!= dev-foo, > 5'
+            ),
+            'conjunctive constraints with various dev constraints/4' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('!= dev-foo')),
+                '!= dev-foo, != dev-foo'
+            ),
+            'conjunctive constraints with various dev constraints/5' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('!= dev-foo', '!= dev-bar')),
+                '!= dev-foo, != dev-bar'
+            ),
+            'conjunctive constraints with various dev constraints/6' => array(
+                array('numeric' => array(), 'branches' => array('== dev-bar')),
+                '!= dev-foo, == dev-bar'
+            ),
+            'conjunctive constraints with various dev constraints/7' => array(
+                self::INTERVAL_NONE,
+                'dev-foo, > 5'
+            ),
+            'complex conjunctive which can not match anything' => array(
+                self::INTERVAL_NONE,
+                '!= 1.0, != 1.0, != dev-foo, 1.0.5.*, == dev-bla'
+            ),
+            'conjunctive with more than one dev negation' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('!= dev-master', '!= dev-foo')),
+                '!= dev-master, != dev-foo'
+            ),
+            'disjunctive constraints with various dev constraints' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('!= dev-foo')),
+                '!= dev-foo, != dev-bar || != dev-foo'
+            ),
+            'disjunctive constraints with various dev constraints/2' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('!= dev-foo', '!= dev-bar')),
+                '!= dev-foo, != dev-bar || != dev-foo, != dev-bar'
+            ),
+            'disjunctive constraints with various dev constraints/3' => array(
+                self::INTERVAL_ANY,
+                new MultiConstraint(array(
+                    new MultiConstraint(array(new Constraint('!=', 'dev-foo'), new Constraint('!=', 'dev-bar')), true),
+                    new AnyDevConstraint(),
+                ), false)
+            ),
+            'disjunctive constraints with various dev constraints/4' => array(
+                array('numeric' => array(),
+                    'branches' => array('== dev-foo', '== dev-bar'),
+                ),
+                '== dev-foo || == dev-bar'
+            ),
+            'disjunctive constraints with various dev constraints/5' => array(
+                self::INTERVAL_ANY,
+                '== dev-foo || != dev-foo'
+            ),
+            'disjunctive constraints with various dev constraints/6' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('!= dev-bar')),
+                '== dev-foo || != dev-bar'
+            ),
+            'disjunctive constraints with various dev constraints/7' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('!= dev-bar')),
+                '== dev-foo || != dev-bar || != dev-bar'
+            ),
+            'disjunctive constraints with various dev constraints/8' => array(
+                self::INTERVAL_ANY,
+                '== dev-foo || != dev-bar || != dev-foo'
             ),
             'match-none constraints result in no interval' => array(
                 self::INTERVAL_NONE,
