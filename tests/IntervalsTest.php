@@ -181,6 +181,11 @@ class IntervalsTest extends TestCase
                 array('!= 3, <5', '>=6, <9'),
                 false
             ),
+            'conjunctive with multiple numeric negations and a disjunctive exact match for dev versions' => array(
+                '== dev-foo || == dev-bar',
+                array('!= 1.0', '!= 2.0', '==dev-foo || ==dev-bar'),
+                true,
+            ),
         );
     }
 

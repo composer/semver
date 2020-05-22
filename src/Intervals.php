@@ -138,7 +138,6 @@ class Intervals
         $constraints = array();
         $hasNumericMatchAll = false;
         $isConjunctive = false;
-
         $count = \count($intervals['numeric']);
         // attempt to convert back 0 - <x + >x - +inf to != x as long as we only have some of those, otherwise bail out of this optimization
         if ($count > 1 && (string) $intervals['numeric'][0]->getStart() === (string) Interval::zero() && (string) $intervals['numeric'][$count-1]->getEnd() === (string) Interval::positiveInfinity()) {
@@ -220,6 +219,10 @@ class Intervals
                     $constraints = array_merge($constraints, $devConstraints);
                 }
             } else {
+                if (count($devConstraints) > 1 && $isConjunctive) {
+                    // cannot happen because the dev constraints would have had numeric interval none which would have canceled out any !=numeric operators which lead to $isConjunctive
+                    throw new \LogicException("Compaction logic error: it should be impossible for more than one dev constraint to be added when the constraint is conjunctive");
+                }
                 $constraints = array_merge($constraints, $devConstraints);
             }
         }
