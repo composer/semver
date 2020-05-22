@@ -178,6 +178,8 @@ class Intervals
             }
         }
 
+        $devConstraints = array();
+        $allDevConstraintsAreNegations = true;
         foreach ($intervals['branches'] as $branchConstraint) {
             if ($branchConstraint instanceof AnyDevConstraint) {
                 if ($hasNumericMatchAll) {
@@ -190,7 +192,28 @@ class Intervals
                 }
             }
 
-            $constraints[] = $branchConstraint;
+            if ($branchConstraint->getOperator() !== '!=') {
+                $allDevConstraintsAreNegations = false;
+            }
+            $devConstraints[] = $branchConstraint;
+        }
+
+        if (\count($devConstraints) === 0) {
+            // noop
+        } elseif ($allDevConstraintsAreNegations && !$isConjunctive) {
+            if (\count($devConstraints) > 1) {
+                $devConstraint = new MultiConstraint($devConstraints, true);
+            } else {
+                $devConstraint = $devConstraints[0];
+            }
+
+            if (\count($constraints) === 1 && (string) $constraints[0] === (string) Interval::zero()) {
+                return $devConstraint;
+            }
+
+            $constraints[] = $devConstraint;
+        } else {
+            $constraints = array_merge($constraints, $devConstraints);
         }
 
         if (\count($constraints) > 1) {
