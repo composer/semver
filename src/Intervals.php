@@ -265,6 +265,10 @@ class Intervals
             return self::generateSingleConstraintIntervals($constraint);
         }
 
+        if ($constraint instanceof AnyDevConstraint) {
+            return array('numeric' => array(), 'branches' => array($constraint));
+        }
+
         if (!$constraint instanceof MultiConstraint) {
             throw new \UnexpectedValueException('The constraint passed in should be an MatchAllConstraint, Constraint or MultiConstraint instance, got '.get_class($constraint).'.');
         }
