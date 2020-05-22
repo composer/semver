@@ -13,6 +13,7 @@ namespace Composer\Semver;
 
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\ConstraintInterface;
+use Composer\Semver\Constraint\CompilableConstraintInterface;
 use Composer\Semver\Constraint\MatchAllConstraint;
 use Composer\Semver\Constraint\MatchNoneConstraint;
 use Composer\Semver\Constraint\AnyDevConstraint;
@@ -123,7 +124,7 @@ class Intervals
      * and then creates a new constraint containing only the smallest amount of rules
      * to match the same intervals.
      *
-     * @return ConstraintInterface
+     * @return CompilableConstraintInterface
      */
     public static function compactConstraint(ConstraintInterface $constraint)
     {
