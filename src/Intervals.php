@@ -153,6 +153,9 @@ class Intervals
                 if ($interval->getEnd()->getOperator() === '<' && $i+1 < $count) {
                     $nextInterval = $intervals['numeric'][$i+1];
                     if ($interval->getEnd()->getVersion() === $nextInterval->getStart()->getVersion() && $nextInterval->getStart()->getOperator() === '>') {
+                        // only add a start if we didn't already do so, can be skipped if we're looking at second
+                        // interval in [>=M, <N] || [>N, <P] || [>P, <Q] where unEqualConstraints currently contains
+                        // [>=M, !=N] already and we only want to add !=P right now
                         if (\count($unEqualConstraints) === 0 && (string) $interval->getStart() !== (string) Interval::fromZero()) {
                             $unEqualConstraints[] = $interval->getStart();
                         }
