@@ -218,24 +218,21 @@ class Intervals
             // excluded branches, e.g. != dev-foo are conjunctive with the interval, so
             // > 2.0 != dev-foo must return a conjunctive constraint
             if ($intervals['branches']['exclude']) {
-                if (\count($devConstraints) > 1) {
-                    $devConstraint = new MultiConstraint($devConstraints, true);
-                } else {
-                    $devConstraint = $devConstraints[0];
-                }
-
-                if (\count($constraints) === 1 && (string)$constraints[0] === (string)Interval::fromZero()) {
-                    return $devConstraint;
-                }
-
                 if (\count($constraints) > 1) {
-                    return new MultiConstraint(array(
-                            new MultiConstraint($constraints, false),
-                            $devConstraint
+                    return new MultiConstraint(array_merge(
+                            array(new MultiConstraint($constraints, false)),
+                            $devConstraints
                         ), true);
                 }
 
-                return new MultiConstraint(array_merge(array($constraints[0]), $devConstraints), true);
+                if (\count($constraints) === 1 && (string)$constraints[0] === (string)Interval::fromZero()) {
+                    if (\count($devConstraints) > 1) {
+                        return new MultiConstraint($devConstraints, true);
+                    }
+                    return $devConstraints[0];
+                }
+
+                return new MultiConstraint(array_merge($constraints, $devConstraints), true);
             }
 
             // otherwise devConstraints contains a list of == operators for branches which are disjunctive with the
