@@ -91,8 +91,8 @@ class IntervalsTest extends TestCase
                 array('!= 1.0', '!= 2.0'),
                 true
             ),
-            'does not switch to conjunctive if more than != x is present' => array(
-                '> 1.5, < 2.0-stable || > 2.0',
+            'switches to conjunctive if more than != x is present' => array(
+                '>1.5, != 2.0',
                 array('!= 2.0', '> 1.5'),
                 true
             ),
@@ -117,7 +117,7 @@ class IntervalsTest extends TestCase
                 true
             ),
             'conjunctive with complex negation/2' => array(
-                '>= 1.0-dev, <1.2-stable || >1.2-stable <2',
+                '>= 1.0-dev, != 1.2-stable, <2',
                 array('!= 1.2', '!= dev-foo', '!= dev-bar', '1.*'),
                 true
             ),
@@ -176,10 +176,15 @@ class IntervalsTest extends TestCase
                 array('!= dev-foo', '!= dev-foo'),
                 true
             ),
-            'does not switch to conjunctive when too complex' => array(
-                '<3-stable || >3-stable, <5 || >=6, <9',
+            'switches to conjunctive when excluding versions and complex' => array(
+                '!= 3-stable, <5 || >=6, <9',
                 array('!= 3, <5', '>=6, <9'),
                 false
+            ),
+            'conjunctive with multiple numeric negations and a disjunctive exact match for dev versions' => array(
+                '== dev-foo || == dev-bar',
+                array('!= 1.0', '!= 2.0', '==dev-foo || ==dev-bar'),
+                true,
             ),
         );
     }
@@ -200,9 +205,6 @@ class IntervalsTest extends TestCase
                 if ($c instanceof Interval) {
                     $c = array('start' => (string) $c->getStart(), 'end' => (string) $c->getEnd());
                 }
-                if ($c instanceof ConstraintInterface) {
-                    $c = (string) $c;
-                }
             });
         }
 
@@ -212,7 +214,7 @@ class IntervalsTest extends TestCase
                     'start' => '>= 0.0.0.0-dev',
                     'end' => '< '.PHP_INT_MAX.'.0.0.0',
                 ),
-            ), 'branches' => array('dev*'));
+            ), 'branches' => Interval::anyDev());
         }
 
         if ($expected === self::INTERVAL_ANY_NODEV) {
@@ -221,11 +223,11 @@ class IntervalsTest extends TestCase
                     'start' => '>= 0.0.0.0-dev',
                     'end' => '< '.PHP_INT_MAX.'.0.0.0',
                 ),
-            ), 'branches' => array());
+            ), 'branches' => Interval::noDev());
         }
 
         if ($expected === self::INTERVAL_NONE) {
-            $expected = array('numeric' => array(), 'branches' => array());
+            $expected = array('numeric' => array(), 'branches' => Interval::noDev());
         }
 
         $this->assertSame($expected, $result);
@@ -240,7 +242,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '^1.0'
             ),
             'simple case/2' => array(
@@ -249,7 +251,7 @@ class IntervalsTest extends TestCase
                         'start' => '> 1.0.0.0',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '> 1.0'
             ),
             'intervals should be sorted' => array(
@@ -270,7 +272,7 @@ class IntervalsTest extends TestCase
                         'start' => '> 2.3.0.0',
                         'end' => '< 2.5.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '1.3.4 || 1.2.3 || >2.3,<2.5 || <1,>=0.9'
             ),
             'intervals should be sorted and consecutive ones merged' => array(
@@ -283,7 +285,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 3.0.0.0-dev',
                         'end' => '< 5.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '^4.0 || ^1.0 || ^3.0'
             ),
             'consecutive intervals should be merged even if one has no end' => array(
@@ -292,7 +294,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 4.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '^4.0 || >= 5'
             ),
             'consecutive intervals should be merged even if one has no start' => array(
@@ -301,7 +303,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< 6.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '>= 5,< 6 || < 5'
             ),
             'consecutive intervals representing everything should become *' => array(
@@ -318,7 +320,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 3.0.0.0-dev',
                         'end' => '< 5.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '^4.0 || ^1.1 || ^3.0 || ^1.2'
             ),
             'intervals should be sorted and overlapping ones merged/2' => array(
@@ -327,7 +329,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 1.5.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '1.2 - 1.4 || 1.0 - 1.3'
             ),
             'overlapping intervals should be merged even if the last has no end' => array(
@@ -336,7 +338,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 4.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '^4.0 || >= 4.5'
             ),
             'overlapping intervals should be merged even if the first has no start' => array(
@@ -345,7 +347,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< 6.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '>= 5,< 6 || < 5.3'
             ),
             'overlapping intervals representing everything should become *' => array(
@@ -358,7 +360,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '^1.0 || ^1.0'
             ),
             'weird input order should still be a good result' => array(
@@ -367,7 +369,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '< 2.0 || < 1.2'
             ),
             'weird input order should still be a good result, matches everything' => array(
@@ -380,7 +382,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '< 2.0, >= 1'
             ),
             'conjunctive constraints result in no interval if conflicting' => array(
@@ -405,7 +407,7 @@ class IntervalsTest extends TestCase
                         'start' => '> 5.0.0.0',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '!= dev-master, != dev-foo, > 5'
             ),
             'conjunctive constraints result in no branches interval if numeric is provided, even if one matches dev*' => array(
@@ -418,7 +420,7 @@ class IntervalsTest extends TestCase
                         'start' => '> 6.0.0.0',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '!= 6, > 5'
             ),
             'disjunctive constraints keeps branch intervals if numeric is provided' => array(
@@ -427,7 +429,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-master', '!= dev-foo')),
+                ), 'branches' => array('names' => array('dev-master', 'dev-foo'), 'exclude' => true)),
                 '!= dev-master, != dev-foo || > 5'
             ),
             'conjunctive constraints should be intersected' => array(
@@ -436,7 +438,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.2.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '^1.0, ^1.2'
             ),
             'conjunctive constraints should be intersected/2' => array(
@@ -445,7 +447,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.5.0.0-dev',
                         'end' => '< 1.7.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '^1.0, ^1.2, 1.4 - 1.8, 1.5 - 1.6, 1.5 - 2'
             ),
             'conjunctive constraints should be intersected, not flattened by version parser' => array(
@@ -454,7 +456,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.5.0.0-dev',
                         'end' => '< 1.7.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 new MultiConstraint(array(
                     new MultiConstraint(array(
                         new Constraint('>=', '1.0.0.0-dev'),
@@ -488,7 +490,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.12.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 new MultiConstraint(array(
                     new MultiConstraint(array( // 1.0 - 1.2 || ^1.5
                         new MultiConstraint(array(
@@ -518,7 +520,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.3.2.0-dev',
                         'end' => '<= 1.3.2.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 new MultiConstraint(array(
                     new MultiConstraint(array(
                         new Constraint('==', '1.3.1.0-dev'),
@@ -534,7 +536,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.5.0.0-dev',
                         'end' => '< 3.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '1.5 - 2'
             ),
             'conjunctive constraints with dev exclusions' => array(
@@ -551,7 +553,7 @@ class IntervalsTest extends TestCase
                         'start' => '> 1.4.5.0',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '!= 1.4.5, ^1.0, != 1.2.3, != 2.3, != dev-foo, != dev-master'
             ),
             'conjunctive constraints with dev exact versions suppresses the number scope matches' => array(
@@ -560,7 +562,7 @@ class IntervalsTest extends TestCase
             ),
             'conjunctive constraints with dev exact versions suppresses the number scope matches, but keeps dev- match if number constraints allowed dev*' => array(
                 array('numeric' => array(
-                ), 'branches' => array('== dev-foo')),
+                ), 'branches' => array('names' => array('dev-foo'), 'exclude' => false)),
                 '!= 1.2.3, != 2.3, == dev-foo, == dev-foo'
             ),
             'disjunctive constraints with exclusions in dev constraints makes the number scope match *' => array(
@@ -569,7 +571,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-foo')),
+                ), 'branches' => array('names' => array('dev-foo'), 'exclude' => true)),
                 '^1.0 || != dev-foo'
             ),
             'disjunctive constraints with exclusions in dev constraints makes number scope match *' => array(
@@ -578,7 +580,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-foo')),
+                ), 'branches' => array('names' => array('dev-foo'), 'exclude' => true)),
                 '^1.0 || != dev-foo'
             ),
             'disjunctive constraints with exclusions, if matches * in number scope and dev scope, then * is returned' => array(
@@ -595,7 +597,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-foo')),
+                ), 'branches' => array('names' => array('dev-foo'), 'exclude' => true)),
                 '^1.0 || != dev-foo || == dev-master'
             ),
             'disjunctive constraints with exact dev matches returns number scope as it should and unique dev constraints' => array(
@@ -604,7 +606,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array('== dev-foo', '== dev-master')),
+                ), 'branches' => array('names' => array('dev-foo', 'dev-master'), 'exclude' => false)),
                 '^1.0 || == dev-foo || == dev-master || == dev-master'
             ),
             'conjunctive constraints with exact versions' => array(
@@ -616,7 +618,7 @@ class IntervalsTest extends TestCase
                 'dev-master, dev-foo'
             ),
             'conjunctive constraints with exact versions, dev only, same version should pass through' => array(
-                array('numeric' => array(), 'branches' => array('== dev-master')),
+                array('numeric' => array(), 'branches' => array('names' => array('dev-master'), 'exclude' => false)),
                 'dev-master, dev-master'
             ),
             'conjunctive constraints with same dev exclusion, should result in * with dev exclusion' => array(
@@ -625,7 +627,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-master')),
+                ), 'branches' => array('names' => array('dev-master'), 'exclude' => true)),
                 '!= dev-master, != dev-master'
             ),
             'conjunctive constraints with different dev exclusion, should result in * with dev exclusions' => array(
@@ -634,7 +636,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-master', '!= dev-foo')),
+                ), 'branches' => array('names' => array('dev-master', 'dev-foo'), 'exclude' => true)),
                 '!= dev-master, != dev-foo'
             ),
             'disjunctive constraints with exact versions' => array(
@@ -643,7 +645,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array('== dev-master', '== dev-foo')),
+                ), 'branches' => array('names' => array('dev-master', 'dev-foo'), 'exclude' => false)),
                 'dev-master || ^1.0 || dev-foo || dev-master'
             ),
             'conjunctive constraints with * should skip it' => array(
@@ -652,7 +654,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 1.0.0.0-dev',
                         'end' => '< 2.0.0.0-dev',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '^1.0, *'
             ),
             'disjunctive constraints with * should result in *' => array(
@@ -671,20 +673,13 @@ class IntervalsTest extends TestCase
                 self::INTERVAL_ANY,
                 '!= dev-foo || *'
             ),
-            'conjunctive constraints with various dev constraints' => array(
-                array('numeric' => array(), 'branches' => array('!= dev-foo')),
-                new MultiConstraint(array(
-                    new Constraint('!=', 'dev-foo'),
-                    new AnyDevConstraint(),
-                ), true)
-            ),
             'conjunctive constraints with various dev constraints/2' => array(
                 array('numeric' => array(
                     array(
                         'start' => '> 5.0.0.0',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '> 5, *'
             ),
             'conjunctive constraints with various dev constraints/3' => array(
@@ -693,7 +688,7 @@ class IntervalsTest extends TestCase
                         'start' => '> 5.0.0.0',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array()),
+                ), 'branches' => Interval::noDev()),
                 '!= dev-foo, > 5'
             ),
             'conjunctive constraints with various dev constraints/4' => array(
@@ -702,7 +697,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-foo')),
+                ), 'branches' => array('names' => array('dev-foo'), 'exclude' => true)),
                 '!= dev-foo, != dev-foo'
             ),
             'conjunctive constraints with various dev constraints/5' => array(
@@ -711,11 +706,11 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-foo', '!= dev-bar')),
+                ), 'branches' => array('names' => array('dev-foo', 'dev-bar'), 'exclude' => true)),
                 '!= dev-foo, != dev-bar'
             ),
             'conjunctive constraints with various dev constraints/6' => array(
-                array('numeric' => array(), 'branches' => array('== dev-bar')),
+                array('numeric' => array(), 'branches' => array('names' => array('dev-bar'), 'exclude' => false)),
                 '!= dev-foo, == dev-bar'
             ),
             'conjunctive constraints with various dev constraints/7' => array(
@@ -732,7 +727,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-master', '!= dev-foo')),
+                ), 'branches' => array('names' => array('dev-master', 'dev-foo'), 'exclude' => true)),
                 '!= dev-master, != dev-foo'
             ),
             'disjunctive constraints with various dev constraints' => array(
@@ -741,7 +736,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-foo')),
+                ), 'branches' => array('names' => array('dev-foo'), 'exclude' => true)),
                 '!= dev-foo, != dev-bar || != dev-foo'
             ),
             'disjunctive constraints with various dev constraints/2' => array(
@@ -750,19 +745,16 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-foo', '!= dev-bar')),
+                ), 'branches' => array('names' => array('dev-foo', 'dev-bar'), 'exclude' => true)),
                 '!= dev-foo, != dev-bar || != dev-foo, != dev-bar'
             ),
             'disjunctive constraints with various dev constraints/3' => array(
                 self::INTERVAL_ANY,
-                new MultiConstraint(array(
-                    new MultiConstraint(array(new Constraint('!=', 'dev-foo'), new Constraint('!=', 'dev-bar')), true),
-                    new AnyDevConstraint(),
-                ), false)
+                new MultiConstraint(array(new Constraint('!=', 'dev-foo'), new Constraint('!=', 'dev-bar')), false),
             ),
             'disjunctive constraints with various dev constraints/4' => array(
                 array('numeric' => array(),
-                    'branches' => array('== dev-foo', '== dev-bar'),
+                    'branches' => array('names' => array('dev-foo', 'dev-bar'), 'exclude' => false),
                 ),
                 '== dev-foo || == dev-bar'
             ),
@@ -776,7 +768,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-bar')),
+                ), 'branches' => array('names' => array('dev-bar'), 'exclude' => true)),
                 '== dev-foo || != dev-bar'
             ),
             'disjunctive constraints with various dev constraints/7' => array(
@@ -785,7 +777,7 @@ class IntervalsTest extends TestCase
                         'start' => '>= 0.0.0.0-dev',
                         'end' => '< '.PHP_INT_MAX.'.0.0.0',
                     ),
-                ), 'branches' => array('!= dev-bar')),
+                ), 'branches' => array('names' => array('dev-bar'), 'exclude' => true)),
                 '== dev-foo || != dev-bar || != dev-bar'
             ),
             'disjunctive constraints with various dev constraints/8' => array(

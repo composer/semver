@@ -46,7 +46,7 @@ class Interval
     /**
      * @return Constraint
      */
-    public static function zero()
+    public static function fromZero()
     {
         static $zero;
 
@@ -60,7 +60,7 @@ class Interval
     /**
      * @return Constraint
      */
-    public static function positiveInfinity()
+    public static function untilPositiveInfinity()
     {
         static $positiveInfinity;
 
@@ -76,20 +76,24 @@ class Interval
      */
     public static function any()
     {
-        return new self(self::zero(), self::positiveInfinity());
+        return new self(self::fromZero(), self::untilPositiveInfinity());
     }
 
     /**
-     * @return Constraint
+     * @return array{'names': string[], 'exclude': bool}
      */
     public static function anyDev()
     {
-        static $anyDev;
+        // any == exclude nothing
+        return array('names' => array(), 'exclude' => true);
+    }
 
-        if (null === $anyDev) {
-            $anyDev = new AnyDevConstraint;
-        }
-
-        return $anyDev;
+    /**
+     * @return array{'names': string[], 'exclude': bool}
+     */
+    public static function noDev()
+    {
+        // nothing == no names included
+        return array('names' => array(), 'exclude' => false);
     }
 }
