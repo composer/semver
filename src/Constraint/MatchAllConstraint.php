@@ -16,7 +16,7 @@ namespace Composer\Semver\Constraint;
  *
  * This constraint matches everything.
  */
-class MatchAllConstraint implements CompilableConstraintInterface
+class MatchAllConstraint implements ConstraintInterface
 {
     /** @var string|null */
     protected $prettyString;

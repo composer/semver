@@ -21,45 +21,4 @@ class CompilingMatcherTest extends TestCase
     {
         $this->assertTrue(CompilingMatcher::match(new Constraint('>=', '1'), Constraint::OP_EQ, '2'));
     }
-
-    public function testMatchHandleNoCompilable()
-    {
-        $self = $this;
-        $constraint = $this->getMockBuilder('Composer\Semver\Constraint\ConstraintInterface')->getMock();
-        $constraint->expects($this->once())
-            ->method('matches')
-            ->with($this->callback(function($provideConstraint) use ($self) {
-                $self->assertInstanceOf('Composer\Semver\Constraint\Constraint', $provideConstraint);
-                $self->assertSame('== 1', (string) $provideConstraint);
-
-                return true;
-            }))
-            ->willReturn(true);
-
-        // @phpstan-ignore-next-line
-        $this->assertTrue(CompilingMatcher::match($constraint, Constraint::OP_EQ, '1'));
-    }
-
-    public function testMatchHandleNoCompilableInMulti()
-    {
-        $self = $this;
-        $constraint = $this->getMockBuilder('Composer\Semver\Constraint\ConstraintInterface')->getMock();
-        $constraint->expects($this->once())
-            ->method('matches')
-            ->with($this->callback(function($provideConstraint) use ($self) {
-                $self->assertInstanceOf('Composer\Semver\Constraint\Constraint', $provideConstraint);
-                $self->assertSame('== 1', (string) $provideConstraint);
-
-                return true;
-            }))
-            ->willReturn(true);
-
-        // @phpstan-ignore-next-line
-        $multi = new MultiConstraint(array(
-            $constraint,
-            new Constraint('>', '2'),
-        ), true);
-
-        $this->assertFalse(CompilingMatcher::match($multi, Constraint::OP_EQ, '1'));
-    }
 }

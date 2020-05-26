@@ -532,7 +532,7 @@ class ConstraintTest extends TestCase
         return $matrix;
     }
 
-    private function matchCompiled(CompilableConstraintInterface $constraint, $operator, $version)
+    private function matchCompiled(ConstraintInterface $constraint, $operator, $version)
     {
         $map = array(
             '=' => Constraint::OP_EQ,

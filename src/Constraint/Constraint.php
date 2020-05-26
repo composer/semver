@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a constraint.
  */
-class Constraint implements CompilableConstraintInterface
+class Constraint implements ConstraintInterface
 {
     /* operator integer values */
     const OP_EQ = 0;

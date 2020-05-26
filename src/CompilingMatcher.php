@@ -11,10 +11,8 @@
 
 namespace Composer\Semver;
 
-use Composer\Semver\Constraint\CompilableConstraintInterface;
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\ConstraintInterface;
-use Composer\Semver\Constraint\NotCompilableConstraintException;
 
 /**
  * Helper class to evaluate constraint by compiling and reusing the code to evaluate
@@ -51,21 +49,14 @@ class CompilingMatcher
         if (self::$enabled === null) {
             self::$enabled = !\in_array('eval', explode(',', ini_get('disable_functions')), true);
         }
-        if (!self::$enabled || !$constraint instanceof CompilableConstraintInterface) {
+        if (!self::$enabled) {
             return $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));
         }
 
         $cacheKey = $operator.$constraint;
         if (!isset(self::$compiledCheckerCache[$cacheKey])) {
-            try {
-                $code = $constraint->compile($operator);
-                self::$compiledCheckerCache[$cacheKey] = $function = eval('return function($v, $b){return '.$code.';};');
-            } catch (NotCompilableConstraintException $e) {
-                $operator = self::$transOpInt[$operator];
-                self::$compiledCheckerCache[$cacheKey] = $function = function($v, $b) use ($constraint, $operator) {
-                    return $constraint->matches(new Constraint($operator, $v));
-                };
-            }
+            $code = $constraint->compile($operator);
+            self::$compiledCheckerCache[$cacheKey] = $function = eval('return function($v, $b){return '.$code.';};');
         } else {
             $function = self::$compiledCheckerCache[$cacheKey];
         }

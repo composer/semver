@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Blackhole of constraints, nothing escapes it
  */
-class MatchNoneConstraint implements CompilableConstraintInterface
+class MatchNoneConstraint implements ConstraintInterface
 {
     /** @var string|null */
     protected $prettyString;

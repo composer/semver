@@ -13,13 +13,21 @@ namespace Composer\Semver;
 
 use Composer\Semver\Constraint\Constraint;
 use Composer\Semver\Constraint\ConstraintInterface;
-use Composer\Semver\Constraint\CompilableConstraintInterface;
 use Composer\Semver\Constraint\MatchAllConstraint;
 use Composer\Semver\Constraint\MatchNoneConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
 
 /**
- * Helper class to evaluate constraint by compiling and reusing the code to evaluate
+ * Helper class generating intervals from constraints
+ *
+ * This contains utilities for:
+ *
+ *  - compacting an existing constraint which can be used to combine several into one
+ * by creating a MultiConstraint out of the many constraints you have.
+ *
+ *  - checking whether one subset is a subset of another.
+ *
+ * Note: You should call clear to free memoization memory  usage when you are done using this class
  */
 class Intervals
 {
@@ -126,7 +134,7 @@ class Intervals
      * and then creates a new constraint containing only the smallest amount of rules
      * to match the same intervals.
      *
-     * @return CompilableConstraintInterface
+     * @return ConstraintInterface
      */
     public static function compactConstraint(ConstraintInterface $constraint)
     {

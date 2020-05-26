@@ -436,7 +436,7 @@ class MultiConstraintTest extends TestCase
         $this->assertTrue(Intervals::haveIntersections($multiRequire, $versionProvide));
     }
 
-    private function matchCompiled(CompilableConstraintInterface $constraint, $operator, $version)
+    private function matchCompiled(ConstraintInterface $constraint, $operator, $version)
     {
         $map = array(
             '=' => Constraint::OP_EQ,
