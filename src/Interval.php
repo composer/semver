@@ -12,7 +12,6 @@
 namespace Composer\Semver;
 
 use Composer\Semver\Constraint\Constraint;
-use Composer\Semver\Constraint\AnyDevConstraint;
 
 class Interval
 {

@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-### [3.0.0] 2020-05-xx
+### [3.0.0] 2020-05-26
 
   * Break: Renamed `EmptyConstraint`, replace it with `MatchAllConstraint`
   * Break: Unlikely to affect anyone but strictly speaking a breaking change, `*.*` and such variants will not match all `dev-*` versions anymore, only `*` does
@@ -11,7 +11,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   * Added `Intervals` class to check if a constraint is a subsets of another one, and allow compacting complex MultiConstraints into simpler ones
   * Added `CompilingMatcher` class to speed up constraint matching against simple Constraint instances
   * Added `MatchAllConstraint` and `MatchNoneConstraint` which match everything and nothing
-  * Added `AnyDevConstraint` which matches any dev- prefixed version (branches)
   * Added more advanced optimization of contiguous constraints inside MultiConstraint
   * Added tentative support for PHP 8
   * Fixed ConstraintInterface::matches to be commutative in all cases
