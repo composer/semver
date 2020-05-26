@@ -137,31 +137,45 @@ class Intervals
         $intervals = self::generateIntervals($constraint);
         $constraints = array();
         $hasNumericMatchAll = false;
-        $isConjunctive = false;
-        $count = \count($intervals['numeric']);
-        // attempt to convert back 0 - <x + >x - +inf to != x as long as we only have some of those, otherwise bail out of this optimization
-        if ($count > 1 && (string) $intervals['numeric'][0]->getStart() === (string) Interval::fromZero() && (string) $intervals['numeric'][$count-1]->getEnd() === (string) Interval::untilPositiveInfinity()) {
-            $isConjunctive = true;
-            for ($i = 0; $i < $count-1; $i++) {
-                $interval = $intervals['numeric'][$i];
-                if ($interval->getEnd()->getVersion() === $intervals['numeric'][$i+1]->getStart()->getVersion() && $interval->getEnd()->getOperator() === '<' && $intervals['numeric'][$i+1]->getStart()->getOperator() === '>') {
-                    $constraints[] = new Constraint('!=', $interval->getEnd()->getVersion());
-                    continue;
-                }
 
-                $constraints = array();
-                $isConjunctive = false;
-                break;
-            }
-        }
-
-        if (!$isConjunctive) {
+        if (\count($intervals['numeric']) > 0 && (string) $intervals['numeric'][0]->getStart() === (string) Interval::fromZero() && (string) $intervals['numeric'][0]->getEnd() === (string) Interval::untilPositiveInfinity()) {
+            $constraints[] = $intervals['numeric'][0]->getStart();
+            $hasNumericMatchAll = true;
+        } else {
+            $unEqualConstraints = array();
             for ($i = 0, $count = \count($intervals['numeric']); $i < $count; $i++) {
                 $interval = $intervals['numeric'][$i];
-                if ((string) $interval->getStart() === (string) Interval::fromZero() && (string) $interval->getEnd() === (string) Interval::untilPositiveInfinity()) {
-                    $constraints[] = $interval->getStart();
-                    $hasNumericMatchAll = true;
-                    break;
+
+                // if current interval ends with < N and next interval begins with > N we can swap this out for != N
+                // but this needs to happen as a conjunctive expression together with the start of the current interval
+                // and end of next interval, so [>=M, <N] || [>N, <P] => [>=M, !=N, <P] but M/P can be skipped if
+                // they are zero/+inf
+                if ($interval->getEnd()->getOperator() === '<' && $i+1 < $count) {
+                    $nextInterval = $intervals['numeric'][$i+1];
+                    if ($interval->getEnd()->getVersion() === $nextInterval->getStart()->getVersion() && $nextInterval->getStart()->getOperator() === '>') {
+                        if (\count($unEqualConstraints) === 0 && (string) $interval->getStart() !== (string) Interval::fromZero()) {
+                            $unEqualConstraints[] = $interval->getStart();
+                        }
+                        $unEqualConstraints[] = new Constraint('!=', $interval->getEnd()->getVersion());
+                        continue;
+                    }
+                }
+
+                if (\count($unEqualConstraints) > 0) {
+                    // this is where the end of the following interval of a != constraint is added as explained above
+                    if ((string) $interval->getEnd() !== (string) Interval::untilPositiveInfinity()) {
+                        $unEqualConstraints[] = $interval->getEnd();
+                    }
+
+                    // count is 1 if entire constraint is just one != expression
+                    if (\count($unEqualConstraints) > 1) {
+                        $constraints[] = new MultiConstraint($unEqualConstraints, true);
+                    } else {
+                        $constraints[] = $unEqualConstraints[0];
+                    }
+
+                    $unEqualConstraints = array();
+                    continue;
                 }
 
                 // convert back >= x - <= x intervals to == x
@@ -187,11 +201,7 @@ class Intervals
                 if ($hasNumericMatchAll) {
                     return new MatchAllConstraint;
                 }
-                // if conjunctive, then the constraint consists only of != operators, we already match all dev versions
-                if (!$isConjunctive) {
-                    // exclude nothing so allow all dev versions, this should not be possible while disallowing all numeric versions
-                    throw new \RuntimeException("Unexpected constraint compaction: cannot represent constraint matching any branch but no numeric version.");
-                }
+                // otherwise constraint should contain a != operator and already cover this
             }
         } else {
             foreach ($intervals['branches']['names'] as $branchName) {
@@ -202,33 +212,36 @@ class Intervals
                 }
             }
 
+            // excluded branches, e.g. != dev-foo are conjunctive with the interval, so
+            // > 2.0 != dev-foo must return a conjunctive constraint
             if ($intervals['branches']['exclude']) {
-                if (!$isConjunctive) {
-                    if (\count($devConstraints) > 1) {
-                        $devConstraint = new MultiConstraint($devConstraints, true);
-                    } else {
-                        $devConstraint = $devConstraints[0];
-                    }
-
-                    if (\count($constraints) === 1 && (string)$constraints[0] === (string)Interval::fromZero()) {
-                        return $devConstraint;
-                    }
-
-                    $constraints[] = $devConstraint;
+                if (\count($devConstraints) > 1) {
+                    $devConstraint = new MultiConstraint($devConstraints, true);
                 } else {
-                    $constraints = array_merge($constraints, $devConstraints);
+                    $devConstraint = $devConstraints[0];
                 }
-            } else {
-                if (count($devConstraints) > 1 && $isConjunctive) {
-                    // cannot happen because the dev constraints would have had numeric interval none which would have canceled out any !=numeric operators which lead to $isConjunctive
-                    throw new \LogicException("Compaction logic error: it should be impossible for more than one dev constraint to be added when the constraint is conjunctive");
+
+                if (\count($constraints) === 1 && (string)$constraints[0] === (string)Interval::fromZero()) {
+                    return $devConstraint;
                 }
-                $constraints = array_merge($constraints, $devConstraints);
+
+                if (\count($constraints) > 1) {
+                    return new MultiConstraint(array(
+                            new MultiConstraint($constraints, false),
+                            $devConstraint
+                        ), true);
+                }
+
+                return new MultiConstraint(array_merge(array($constraints[0]), $devConstraints), true);
             }
+
+            // otherwise devConstraints contains a list of == operators for branches which are disjunctive with the
+            // rest of the constraint
+            $constraints = array_merge($constraints, $devConstraints);
         }
 
         if (\count($constraints) > 1) {
-            return new MultiConstraint($constraints, $isConjunctive);
+            return new MultiConstraint($constraints, false);
         }
 
         if (\count($constraints) === 1) {

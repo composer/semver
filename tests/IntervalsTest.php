@@ -91,8 +91,8 @@ class IntervalsTest extends TestCase
                 array('!= 1.0', '!= 2.0'),
                 true
             ),
-            'does not switch to conjunctive if more than != x is present' => array(
-                '> 1.5, < 2.0-stable || > 2.0',
+            'switches to conjunctive if more than != x is present' => array(
+                '>1.5, != 2.0',
                 array('!= 2.0', '> 1.5'),
                 true
             ),
@@ -117,7 +117,7 @@ class IntervalsTest extends TestCase
                 true
             ),
             'conjunctive with complex negation/2' => array(
-                '>= 1.0-dev, <1.2-stable || >1.2-stable <2',
+                '>= 1.0-dev, != 1.2-stable, <2',
                 array('!= 1.2', '!= dev-foo', '!= dev-bar', '1.*'),
                 true
             ),
@@ -176,8 +176,8 @@ class IntervalsTest extends TestCase
                 array('!= dev-foo', '!= dev-foo'),
                 true
             ),
-            'does not switch to conjunctive when too complex' => array(
-                '<3-stable || >3-stable, <5 || >=6, <9',
+            'switches to conjunctive when excluding versions and complex' => array(
+                '!= 3-stable, <5 || >=6, <9',
                 array('!= 3, <5', '>=6, <9'),
                 false
             ),
