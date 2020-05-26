@@ -12,11 +12,9 @@
 namespace Composer\Semver\Constraint;
 
 /**
- * Defines the absence of a constraint.
- *
- * This constraint matches everything.
+ * Blackhole of constraints, nothing escapes it
  */
-class MatchAllConstraint implements ConstraintInterface
+class MatchNoneConstraint implements ConstraintInterface
 {
     /** @var string|null */
     protected $prettyString;
@@ -28,12 +26,12 @@ class MatchAllConstraint implements ConstraintInterface
      */
     public function matches(ConstraintInterface $provider)
     {
-        return true;
+        return false;
     }
 
     public function compile($operator)
     {
-        return 'true';
+        return 'false';
     }
 
     /**
@@ -61,7 +59,7 @@ class MatchAllConstraint implements ConstraintInterface
      */
     public function __toString()
     {
-        return '*';
+        return '[]';
     }
 
     /**
@@ -69,7 +67,7 @@ class MatchAllConstraint implements ConstraintInterface
      */
     public function getUpperBound()
     {
-        return Bound::positiveInfinity();
+        return new Bound('0.0.0.0-dev', false);
     }
 
     /**
@@ -77,6 +75,6 @@ class MatchAllConstraint implements ConstraintInterface
      */
     public function getLowerBound()
     {
-        return Bound::zero();
+        return new Bound('0.0.0.0-dev', false);
     }
 }

@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a conjunctive or disjunctive set of constraints.
  */
-class MultiConstraint implements CompilableConstraintInterface
+class MultiConstraint implements ConstraintInterface
 {
     /** @var ConstraintInterface[] */
     protected $constraints;
@@ -82,9 +82,6 @@ class MultiConstraint implements CompilableConstraintInterface
     {
         $parts = array();
         foreach ($this->constraints as $constraint) {
-            if (!$constraint instanceof CompilableConstraintInterface) {
-                throw new NotCompilableConstraintException(sprintf('The constraint "%s" is not compilable.', (string) $constraint));
-            }
             $code = $constraint->compile($otherOperator);
             if ($code === 'true') {
                 if (!$this->conjunctive) {

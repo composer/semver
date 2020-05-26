@@ -12,6 +12,7 @@
 namespace Composer\Semver;
 
 use Composer\Semver\Constraint\Constraint;
+use Composer\Semver\Constraint\AnyDevConstraint;
 
 class Interval
 {
@@ -45,7 +46,7 @@ class Interval
     /**
      * @return Constraint
      */
-    public static function zero()
+    public static function fromZero()
     {
         static $zero;
 
@@ -59,7 +60,7 @@ class Interval
     /**
      * @return Constraint
      */
-    public static function positiveInfinity()
+    public static function untilPositiveInfinity()
     {
         static $positiveInfinity;
 
@@ -75,22 +76,24 @@ class Interval
      */
     public static function any()
     {
-        return new self(self::zero(), self::positiveInfinity());
+        return new self(self::fromZero(), self::untilPositiveInfinity());
     }
 
     /**
-     * @return Constraint
+     * @return array{'names': string[], 'exclude': bool}
      */
     public static function anyDev()
     {
-        static $anyDev;
+        // any == exclude nothing
+        return array('names' => array(), 'exclude' => true);
+    }
 
-        if (null === $anyDev) {
-            // this ideally should be an MatchAllConstraint but the code expects Constraint instances so
-            // this makes it work with less workarounds/checks above
-            $anyDev = new Constraint('==', 'dev*');
-        }
-
-        return $anyDev;
+    /**
+     * @return array{'names': string[], 'exclude': bool}
+     */
+    public static function noDev()
+    {
+        // nothing == no names included
+        return array('names' => array(), 'exclude' => false);
     }
 }

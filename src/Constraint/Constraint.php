@@ -14,7 +14,7 @@ namespace Composer\Semver\Constraint;
 /**
  * Defines a constraint.
  */
-class Constraint implements CompilableConstraintInterface
+class Constraint implements ConstraintInterface
 {
     /* operator integer values */
     const OP_EQ = 0;
@@ -113,7 +113,7 @@ class Constraint implements CompilableConstraintInterface
      */
     public function matches(ConstraintInterface $provider)
     {
-        if ($provider instanceof $this) {
+        if ($provider instanceof self) {
             return $this->matchSpecific($provider);
         }
 
@@ -149,6 +149,17 @@ class Constraint implements CompilableConstraintInterface
     public static function getSupportedOperators()
     {
         return array_keys(self::$transOpStr);
+    }
+
+    /**
+     * @param  string $operator
+     * @return int
+     *
+     * @phpstan-return self::OP_*
+     */
+    public static function getOperatorConstant($operator)
+    {
+        return self::$transOpStr[$operator];
     }
 
     /**

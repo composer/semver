@@ -56,6 +56,8 @@ class MultiConstraintTest extends TestCase
         $this->assertTrue($versionProvide->matches($multiRequire));
         $this->assertTrue($this->matchCompiled($multiRequire, '==', 1.1));
         $this->assertTrue(Intervals::haveIntersections($multiRequire, $versionProvide));
+        $this->assertTrue(Intervals::compactConstraint($multiRequire)->matches(Intervals::compactConstraint($versionProvide)));
+        $this->assertTrue(Intervals::compactConstraint($versionProvide)->matches(Intervals::compactConstraint($multiRequire)));
     }
 
     public function testMultiVersionProvidedMatchSucceeds()
@@ -68,6 +70,9 @@ class MultiConstraintTest extends TestCase
 
         $this->assertTrue($multiRequire->matches($multiProvide));
         $this->assertTrue($multiProvide->matches($multiRequire));
+        $this->assertTrue(Intervals::haveIntersections($multiRequire, $multiProvide));
+        $this->assertTrue(Intervals::compactConstraint($multiRequire)->matches(Intervals::compactConstraint($multiProvide)));
+        $this->assertTrue(Intervals::compactConstraint($multiProvide)->matches(Intervals::compactConstraint($multiRequire)));
     }
 
     public function testMultiVersionMatchSucceedsInsideForeachLoop()
@@ -80,6 +85,9 @@ class MultiConstraintTest extends TestCase
 
         $this->assertTrue($multiRequire->matches($multiProvide));
         $this->assertTrue($multiProvide->matches($multiRequire));
+        $this->assertTrue(Intervals::haveIntersections($multiRequire, $multiProvide));
+        $this->assertTrue(Intervals::compactConstraint($multiRequire)->matches(Intervals::compactConstraint($multiProvide)));
+        $this->assertTrue(Intervals::compactConstraint($multiProvide)->matches(Intervals::compactConstraint($multiRequire)));
     }
 
     public function testMultiVersionMatchFails()
@@ -92,6 +100,8 @@ class MultiConstraintTest extends TestCase
         $this->assertFalse($versionProvide->matches($multiRequire));
         $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.2));
         $this->assertFalse(Intervals::haveIntersections($multiRequire, $versionProvide));
+        $this->assertFalse(Intervals::compactConstraint($multiRequire)->matches(Intervals::compactConstraint($versionProvide)));
+        $this->assertFalse(Intervals::compactConstraint($versionProvide)->matches(Intervals::compactConstraint($multiRequire)));
     }
 
     public function testGetPrettyString()
@@ -426,7 +436,7 @@ class MultiConstraintTest extends TestCase
         $this->assertTrue(Intervals::haveIntersections($multiRequire, $versionProvide));
     }
 
-    private function matchCompiled(CompilableConstraintInterface $constraint, $operator, $version)
+    private function matchCompiled(ConstraintInterface $constraint, $operator, $version)
     {
         $map = array(
             '=' => Constraint::OP_EQ,
