@@ -3,10 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-### [2.1.0] 2020-05-xx
+### [3.0.0] 2020-05-xx
 
-  * BC Break: Unlikely to affect anyone but strictly speaking a breaking change, `*.*` and such variants will not match all `dev-*` versions anymore, only `*` does
-  * Deprecated and renamed `EmptyConstraint`, replace it with `MatchAllConstraint`
+  * Break: Renamed `EmptyConstraint`, replace it with `MatchAllConstraint`
+  * Break: Unlikely to affect anyone but strictly speaking a breaking change, `*.*` and such variants will not match all `dev-*` versions anymore, only `*` does
+  * Break: ConstraintInterface is now considered internal/private and not meant to be implemented by third parties anymore
   * Added `Intervals` class to check if a constraint is a subsets of another one, and allow compacting complex MultiConstraints into simpler ones
   * Added `CompilingMatcher` class to speed up constraint matching against simple Constraint instances
   * Added `MatchAllConstraint` and `MatchNoneConstraint` which match everything and nothing
