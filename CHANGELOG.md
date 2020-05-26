@@ -85,6 +85,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - Namespace: `Composer\Test\Package\LinkConstraint` -> `Composer\Test\Semver\Constraint`
   * Changed: code style using php-cs-fixer.
 
+[3.0.0]: https://github.com/composer/semver/compare/2.0.0...3.0.0
 [2.0.0]: https://github.com/composer/semver/compare/1.5.1...2.0.0
 [1.5.1]: https://github.com/composer/semver/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/composer/semver/compare/1.4.2...1.5.0
