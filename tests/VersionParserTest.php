@@ -103,6 +103,12 @@ class VersionParserTest extends TestCase
             // not supported for BC 'semver metadata/7' => array('1.0.0-0.3.7', '1.0.0.0-0.3.7'),
             // not supported for BC 'semver metadata/8' => array('1.0.0-x.7.z.92', '1.0.0.0-x.7.z.92'),
             'metadata w/ alias' => array('1.0.0+foo as 2.0', '1.0.0.0'),
+            'keep zero-padding' => array('00.01.03.04', '00.01.03.04'),
+            'keep zero-padding/2' => array('000.001.003.004', '000.001.003.004'),
+            'keep zero-padding/3' => array('0.000.103.204', '0.000.103.204'),
+            'keep zero-padding/4' => array('0700', '0700.0.0.0'),
+            'keep zero-padding/5' => array('041.x-dev', '041.9999999.9999999.9999999-dev'),
+            'keep zero-padding/6' => array('dev-041.003', 'dev-041.003'),
         );
     }
 
