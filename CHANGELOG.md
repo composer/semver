@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [1.6.0] 2020-09-08
+
+  * Added: support for constraints like `^2.x-dev` and `~2.x-dev`, not very useful but seen in the wild and failed to validate with 1.5.2
+  * Fixed: invalid aliases will no longer throw, unless explicitly validated by Composer in the root package
+
 ### [1.5.2] 2020-09-08
 
   * Fixed: handling of some invalid -dev versions which were seen as valid
@@ -71,6 +76,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - Namespace: `Composer\Test\Package\LinkConstraint` -> `Composer\Test\Semver\Constraint`
   * Changed: code style using php-cs-fixer.
 
+[1.6.0]: https://github.com/composer/semver/compare/1.5.2...1.6.0
 [1.5.2]: https://github.com/composer/semver/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/composer/semver/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/composer/semver/compare/1.4.2...1.5.0
