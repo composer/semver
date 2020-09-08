@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [3.0.1] 2020-09-08
+
+  * Fixed: handling of some invalid -dev versions which were seen as valid
+
 ### [3.0.0] 2020-05-26
 
   * Break: Renamed `EmptyConstraint`, replace it with `MatchAllConstraint`
@@ -21,6 +25,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   * Break: Removed the deprecated `AbstractConstraint`
   * Added `getUpperBound` and `getLowerBound` to ConstraintInterface. They return `Composer\Semver\Constraint\Bound` instances
   * Added `MultiConstraint::create` to create the most-optimal form of ConstraintInterface from an array of constraint strings
+
+### [1.5.2] 2020-09-08
+
+  * Fixed: handling of some invalid -dev versions which were seen as valid
+  * Fixed: some doctypes
 
 ### [1.5.1] 2020-01-13
 
@@ -85,8 +94,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - Namespace: `Composer\Test\Package\LinkConstraint` -> `Composer\Test\Semver\Constraint`
   * Changed: code style using php-cs-fixer.
 
+[3.0.1]: https://github.com/composer/semver/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/composer/semver/compare/2.0.0...3.0.0
 [2.0.0]: https://github.com/composer/semver/compare/1.5.1...2.0.0
+[1.5.2]: https://github.com/composer/semver/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/composer/semver/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/composer/semver/compare/1.4.2...1.5.0
 [1.4.2]: https://github.com/composer/semver/compare/1.4.1...1.4.2
