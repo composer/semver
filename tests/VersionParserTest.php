@@ -109,6 +109,7 @@ class VersionParserTest extends TestCase
             'keep zero-padding/4' => array('0700', '0700.0.0.0'),
             'keep zero-padding/5' => array('041.x-dev', '041.9999999.9999999.9999999-dev'),
             'keep zero-padding/6' => array('dev-041.003', 'dev-041.003'),
+            'dev with mad name' => array('dev-1.0.0-dev<1.0.5-dev', 'dev-1.0.0-dev<1.0.5-dev'),
         );
     }
 
@@ -136,6 +137,8 @@ class VersionParserTest extends TestCase
             'Alias and tilde' => array('1.0.0+foo as ~2.0'),
             'Alias and greater than' => array('1.0.0+foo as >2.0'),
             'Alias and less than' => array('1.0.0+foo as <2.0'),
+            'dev with less than' => array('1.0.0<1.0.5-dev'),
+            'dev with less than/2' => array('1.0.0-dev<1.0.5-dev'),
         );
     }
 

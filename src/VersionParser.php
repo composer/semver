@@ -161,7 +161,13 @@ class VersionParser
         // match dev branches
         if (preg_match('{(.*?)[.-]?dev$}i', $version, $match)) {
             try {
-                return $this->normalizeBranch($match[1]);
+                $normalized = $this->normalizeBranch($match[1]);
+                // a branch ending with -dev is only valid if it is numeric
+                // if it gets prefixed with dev- it means the branch name should
+                // have had a dev- prefix already when passed to normalize
+                if (strpos($normalized, 'dev-') === false) {
+                    return $normalized;
+                }
             } catch (\Exception $e) {
             }
         }
