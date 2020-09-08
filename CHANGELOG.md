@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [1.5.2] 2020-09-08
+
+  * Fixed: handling of some invalid -dev versions which were seen as valid
+  * Fixed: some doctypes
+
 ### [1.5.1] 2020-01-13
 
   * Fixed: Parsing of aliased version was not validating the alias to be a valid version
