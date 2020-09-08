@@ -132,25 +132,61 @@ class VersionParserTest extends TestCase
             'maven style release' => array('1.0.1-SNAPSHOT'),
             'dev with less than' => array('1.0.0<1.0.5-dev'),
             'dev with less than/2' => array('1.0.0-dev<1.0.5-dev'),
+            'no version, no alias' => array(' as '),
+            'no version, only alias' => array(' as 1.2'),
         );
     }
 
     /**
-     * @expectedException \UnexpectedValueException
+     * @dataProvider failingNormalizedVersionsWithBadAlias
      */
-    public function testNormalizeFailsWithExtraMessage()
+    public function testNormalizeFailsAndReportsAliasIssue($fullInput)
     {
+        preg_match('{^([^,\s#]+)(?:#[^ ]+)? +as +([^,\s]+)$}', $fullInput, $match);
         $parser = new VersionParser();
-        $parser->normalize('', '  as ');
+        $parser->normalize($match[1], $fullInput);
+        try {
+            $parser->normalize($match[2], $fullInput);
+        } catch (\UnexpectedValueException $e) {
+            $this->assertEquals('Invalid version string "'.$match[2].'" in "'.$fullInput.'", the alias must be an exact version', $e->getMessage());
+        }
+    }
+
+    public function failingNormalizedVersionsWithBadAlias()
+    {
+        return array(
+            'Alias and caret' => array('1.0.0+foo as ^2.0'),
+            'Alias and tilde' => array('1.0.0+foo as  ~2.0'),
+            'Alias and greater than' => array('1.0.0+foo  as >2.0'),
+            'Alias and less than' => array('1.0.0+foo as <2.0'),
+            'Bad alias with stability' => array('1.0.0+foo@dev as <2.0@dev'),
+        );
     }
 
     /**
-     * @expectedException \UnexpectedValueException
+     * @dataProvider failingNormalizedVersionsWithBadAliasee
      */
-    public function testNormalizeFailsWithOtherExtraMessage()
+    public function testNormalizeFailsAndReportsAliaseeIssue($fullInput)
     {
+        preg_match('{^([^,\s#]+)(?:#[^ ]+)? +as +([^,\s]+)$}', $fullInput, $match);
         $parser = new VersionParser();
-        $parser->normalize('', '  as  123');
+        try {
+            $parser->normalize($match[1], $fullInput);
+        } catch (\UnexpectedValueException $e) {
+            $this->assertEquals('Invalid version string "'.$match[1].'" in "'.$fullInput.'", the alias source must be an exact version, if it is a branch name you should prefix it with dev-', $e->getMessage());
+        }
+        $parser->normalize($match[2], $fullInput);
+    }
+
+    public function failingNormalizedVersionsWithBadAliasee()
+    {
+        return array(
+            'Alias and caret' => array('^2.0 as 1.0.0+foo'),
+            'Alias and tilde' => array('~2.0 as  1.0.0+foo'),
+            'Alias and greater than' => array('>2.0  as 1.0.0+foo'),
+            'Alias and less than' => array('<2.0 as 1.0.0+foo'),
+            'Bad aliasee with stability' => array('<2.0@dev as 1.2.3@dev'),
+        );
     }
 
     /**

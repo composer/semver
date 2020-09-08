@@ -102,6 +102,7 @@ class VersionParser
     public function normalize($version, $fullVersion = null)
     {
         $version = trim($version);
+        $origVersion = $version;
         if (null === $fullVersion) {
             $fullVersion = $version;
         }
@@ -175,13 +176,13 @@ class VersionParser
         }
 
         $extraMessage = '';
-        if (preg_match('{ +as +' . preg_quote($version) . '$}', $fullVersion)) {
+        if (preg_match('{ +as +' . preg_quote($version) . '(?:@(?:'.self::$stabilitiesRegex.'))?$}', $fullVersion)) {
             $extraMessage = ' in "' . $fullVersion . '", the alias must be an exact version';
-        } elseif (preg_match('{^' . preg_quote($version) . ' +as +}', $fullVersion)) {
+        } elseif (preg_match('{^' . preg_quote($version) . '(?:@(?:'.self::$stabilitiesRegex.'))? +as +}', $fullVersion)) {
             $extraMessage = ' in "' . $fullVersion . '", the alias source must be an exact version, if it is a branch name you should prefix it with dev-';
         }
 
-        throw new \UnexpectedValueException('Invalid version string "' . $version . '"' . $extraMessage);
+        throw new \UnexpectedValueException('Invalid version string "' . $origVersion . '"' . $extraMessage);
     }
 
     /**
