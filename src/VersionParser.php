@@ -38,8 +38,8 @@ class VersionParser
      */
     private static $modifierRegex = '[._-]?(?:(stable|beta|b|RC|alpha|a|patch|pl|p)((?:[.-]?\d+)*+)?)?([.-]?dev)?';
 
-    /** @var array */
-    private static $stabilities = array('stable', 'RC', 'beta', 'alpha', 'dev');
+    /** @var string */
+    private static $stabilitiesRegex = 'stable|RC|beta|alpha|dev';
 
     /**
      * Returns the stability of a version.
@@ -108,10 +108,12 @@ class VersionParser
 
         // strip off aliasing
         if (preg_match('{^([^,\s]++) ++as ++([^,\s]++)$}', $version, $match)) {
-            // verify that the alias is a version without constraint
-            $this->normalize($match[2]);
-
             $version = $match[1];
+        }
+
+        // strip off stability flag
+        if (preg_match('{@(?:' . self::$stabilitiesRegex . ')$}i', $version, $match)) {
+            $version = substr($version, 0, strlen($version) - strlen($match[0]));
         }
 
         // match master-like branches
@@ -236,7 +238,7 @@ class VersionParser
     {
         $prettyConstraint = $constraints;
 
-        if (preg_match('{^([^,\s]*?)@(' . implode('|', self::$stabilities) . ')$}i', $constraints, $match)) {
+        if (preg_match('{^([^,\s]*?)@(?:' . self::$stabilitiesRegex . ')$}i', $constraints, $match)) {
             $constraints = empty($match[1]) ? '*' : $match[1];
         }
 
@@ -306,7 +308,7 @@ class VersionParser
      */
     private function parseConstraint($constraint)
     {
-        if (preg_match('{^([^,\s]+?)@(' . implode('|', self::$stabilities) . ')$}i', $constraint, $match)) {
+        if (preg_match('{^([^,\s]+?)@(' . self::$stabilitiesRegex . ')$}i', $constraint, $match)) {
             $constraint = $match[1];
             if ($match[2] !== 'stable') {
                 $stabilityModifier = $match[2];
@@ -317,7 +319,7 @@ class VersionParser
             return array(new EmptyConstraint());
         }
 
-        $versionRegex = 'v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?' . self::$modifierRegex . '(?:\+[^\s]+)?';
+        $versionRegex = 'v?(\d++)(?:\.(\d++|[xX*]))?(?:\.(\d++|[xX*]))?(?:\.(\d++|[xX*]))?' . self::$modifierRegex . '(?:\+[^\s]+)?';
 
         // Tilde Range
         //
@@ -341,6 +343,13 @@ class VersionParser
                 $position = 2;
             } else {
                 $position = 1;
+            }
+
+            // make sure all Xs are converted to the 9999999 it represents
+            for ($i = $position; $i >= 0; $i--) {
+                if ($matches[$i] === 'x' || $matches[$i] === 'X' || $matches[$i] === '*') {
+                    $matches[$i] = '9999999';
+                }
             }
 
             // Calculate the stability suffix
@@ -377,6 +386,11 @@ class VersionParser
                 $position = 2;
             } else {
                 $position = 3;
+            }
+
+            // support ^0.x resolving to 0.9999 - 1.0-dev
+            if ($position === 2 && ($matches[2] === 'x' || $matches[2] === 'X' || $matches[2] === '*')) {
+                $position = 1;
             }
 
             // Calculate the stability suffix
@@ -450,6 +464,10 @@ class VersionParser
                 $upperBound = new Constraint('<=', $highVersion);
             } else {
                 $highMatch = array('', $matches[10], $matches[11], $matches[12], $matches[13]);
+
+                // validate to version
+                $this->normalize($matches['to']);
+
                 $highVersion = $this->manipulateVersionString($highMatch, $empty($matches[11]) ? 1 : 2, 1) . '-dev';
                 $upperBound = new Constraint('<', $highVersion);
             }

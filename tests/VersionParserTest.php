@@ -94,6 +94,10 @@ class VersionParserTest extends TestCase
             'parses arbitrary/3' => array('dev-feature/foo', 'dev-feature/foo'),
             'parses arbitrary/4' => array('dev-feature+issue-1', 'dev-feature+issue-1'),
             'ignores aliases' => array('dev-master as 1.0.0', '9999999-dev'),
+            'ignores aliases/2' => array('dev-load-varnish-only-when-used as ^2.0', 'dev-load-varnish-only-when-used'),
+            'ignores aliases/3' => array('dev-load-varnish-only-when-used@dev as ^2.0@dev', 'dev-load-varnish-only-when-used'),
+            'ignores stability' => array('1.0.0+foo@dev', '1.0.0.0'),
+            'ignores stability/2' => array('dev-load-varnish-only-when-used@stable', 'dev-load-varnish-only-when-used'),
             'semver metadata/2' => array('1.0.0-beta.5+foo', '1.0.0.0-beta5'),
             'semver metadata/3' => array('1.0.0+foo', '1.0.0.0'),
             'semver metadata/4' => array('1.0.0-alpha.3.1+foo', '1.0.0.0-alpha3.1'),
@@ -126,10 +130,6 @@ class VersionParserTest extends TestCase
             'non-dev arbitrary' => array('feature-foo'),
             'metadata w/ space' => array('1.0.0+foo bar'),
             'maven style release' => array('1.0.1-SNAPSHOT'),
-            'Alias and caret' => array('1.0.0+foo as ^2.0'),
-            'Alias and tilde' => array('1.0.0+foo as ~2.0'),
-            'Alias and greater than' => array('1.0.0+foo as >2.0'),
-            'Alias and less than' => array('1.0.0+foo as <2.0'),
             'dev with less than' => array('1.0.0<1.0.5-dev'),
             'dev with less than/2' => array('1.0.0-dev<1.0.5-dev'),
         );
@@ -187,6 +187,8 @@ class VersionParserTest extends TestCase
         $parser = new VersionParser();
 
         $this->assertSame((string) new Constraint('=', '1.0.0.0'), (string) $parser->parseConstraints('1.0@dev'));
+        $this->assertSame((string) new Constraint('=', 'dev-load-varnish-only-when-used'), (string) $parser->parseConstraints('dev-load-varnish-only-when-used as ^2.0@dev'));
+        $this->assertSame((string) new Constraint('=', 'dev-load-varnish-only-when-used'), (string) $parser->parseConstraints('dev-load-varnish-only-when-used@dev as ^2.0@dev'));
     }
 
     public function testParseConstraintsIgnoresReferenceOnDevVersion()
@@ -352,6 +354,11 @@ class VersionParserTest extends TestCase
             array('~201903.0-beta', new Constraint('>=', '201903.0-beta'), new Constraint('<', '201904.0.0.0-dev')),
             array('~201903.0-stable', new Constraint('>=', '201903.0'), new Constraint('<', '201904.0.0.0-dev')),
             array('~201903.205830.1-stable', new Constraint('>=', '201903.205830.1'), new Constraint('<', '201903.205831.0.0-dev')),
+            array('~2.x.x.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<', '2.9999999.10000000.0-dev')),
+            array('~2.0.3.x-dev', new Constraint('>=', '2.0.3.9999999-dev'), new Constraint('<', '2.0.4.0-dev')),
+            array('~2.0.x-dev', new Constraint('>=', '2.0.9999999.9999999-dev'), new Constraint('<', '2.1.0.0-dev')),
+            array('~2.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('~0.x-dev', new Constraint('>=', '0.9999999.9999999.9999999-dev'), new Constraint('<', '1.0.0.0-dev')),
         );
     }
 
@@ -397,6 +404,11 @@ class VersionParserTest extends TestCase
             array('^201903.0', new Constraint('>=', '201903.0-dev'), new Constraint('<', '201904.0.0.0-dev')),
             array('^201903.0-beta', new Constraint('>=', '201903.0-beta'), new Constraint('<', '201904.0.0.0-dev')),
             array('^201903.205830.1-stable', new Constraint('>=', '201903.205830.1'), new Constraint('<', '201904.0.0.0-dev')),
+            array('^2.x.x.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('^2.0.3.x-dev', new Constraint('>=', '2.0.3.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('^2.0.x-dev', new Constraint('>=', '2.0.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('^2.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('^0.x-dev', new Constraint('>=', '0.9999999.9999999.9999999-dev'), new Constraint('<', '1.0.0.0-dev')),
         );
     }
 
@@ -435,6 +447,11 @@ class VersionParserTest extends TestCase
             array('1 - 2.1', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '2.2.0.0-dev')),
             array('1.2 - 2.1.0', new Constraint('>=', '1.2.0.0-dev'), new Constraint('<=', '2.1.0.0')),
             array('1.3 - 2.1.3', new Constraint('>=', '1.3.0.0-dev'), new Constraint('<=', '2.1.3.0')),
+            array('2.x.x.x-dev - 3.x.x.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<=', '3.9999999.9999999.9999999-dev')),
+            array('2.0.3.x-dev - 3.0.3.x-dev', new Constraint('>=', '2.0.3.9999999-dev'), new Constraint('<=', '3.0.3.9999999-dev')),
+            array('2.0.x-dev - 3.0.x-dev', new Constraint('>=', '2.0.9999999.9999999-dev'), new Constraint('<=', '3.0.9999999.9999999-dev')),
+            array('2.x-dev - 3.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<=', '3.9999999.9999999.9999999-dev')),
+            array('0.x-dev - 1.x-dev', new Constraint('>=', '0.9999999.9999999.9999999-dev'), new Constraint('<=', '1.9999999.9999999.9999999-dev')),
         );
     }
 
