@@ -102,6 +102,7 @@ class VersionParserTest extends TestCase
             // not supported for BC 'semver metadata/7' => array('1.0.0-0.3.7', '1.0.0.0-0.3.7'),
             // not supported for BC 'semver metadata/8' => array('1.0.0-x.7.z.92', '1.0.0.0-x.7.z.92'),
             'metadata w/ alias' => array('1.0.0+foo as 2.0', '1.0.0.0'),
+            'dev with mad name' => array('dev-1.0.0-dev<1.0.5-dev', 'dev-1.0.0-dev<1.0.5-dev'),
         );
     }
 
@@ -129,6 +130,8 @@ class VersionParserTest extends TestCase
             'Alias and tilde' => array('1.0.0+foo as ~2.0'),
             'Alias and greater than' => array('1.0.0+foo as >2.0'),
             'Alias and less than' => array('1.0.0+foo as <2.0'),
+            'dev with less than' => array('1.0.0<1.0.5-dev'),
+            'dev with less than/2' => array('1.0.0-dev<1.0.5-dev'),
         );
     }
 
