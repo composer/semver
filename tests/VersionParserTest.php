@@ -546,6 +546,38 @@ class VersionParserTest extends TestCase
     }
 
     /**
+     * @dataProvider constraintProvider
+     */
+    public function testParseConstraints($constraint, $expected)
+    {
+        $parser = new VersionParser();
+
+        $this->assertSame($expected, (string) $parser->parseConstraints($constraint));
+    }
+
+    public function constraintProvider()
+    {
+        return array(
+            // numeric branch
+            array('3.x-dev', '== 3.9999999.9999999.9999999-dev'),
+            array('3-dev', '== 3.0.0.0-dev'),
+            // non-numeric branches
+            array('dev-3.x', '== dev-3.x'),
+            array('xsd2php-dev', '== dev-xsd2php'),
+            array('3.next-dev', '== dev-3.next'),
+            array('foobar-dev', '== dev-foobar'),
+            array('dev-xsd2php', '== dev-xsd2php'),
+            array('dev-3.next', '== dev-3.next'),
+            array('dev-foobar', '== dev-foobar'),
+            array('dev-1.0.0-dev<1.0.5-dev', '== dev-1.0.0-dev<1.0.5-dev'),
+            array('1.0.0-dev<1.0.5-dev', '== dev-1.0.0-dev<1.0.5'),
+            array('foobar-dev as 2.1.0', '== dev-foobar'),
+            array('foobar-dev as 2.1.0 || 3.5', '[== dev-foobar || == 3.5.0.0]'),
+            array('foobar-dev as 2.1.0 || 3.5 as 1.5', '[== dev-foobar || == 3.5.0.0]'),
+        );
+    }
+
+    /**
      * @dataProvider multiConstraintProvider
      */
     public function testParseConstraintsMulti($constraint)

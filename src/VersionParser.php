@@ -301,6 +301,11 @@ class VersionParser
      */
     private function parseConstraint($constraint)
     {
+        // strip off aliasing
+        if (preg_match('{^([^,\s]++) ++as ++([^,\s]++)$}', $constraint, $match)) {
+            $constraint = $match[1];
+        }
+
         // strip @stability flags, and keep it for later use
         if (preg_match('{^([^,\s]*?)@(' . self::$stabilitiesRegex . ')$}i', $constraint, $match)) {
             $constraint = '' !== $match[1] ? $match[1] : '*';
@@ -480,7 +485,16 @@ class VersionParser
         // Basic Comparators
         if (preg_match('{^(<>|!=|>=?|<=?|==?)?\s*(.*)}', $constraint, $matches)) {
             try {
-                $version = $this->normalize($matches[2]);
+                try {
+                    $version = $this->normalize($matches[2]);
+                } catch (\UnexpectedValueException $e) {
+                    // recover from an invalid constraint like foobar-dev which should be dev-foobar
+                    if (substr($matches[2], -4) === '-dev') {
+                        $version = $this->normalize('dev-'.substr($matches[2], 0, -4));
+                    } else {
+                        throw $e;
+                    }
+                }
 
                 $op = $matches[1] ?: '=';
 
