@@ -707,6 +707,11 @@ class VersionParserTest extends TestCase
             'operator abuse' => array('>2.0,,<=3.0'),
             'operator abuse/2' => array('>2.0 ,, <=3.0'),
             'operator abuse/3' => array('>2.0 ||| <=3.0'),
+            'leading operator' => array(',^1@dev || ^4@dev'),
+            'leading operator/2' => array(',^1@dev'),
+            'leading operator/3' => array('|| ^1@dev'),
+            'trailing operator' => array('^1@dev ||'),
+            'trailing operator/2' => array('^1@dev ,'),
         );
     }
 
