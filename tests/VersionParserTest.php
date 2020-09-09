@@ -223,6 +223,7 @@ class VersionParserTest extends TestCase
         $parser = new VersionParser();
 
         $this->assertSame((string) new Constraint('=', '1.0.0.0'), (string) $parser->parseConstraints('1.0@dev'));
+        $this->assertSame((string) new Constraint('>=', '1.0.0.0-beta'), (string) $parser->parseConstraints('>=1.0@beta'));
         $this->assertSame((string) new Constraint('=', 'dev-load-varnish-only-when-used'), (string) $parser->parseConstraints('dev-load-varnish-only-when-used as ^2.0@dev'));
         $this->assertSame((string) new Constraint('=', 'dev-load-varnish-only-when-used'), (string) $parser->parseConstraints('dev-load-varnish-only-when-used@dev as ^2.0@dev'));
     }
@@ -629,6 +630,26 @@ class VersionParserTest extends TestCase
         $multi = new MultiConstraint(array($first, $second));
 
         $this->assertSame((string) $multi, (string) $parser->parseConstraints('>2.0@stable,<=3.0@dev'));
+    }
+
+    public function testParseConstraintsMultiWithStabilitiesWildcard()
+    {
+        $parser = new VersionParser();
+        $first = new Constraint('>', '2.0.0.0');
+        $second = new EmptyConstraint();
+        $multi = new MultiConstraint(array($first, $second));
+
+        $this->assertSame((string) $multi, (string) $parser->parseConstraints('>2.0@stable,@dev'));
+    }
+
+    public function testParseConstraintsMultiWithStabilitiesZero()
+    {
+        $parser = new VersionParser();
+        $first = new Constraint('>', '2.0.0.0');
+        $second = new Constraint('==', '0.0.0.0');
+        $multi = new MultiConstraint(array($first, $second), false);
+
+        $this->assertSame((string) $multi, (string) $parser->parseConstraints('>2.0@stable || 0@dev'));
     }
 
     /**
