@@ -230,6 +230,7 @@ class VersionParserTest extends TestCase
         $parser = new VersionParser();
 
         $this->assertSame((string) new Constraint('=', '1.0.0.0'), (string) $parser->parseConstraints('1.0@dev'));
+        $this->assertSame((string) new Constraint('>=', '1.0.0.0-beta'), (string) $parser->parseConstraints('>=1.0@beta'));
         $this->assertSame((string) new Constraint('=', 'dev-load-varnish-only-when-used'), (string) $parser->parseConstraints('dev-load-varnish-only-when-used as ^2.0@dev'));
         $this->assertSame((string) new Constraint('=', 'dev-load-varnish-only-when-used'), (string) $parser->parseConstraints('dev-load-varnish-only-when-used@dev as ^2.0@dev'));
     }
@@ -495,6 +496,38 @@ class VersionParserTest extends TestCase
     }
 
     /**
+     * @dataProvider constraintProvider
+     */
+    public function testParseConstraints($constraint, $expected)
+    {
+        $parser = new VersionParser();
+
+        $this->assertSame($expected, (string) $parser->parseConstraints($constraint));
+    }
+
+    public function constraintProvider()
+    {
+        return array(
+            // numeric branch
+            array('3.x-dev', '== 3.9999999.9999999.9999999-dev'),
+            array('3-dev', '== 3.0.0.0-dev'),
+            // non-numeric branches
+            array('dev-3.x', '== dev-3.x'),
+            array('xsd2php-dev', '== dev-xsd2php'),
+            array('3.next-dev', '== dev-3.next'),
+            array('foobar-dev', '== dev-foobar'),
+            array('dev-xsd2php', '== dev-xsd2php'),
+            array('dev-3.next', '== dev-3.next'),
+            array('dev-foobar', '== dev-foobar'),
+            array('dev-1.0.0-dev<1.0.5-dev', '== dev-1.0.0-dev<1.0.5-dev'),
+            array('1.0.0-dev<1.0.5-dev', '== dev-1.0.0-dev<1.0.5'),
+            array('foobar-dev as 2.1.0', '== dev-foobar'),
+            array('foobar-dev as 2.1.0 || 3.5', '[== dev-foobar || == 3.5.0.0]'),
+            array('foobar-dev as 2.1.0 || 3.5 as 1.5', '[== dev-foobar || == 3.5.0.0]'),
+        );
+    }
+
+    /**
      * @dataProvider multiConstraintProvider
      */
     public function testParseConstraintsMulti($constraint)
@@ -581,6 +614,26 @@ class VersionParserTest extends TestCase
         $this->assertSame((string) $multi, (string) $parser->parseConstraints('>2.0@stable,<=3.0@dev'));
     }
 
+    public function testParseConstraintsMultiWithStabilitiesWildcard()
+    {
+        $parser = new VersionParser();
+        $first = new Constraint('>', '2.0.0.0');
+        $second = new MatchAllConstraint();
+        $multi = new MultiConstraint(array($first, $second));
+
+        $this->assertSame((string) $multi, (string) $parser->parseConstraints('>2.0@stable,@dev'));
+    }
+
+    public function testParseConstraintsMultiWithStabilitiesZero()
+    {
+        $parser = new VersionParser();
+        $first = new Constraint('>', '2.0.0.0');
+        $second = new Constraint('==', '0.0.0.0');
+        $multi = new MultiConstraint(array($first, $second), false);
+
+        $this->assertSame((string) $multi, (string) $parser->parseConstraints('>2.0@stable || 0@dev'));
+    }
+
     /**
      * @dataProvider failingConstraints
      *
@@ -604,6 +657,11 @@ class VersionParserTest extends TestCase
             'operator abuse' => array('>2.0,,<=3.0'),
             'operator abuse/2' => array('>2.0 ,, <=3.0'),
             'operator abuse/3' => array('>2.0 ||| <=3.0'),
+            'leading operator' => array(',^1@dev || ^4@dev'),
+            'leading operator/2' => array(',^1@dev'),
+            'leading operator/3' => array('|| ^1@dev'),
+            'trailing operator' => array('^1@dev ||'),
+            'trailing operator/2' => array('^1@dev ,'),
         );
     }
 

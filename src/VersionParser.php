@@ -251,14 +251,6 @@ class VersionParser
     {
         $prettyConstraint = $constraints;
 
-        if (preg_match('{^([^,\s]*?)@(?:' . self::$stabilitiesRegex . ')$}i', $constraints, $match)) {
-            $constraints = empty($match[1]) ? '*' : $match[1];
-        }
-
-        if (preg_match('{^(dev-[^,\s@]+?|[^,\s@]+?\.x-dev)#.+$}i', $constraints, $match)) {
-            $constraints = $match[1];
-        }
-
         $orConstraints = preg_split('{\s*\|\|?\s*}', trim($constraints));
         $orGroups = array();
 
@@ -300,11 +292,22 @@ class VersionParser
      */
     private function parseConstraint($constraint)
     {
-        if (preg_match('{^([^,\s]+?)@(' . self::$stabilitiesRegex . ')$}i', $constraint, $match)) {
+        // strip off aliasing
+        if (preg_match('{^([^,\s]++) ++as ++([^,\s]++)$}', $constraint, $match)) {
             $constraint = $match[1];
+        }
+
+        // strip @stability flags, and keep it for later use
+        if (preg_match('{^([^,\s]*?)@(' . self::$stabilitiesRegex . ')$}i', $constraint, $match)) {
+            $constraint = '' !== $match[1] ? $match[1] : '*';
             if ($match[2] !== 'stable') {
                 $stabilityModifier = $match[2];
             }
+        }
+
+        // get rid of #refs as those are used by composer only
+        if (preg_match('{^(dev-[^,\s@]+?|[^,\s@]+?\.x-dev)#.+$}i', $constraint, $match)) {
+            $constraint = $match[1];
         }
 
         if (preg_match('{^(v)?[xX*](\.[xX*])*$}i', $constraint, $match)) {
@@ -477,11 +480,22 @@ class VersionParser
         // Basic Comparators
         if (preg_match('{^(<>|!=|>=?|<=?|==?)?\s*(.*)}', $constraint, $matches)) {
             try {
-                $version = $this->normalize($matches[2]);
+                try {
+                    $version = $this->normalize($matches[2]);
+                } catch (\UnexpectedValueException $e) {
+                    // recover from an invalid constraint like foobar-dev which should be dev-foobar
+                    if (substr($matches[2], -4) === '-dev') {
+                        $version = $this->normalize('dev-'.substr($matches[2], 0, -4));
+                    } else {
+                        throw $e;
+                    }
+                }
 
-                if (!empty($stabilityModifier) && self::parseStability($version) === 'stable') {
+                $op = $matches[1] ?: '=';
+
+                if ($op !== '==' && $op !== '=' && !empty($stabilityModifier) && self::parseStability($version) === 'stable') {
                     $version .= '-' . $stabilityModifier;
-                } elseif ('<' === $matches[1] || '>=' === $matches[1]) {
+                } elseif ('<' === $op || '>=' === $op) {
                     if (!preg_match('/-' . self::$modifierRegex . '$/', strtolower($matches[2]))) {
                         if (strpos($matches[2], 'dev-') !== 0) {
                             $version .= '-dev';
