@@ -441,7 +441,7 @@ class Intervals
         $op = $constraint->getOperator();
 
         // handle branch constraints first
-        if (substr($constraint->getVersion(), 0, 4) === 'dev-') {
+        if (strpos($constraint->getVersion(), 'dev-') === 0) {
             $intervals = array();
             $branches = array('names' => array(), 'exclude' => false);
 

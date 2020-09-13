@@ -20,7 +20,7 @@ use Composer\Semver\Constraint\ConstraintInterface;
 class CompilingMatcher
 {
     private static $compiledCheckerCache = array();
-    private static $enabled = null;
+    private static $enabled;
 
     /**
      * @phpstan-var array<Constraint::OP_*, string>
@@ -61,6 +61,6 @@ class CompilingMatcher
             $function = self::$compiledCheckerCache[$cacheKey];
         }
 
-        return $function($version, $version[0] === 'd' && 'dev-' === substr($version, 0, 4));
+        return $function($version, $version[0] === 'd' && strpos($version, 'dev-') === 0);
     }
 }

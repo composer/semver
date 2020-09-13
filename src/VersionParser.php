@@ -50,7 +50,7 @@ class VersionParser
      */
     public static function parseStability($version)
     {
-        $version = preg_replace('{#.+$}i', '', $version);
+        $version = preg_replace('{#.+$}', '', $version);
 
         if (strpos($version, 'dev-') === 0 || '-dev' === substr($version, -4)) {
             return 'dev';
