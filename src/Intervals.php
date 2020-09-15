@@ -478,4 +478,22 @@ class Intervals
             new Interval(new Constraint('>=', $constraint->getVersion()), new Constraint('<=', $constraint->getVersion())),
         ), 'branches' => Interval::noDev());
     }
+
+    /**
+     * @param ConstraintInterface $base
+     * @param ConstraintInterface $conflict
+     * @return ConstraintInterface
+     */
+    public static function excludeConflict(ConstraintInterface $base, ConstraintInterface $conflict)
+    {
+        if ($conflict instanceof MatchAllConstraint || $base instanceof MatchNoneConstraint) {
+            return new MatchNoneConstraint();
+        }
+
+        if ($conflict instanceof MatchNoneConstraint || !self::haveIntersections($base, $conflict)) {
+            return $base;
+        }
+
+        // @todo
+    }
 }
