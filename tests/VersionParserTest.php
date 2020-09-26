@@ -110,6 +110,9 @@ class VersionParserTest extends TestCase
             // not supported for BC 'semver metadata/8' => array('1.0.0-x.7.z.92', '1.0.0.0-x.7.z.92'),
             'metadata w/ alias' => array('1.0.0+foo as 2.0', '1.0.0.0'),
             'dev with mad name' => array('dev-1.0.0-dev<1.0.5-dev', 'dev-1.0.0-dev<1.0.5-dev'),
+            'dev prefix with spaces' => array('dev-foo bar', 'dev-foo bar'),
+            'space padding' => array(' 1.0.0', '1.0.0.0'),
+            'space padding/2' => array('1.0.0 ', '1.0.0.0'),
         );
     }
 
@@ -135,6 +138,8 @@ class VersionParserTest extends TestCase
             'maven style release' => array('1.0.1-SNAPSHOT'),
             'dev with less than' => array('1.0.0<1.0.5-dev'),
             'dev with less than/2' => array('1.0.0-dev<1.0.5-dev'),
+            'dev suffix with spaces' => array('foo bar-dev'),
+            'any with spaces' => array('1.0 .2'),
             'no version, no alias' => array(' as '),
             'no version, only alias' => array(' as 1.2'),
         );
@@ -394,10 +399,9 @@ class VersionParserTest extends TestCase
             array('~201903.0-beta', new Constraint('>=', '201903.0-beta'), new Constraint('<', '201904.0.0.0-dev')),
             array('~201903.0-stable', new Constraint('>=', '201903.0'), new Constraint('<', '201904.0.0.0-dev')),
             array('~201903.205830.1-stable', new Constraint('>=', '201903.205830.1'), new Constraint('<', '201903.205831.0.0-dev')),
-            array('~2.x.x.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<', '2.9999999.10000000.0-dev')),
-            array('~2.0.3.x-dev', new Constraint('>=', '2.0.3.9999999-dev'), new Constraint('<', '2.0.4.0-dev')),
-            array('~2.0.x-dev', new Constraint('>=', '2.0.9999999.9999999-dev'), new Constraint('<', '2.1.0.0-dev')),
             array('~2.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('~2.0.x-dev', new Constraint('>=', '2.0.9999999.9999999-dev'), new Constraint('<', '2.1.0.0-dev')),
+            array('~2.0.3.x-dev', new Constraint('>=', '2.0.3.9999999-dev'), new Constraint('<', '2.0.4.0-dev')),
             array('~0.x-dev', new Constraint('>=', '0.9999999.9999999.9999999-dev'), new Constraint('<', '1.0.0.0-dev')),
         );
     }
@@ -444,10 +448,10 @@ class VersionParserTest extends TestCase
             array('^201903.0', new Constraint('>=', '201903.0-dev'), new Constraint('<', '201904.0.0.0-dev')),
             array('^201903.0-beta', new Constraint('>=', '201903.0-beta'), new Constraint('<', '201904.0.0.0-dev')),
             array('^201903.205830.1-stable', new Constraint('>=', '201903.205830.1'), new Constraint('<', '201904.0.0.0-dev')),
-            array('^2.x.x.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
-            array('^2.0.3.x-dev', new Constraint('>=', '2.0.3.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
-            array('^2.0.x-dev', new Constraint('>=', '2.0.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
             array('^2.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('^2.0.*-dev', new Constraint('>=', '2.0.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('^2.0.x-dev', new Constraint('>=', '2.0.9999999.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
+            array('^2.0.3.x-dev', new Constraint('>=', '2.0.3.9999999-dev'), new Constraint('<', '3.0.0.0-dev')),
             array('^0.x-dev', new Constraint('>=', '0.9999999.9999999.9999999-dev'), new Constraint('<', '1.0.0.0-dev')),
         );
     }
@@ -487,7 +491,6 @@ class VersionParserTest extends TestCase
             array('1 - 2.1', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '2.2.0.0-dev')),
             array('1.2 - 2.1.0', new Constraint('>=', '1.2.0.0-dev'), new Constraint('<=', '2.1.0.0')),
             array('1.3 - 2.1.3', new Constraint('>=', '1.3.0.0-dev'), new Constraint('<=', '2.1.3.0')),
-            array('2.x.x.x-dev - 3.x.x.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<=', '3.9999999.9999999.9999999-dev')),
             array('2.0.3.x-dev - 3.0.3.x-dev', new Constraint('>=', '2.0.3.9999999-dev'), new Constraint('<=', '3.0.3.9999999-dev')),
             array('2.0.x-dev - 3.0.x-dev', new Constraint('>=', '2.0.9999999.9999999-dev'), new Constraint('<=', '3.0.9999999.9999999-dev')),
             array('2.x-dev - 3.x-dev', new Constraint('>=', '2.9999999.9999999.9999999-dev'), new Constraint('<=', '3.9999999.9999999.9999999-dev')),
@@ -573,10 +576,20 @@ class VersionParserTest extends TestCase
             array('dev-3.next', '== dev-3.next'),
             array('dev-foobar', '== dev-foobar'),
             array('dev-1.0.0-dev<1.0.5-dev', '== dev-1.0.0-dev<1.0.5-dev'),
-            array('1.0.0-dev<1.0.5-dev', '== dev-1.0.0-dev<1.0.5'),
+            array('dev-1.0.0-dev<1.0.5', '== dev-1.0.0-dev<1.0.5'),
             array('foobar-dev as 2.1.0', '== dev-foobar'),
             array('foobar-dev as 2.1.0 || 3.5', '[== dev-foobar || == 3.5.0.0]'),
             array('foobar-dev as 2.1.0 || 3.5 as 1.5', '[== dev-foobar || == 3.5.0.0]'),
+            array('2.1.0 - 2.3-dev', '[>= 2.1.0.0-dev <= 2.3.0.0-dev]'),
+            array('1.0 - 2.0.x-dev', '[>= 1.0.0.0-dev <= 2.0.9999999.9999999-dev]'),
+
+            // borked typo constraints but so common historically that we gotta keep them working
+            array('^1.', '[>= 1.0.0.0-dev < 2.0.0.0-dev]'),
+            array('~1.', '[>= 1.0.0.0-dev < 2.0.0.0-dev]'),
+            array('1.2.', '== 1.2.0.0'),
+            array('1.2..dev', '== 1.2.0.0-dev'),
+            array('1.2-.dev', '== 1.2.0.0-dev'),
+            array('1.2_-dev', '== 1.2.0.0-dev'),
         );
     }
 
@@ -715,6 +728,31 @@ class VersionParserTest extends TestCase
             'leading operator/3' => array('|| ^1@dev'),
             'trailing operator' => array('^1@dev ||'),
             'trailing operator/2' => array('^1@dev ,'),
+            'caret+wildcard w/o -dev' => array('^2.0.*'),
+            'caret+wildcard w/o -dev/2' => array('^2.0.x'),
+            'caret+wildcard w/o -dev/3' => array('^2.0.x-beta'),
+            'caret+wildcard w/o -dev/4' => array('^2.*'),
+            'caret+wildcard w/o -dev/5' => array('^2.x'),
+            'caret+wildcard w/o -dev/6' => array('^2.x-beta'),
+            'caret+wildcard w/o -dev/7' => array('^2.1.2.*'),
+            'caret+wildcard w/o -dev/8' => array('^2.1.2.x'),
+            'caret+wildcard w/o -dev/9' => array('^2.1.2.x-beta'),
+            'tilde+wildcard w/o -dev' => array('~2.0.*'),
+            'tilde+wildcard w/o -dev/2' => array('~2.0.x'),
+            'tilde+wildcard w/o -dev/3' => array('~2.0.x-beta'),
+            'tilde+wildcard w/o -dev/4' => array('~2.*'),
+            'tilde+wildcard w/o -dev/5' => array('~2.x'),
+            'tilde+wildcard w/o -dev/6' => array('~2.x-beta'),
+            'tilde+wildcard w/o -dev/7' => array('~2.1.2.*'),
+            'tilde+wildcard w/o -dev/8' => array('~2.1.2.x'),
+            'tilde+wildcard w/o -dev/9' => array('~2.1.2.x-beta'),
+            'dash range with wildcard' => array('1.x - 2.*'),
+            'dash range with wildcards' => array('2.x.x.x-dev - 3.x.x.x-dev'),
+            'broken constraint with dev suffix' => array('^1.*-beta-dev'),
+            'broken constraint with dev suffix/2' => array('^1. *-dev'),
+            'broken constraint with dev suffix/3' => array('~1.*-beta-dev'),
+            'dev suffix conversion only works on simple strings' => array('1.0.0-dev<1.0.5-dev'),
+            'dev suffix conversion only works on simple strings/2' => array('*-dev'),
         );
     }
 

@@ -323,7 +323,7 @@ class VersionParser
             return array(new EmptyConstraint());
         }
 
-        $versionRegex = 'v?(\d++)(?:\.(\d++|[xX*]))?(?:\.(\d++|[xX*]))?(?:\.(\d++|[xX*]))?' . self::$modifierRegex . '(?:\+[^\s]+)?';
+        $versionRegex = 'v?(\d++)(?:\.(\d++))?(?:\.(\d++))?(?:\.(\d++))?(?:' . self::$modifierRegex . '|\.([xX*][.-]?dev))(?:\+[^\s]+)?';
 
         // Tilde Range
         //
@@ -349,16 +349,14 @@ class VersionParser
                 $position = 1;
             }
 
-            // make sure all Xs are converted to the 9999999 it represents
-            for ($i = $position; $i >= 0; $i--) {
-                if ($matches[$i] === 'x' || $matches[$i] === 'X' || $matches[$i] === '*') {
-                    $matches[$i] = '9999999';
-                }
+            // when matching 2.x-dev or 3.0.x-dev we have to shift the second or third number, despite no second/third number matching above
+            if (!empty($matches[8])) {
+                $position++;
             }
 
             // Calculate the stability suffix
             $stabilitySuffix = '';
-            if (empty($matches[5]) && empty($matches[7])) {
+            if (empty($matches[5]) && empty($matches[7]) && empty($matches[8])) {
                 $stabilitySuffix .= '-dev';
             }
 
@@ -392,14 +390,9 @@ class VersionParser
                 $position = 3;
             }
 
-            // support ^0.x resolving to 0.9999 - 1.0-dev
-            if ($position === 2 && ($matches[2] === 'x' || $matches[2] === 'X' || $matches[2] === '*')) {
-                $position = 1;
-            }
-
             // Calculate the stability suffix
             $stabilitySuffix = '';
-            if (empty($matches[5]) && empty($matches[7])) {
+            if (empty($matches[5]) && empty($matches[7]) && empty($matches[8])) {
                 $stabilitySuffix .= '-dev';
             }
 
@@ -452,7 +445,7 @@ class VersionParser
         if (preg_match('{^(?P<from>' . $versionRegex . ') +- +(?P<to>' . $versionRegex . ')($)}i', $constraint, $matches)) {
             // Calculate the stability suffix
             $lowStabilitySuffix = '';
-            if (empty($matches[6]) && empty($matches[8])) {
+            if (empty($matches[6]) && empty($matches[8]) && empty($matches[9])) {
                 $lowStabilitySuffix = '-dev';
             }
 
@@ -463,16 +456,16 @@ class VersionParser
                 return ($x === 0 || $x === '0') ? false : empty($x);
             };
 
-            if ((!$empty($matches[11]) && !$empty($matches[12])) || !empty($matches[14]) || !empty($matches[16])) {
+            if ((!$empty($matches[12]) && !$empty($matches[13])) || !empty($matches[15]) || !empty($matches[17]) || !empty($matches[18])) {
                 $highVersion = $this->normalize($matches['to']);
                 $upperBound = new Constraint('<=', $highVersion);
             } else {
-                $highMatch = array('', $matches[10], $matches[11], $matches[12], $matches[13]);
+                $highMatch = array('', $matches[11], $matches[12], $matches[13], $matches[14]);
 
                 // validate to version
                 $this->normalize($matches['to']);
 
-                $highVersion = $this->manipulateVersionString($highMatch, $empty($matches[11]) ? 1 : 2, 1) . '-dev';
+                $highVersion = $this->manipulateVersionString($highMatch, $empty($matches[12]) ? 1 : 2, 1) . '-dev';
                 $upperBound = new Constraint('<', $highVersion);
             }
 
@@ -489,7 +482,8 @@ class VersionParser
                     $version = $this->normalize($matches[2]);
                 } catch (\UnexpectedValueException $e) {
                     // recover from an invalid constraint like foobar-dev which should be dev-foobar
-                    if (substr($matches[2], -4) === '-dev') {
+                    // except if the constraint uses a known operator, in which case it must be a parse error
+                    if (substr($matches[2], -4) === '-dev' && preg_match('{^[0-9a-zA-Z-./]+$}', $matches[2])) {
                         $version = $this->normalize('dev-'.substr($matches[2], 0, -4));
                     } else {
                         throw $e;
