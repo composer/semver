@@ -662,6 +662,7 @@ class VersionParserTest extends TestCase
             'leading operator/3' => array('|| ^1@dev'),
             'trailing operator' => array('^1@dev ||'),
             'trailing operator/2' => array('^1@dev ,'),
+            'ambiguous meaning' => array('^1.*'),
         );
     }
 
