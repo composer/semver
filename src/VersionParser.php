@@ -318,7 +318,7 @@ class VersionParser
             return array(new MatchAllConstraint());
         }
 
-        $versionRegex = 'v?(\d++)(?:\.(\d++|[xX*]))?(?:\.(\d++|[xX*]))?(?:\.(\d++|[xX*]))?' . self::$modifierRegex . '(?:\+[^\s]+)?';
+        $versionRegex = 'v?(\d++)(?:\.(\d++|[xX]))?(?:\.(\d++|[xX]))?(?:\.(\d++|[xX]))?' . self::$modifierRegex . '(?:\+[^\s]+)?';
 
         // Tilde Range
         //
@@ -346,7 +346,7 @@ class VersionParser
 
             // make sure all Xs are converted to the 9999999 it represents
             for ($i = $position; $i >= 0; $i--) {
-                if ($matches[$i] === 'x' || $matches[$i] === 'X' || $matches[$i] === '*') {
+                if ($matches[$i] === 'x' || $matches[$i] === 'X') {
                     $matches[$i] = '9999999';
                 }
             }
@@ -388,7 +388,7 @@ class VersionParser
             }
 
             // support ^0.x resolving to 0.9999 - 1.0-dev
-            if ($position === 2 && ($matches[2] === 'x' || $matches[2] === 'X' || $matches[2] === '*')) {
+            if ($position === 2 && ($matches[2] === 'x' || $matches[2] === 'X')) {
                 $position = 1;
             }
 
