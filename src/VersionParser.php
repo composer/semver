@@ -151,7 +151,7 @@ class VersionParser
                 if ('stable' === $matches[$index]) {
                     return $version;
                 }
-                $version .= '-' . $this->expandStability($matches[$index]) . (!empty($matches[$index + 1]) ? ltrim($matches[$index + 1], '.-') : '');
+                $version .= '-' . $this->expandStability($matches[$index]) . (isset($matches[$index + 1]) && '' !== $matches[$index + 1] ? ltrim($matches[$index + 1], '.-') : '');
             }
 
             if (!empty($matches[$index + 2])) {
