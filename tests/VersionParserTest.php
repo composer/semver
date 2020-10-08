@@ -149,6 +149,13 @@ class VersionParserTest extends TestCase
             'any with spaces' => array('1.0 .2'),
             'no version, no alias' => array(' as '),
             'no version, only alias' => array(' as 1.2'),
+            'just an operator' => array('^'),
+            'just an operator/2' => array('^8 || ^'),
+            'just an operator/3' => array('~'),
+            'just an operator/4' => array('~1 ~'),
+            'constraint' => array('~1'),
+            'constraint/2' => array('^1'),
+            'constraint/3' => array('1.*'),
         );
     }
 
@@ -703,6 +710,10 @@ class VersionParserTest extends TestCase
             'broken constraint with dev suffix/3' => array('~1.*-beta-dev'),
             'dev suffix conversion only works on simple strings' => array('1.0.0-dev<1.0.5-dev'),
             'dev suffix conversion only works on simple strings/2' => array('*-dev'),
+            'just an operator' => array('^'),
+            'just an operator/2' => array('^8 || ^'),
+            'just an operator/3' => array('~'),
+            'just an operator/4' => array('~1 ~'),
         );
     }
 
