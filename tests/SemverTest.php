@@ -72,7 +72,7 @@ class SemverTest extends TestCase
         $manipulateVersionStringMethod->setAccessible(true);
         $result = $manipulateVersionStringMethod->invoke(new Semver(), $versions, 1);
 
-        $this->assertInternalType('array', $result);
+        $this->assertTrue(is_array($result));
         $this->assertCount(3, $versions);
     }
 
