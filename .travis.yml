@@ -47,7 +47,7 @@ install: |
       export SYMFONY_PHPUNIT_VERSION=7.5
     fi
     if [[ $TRAVIS_PHP_VERSION = nightly ]]; then
-      export SYMFONY_PHPUNIT_VERSION=8.5
+      export SYMFONY_PHPUNIT_VERSION=9.4
       # install the phpunit-bridge with PHP 7.4 when testing nightly
       (cd / && wget https://storage.googleapis.com/travis-ci-language-archives/php/binaries/ubuntu/18.04/x86_64/php-7.4.tar.bz2 -O - | tar -xj)
       phpenv global 7.4
