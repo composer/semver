@@ -61,6 +61,6 @@ class CompilingMatcher
             $function = self::$compiledCheckerCache[$cacheKey];
         }
 
-        return $function($version, $version[0] === 'd' && strpos($version, 'dev-') === 0);
+        return $function($version, strpos($version, 'dev-') === 0);
     }
 }

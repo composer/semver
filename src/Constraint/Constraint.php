@@ -203,7 +203,7 @@ class Constraint implements ConstraintInterface
 
     public function compile($otherOperator)
     {
-        if ($this->version[0] === 'd' && strpos($this->version, 'dev-') === 0) {
+        if (strpos($this->version, 'dev-') === 0) {
             if (self::OP_EQ === $this->operator) {
                 if (self::OP_EQ === $otherOperator) {
                     return sprintf('$b && $v === %s', \var_export($this->version, true));
