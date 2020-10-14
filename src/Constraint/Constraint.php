@@ -182,8 +182,8 @@ class Constraint implements ConstraintInterface
             ));
         }
 
-        $aIsBranch = 'dev-' === substr($a, 0, 4);
-        $bIsBranch = 'dev-' === substr($b, 0, 4);
+        $aIsBranch = strpos($a, 'dev-') === 0;
+        $bIsBranch = strpos($b, 'dev-') === 0;
 
         if ($operator === '!=' && ($aIsBranch || $bIsBranch)) {
             return $a !== $b;
@@ -203,7 +203,7 @@ class Constraint implements ConstraintInterface
 
     public function compile($otherOperator)
     {
-        if ($this->version[0] === 'd' && 'dev-' === substr($this->version, 0, 4)) {
+        if ($this->version[0] === 'd' && strpos($this->version, 'dev-') === 0) {
             if (self::OP_EQ === $this->operator) {
                 if (self::OP_EQ === $otherOperator) {
                     return sprintf('$b && $v === %s', \var_export($this->version, true));
@@ -296,11 +296,11 @@ class Constraint implements ConstraintInterface
         // '!=' operator is match when other operator is not '==' operator or version is not match
         // these kinds of comparisons always have a solution
         if ($isNonEqualOp || $isProviderNonEqualOp) {
-            if ($isNonEqualOp && !$isProviderNonEqualOp && !$isProviderEqualOp && 'dev-' === substr($provider->version, 0, 4)) {
+            if ($isNonEqualOp && !$isProviderNonEqualOp && !$isProviderEqualOp && strpos($provider->version, 'dev-') === 0) {
                 return false;
             }
 
-            if ($isProviderNonEqualOp && !$isNonEqualOp && !$isEqualOp && 'dev-' === substr($this->version, 0, 4)) {
+            if ($isProviderNonEqualOp && !$isNonEqualOp && !$isEqualOp && strpos($this->version, 'dev-') === 0) {
                 return false;
             }
 
@@ -313,10 +313,7 @@ class Constraint implements ConstraintInterface
         // an example for the condition is <= 2.0 & < 1.0
         // these kinds of comparisons always have a solution
         if ($this->operator !== self::OP_EQ && $noEqualOp === $providerNoEqualOp) {
-            if ('dev-' === substr($this->version, 0, 4) || 'dev-' === substr($provider->version, 0, 4)) {
-                return false;
-            }
-            return true;
+            return !(strpos($this->version, 'dev-') === 0 || strpos($provider->version, 'dev-') === 0);
         }
 
         $version1 = $isEqualOp ? $this->version : $provider->version;

@@ -233,9 +233,9 @@ class MultiConstraint implements ConstraintInterface
             for ($i = 1, $l = \count($constraints); $i < $l; $i++) {
                 $right = $constraints[$i];
                 if (
-                    $left instanceof MultiConstraint
+                    $left instanceof self
                     && $left->conjunctive
-                    && $right instanceof MultiConstraint
+                    && $right instanceof self
                     && $right->conjunctive
                     && ($left0 = (string) $left->constraints[0])
                     && $left0[0] === '>' && $left0[1] === '='
