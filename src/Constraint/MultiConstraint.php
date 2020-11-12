@@ -237,6 +237,8 @@ class MultiConstraint implements ConstraintInterface
                     && $left->conjunctive
                     && $right instanceof self
                     && $right->conjunctive
+                    && \count($left->constraints) === 2
+                    && \count($right->constraints) === 2
                     && ($left0 = (string) $left->constraints[0])
                     && $left0[0] === '>' && $left0[1] === '='
                     && ($left1 = (string) $left->constraints[1])

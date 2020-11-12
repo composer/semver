@@ -547,6 +547,9 @@ class VersionParserTest extends TestCase
             array('1.2..dev', '== 1.2.0.0-dev'),
             array('1.2-.dev', '== 1.2.0.0-dev'),
             array('1.2_-dev', '== 1.2.0.0-dev'),
+
+            // complex constraints
+            array('~2.5.9|~2.6,>=2.6.2', '[[>= 2.5.9.0-dev < 2.6.0.0-dev] || [>= 2.6.0.0-dev < 3.0.0.0-dev >= 2.6.2.0-dev]]'),
         );
     }
 

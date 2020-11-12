@@ -312,37 +312,120 @@ class MultiConstraintTest extends TestCase
                     true // conjunctive
                 ),
             ),
-            'Test collapses multiple contiguous with other constraint' => array(
+            'Test does not collapse when one side is more complex' => array(
+                '~2.5.9 || ~2.6, >=2.6.2',
+                new MultiConstraint(
+                    array(
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '2.5.9.0-dev'),
+                                new Constraint('<', '2.6.0.0-dev'),
+                            ),
+                            true // conjunctive
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '2.6.0.0-dev'),
+                                new Constraint('<', '3.0.0.0-dev'),
+                                new Constraint('>=', '2.6.2.0-dev'),
+                            ),
+                            true // conjunctive
+                        ),
+                    ),
+                    false
+                )
+            ),
+            'Test does not collapse multiple contiguous with other constraint but collapses the end' => array(
                 '^1.0 || ^2.0 !=2.0.1 || ^3.0 || ^4.0',
                 new MultiConstraint(
                     array(
-                        new Constraint('>=', '1.0.0.0-dev'),
-                        new Constraint('<', '5.0.0.0-dev'),
-                        new Constraint('!=', '2.0.1.0'),
-                    )
-                ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '1.0.0.0-dev'),
+                                new Constraint('<', '2.0.0.0-dev'),
+                            ),
+                            true // conjunctive
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '2.0.0.0-dev'),
+                                new Constraint('<', '3.0.0.0-dev'),
+                                new Constraint('!=', '2.0.1.0'),
+                            ),
+                            true // conjunctive
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '3.0.0.0-dev'),
+                                new Constraint('<', '5.0.0.0-dev'),
+                            ),
+                            true // conjunctive
+                        ),
+                    ),
+                    false
+                )
             ),
-            'Test collapses multiple contiguous with multiple other constraint' => array(
+            'Test does not collapse multiple contiguous with multiple other constraint' => array(
                 '^1.0 != 1.0.1 || ^2.0 !=2.0.1 || ^3.0 || ^4.0 != 4.0.1',
                 new MultiConstraint(
                     array(
-                        new Constraint('>=', '1.0.0.0-dev'),
-                        new Constraint('<', '5.0.0.0-dev'),
-                        new Constraint('!=', '1.0.1.0'),
-                        new Constraint('!=', '2.0.1.0'),
-                        new Constraint('!=', '4.0.1.0'),
-                    )
-                ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '1.0.0.0-dev'),
+                                new Constraint('<', '2.0.0.0-dev'),
+                                new Constraint('!=', '1.0.1.0'),
+                            ),
+                            true // conjunctive
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '2.0.0.0-dev'),
+                                new Constraint('<', '3.0.0.0-dev'),
+                                new Constraint('!=', '2.0.1.0'),
+                            ),
+                            true // conjunctive
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '3.0.0.0-dev'),
+                                new Constraint('<', '4.0.0.0-dev'),
+                            ),
+                            true // conjunctive
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '4.0.0.0-dev'),
+                                new Constraint('<', '5.0.0.0-dev'),
+                                new Constraint('!=', '4.0.1.0'),
+                            ),
+                            true // conjunctive
+                        ),
+                    ),
+                    false
+                )
             ),
-            'Test collapse if contiguous range and other constraints also apply' => array(
+            'Test does not collapse if contiguous range and other constraints also apply' => array(
                 '~0.1 || ~1.0 !=1.0.1',
                 new MultiConstraint(
                     array(
-                        new Constraint('>=', '0.1.0.0-dev'),
-                        new Constraint('<', '2.0.0.0-dev'),
-                        new Constraint('!=', '1.0.1.0'),
-                    )
-                ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '0.1.0.0-dev'),
+                                new Constraint('<', '1.0.0.0-dev'),
+                            ),
+                            true // conjunctive
+                        ),
+                        new MultiConstraint(
+                            array(
+                                new Constraint('>=', '1.0.0.0-dev'),
+                                new Constraint('<', '2.0.0.0-dev'),
+                                new Constraint('!=', '1.0.1.0'),
+                            ),
+                            true // conjunctive
+                        ),
+                    ),
+                    false
+                )
             ),
             'Parse caret constraints must not collapse if non contiguous range' => array(
                 '^0.2 || ^1.0',
