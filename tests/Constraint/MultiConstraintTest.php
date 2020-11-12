@@ -325,9 +325,8 @@ class MultiConstraintTest extends TestCase
                         ),
                         new MultiConstraint(
                             array(
-                                new Constraint('>=', '2.6.0.0-dev'),
-                                new Constraint('<', '3.0.0.0-dev'),
                                 new Constraint('>=', '2.6.2.0-dev'),
+                                new Constraint('<', '3.0.0.0-dev'),
                             ),
                             true // conjunctive
                         ),

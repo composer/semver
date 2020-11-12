@@ -270,7 +270,7 @@ class VersionParser
             if (1 === \count($constraintObjects)) {
                 $constraint = $constraintObjects[0];
             } else {
-                $constraint = new MultiConstraint($constraintObjects);
+                $constraint = MultiConstraint::create($constraintObjects);
             }
 
             $orGroups[] = $constraint;

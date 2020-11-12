@@ -269,6 +269,43 @@ class MultiConstraint implements ConstraintInterface
                 $mergedConstraints[] = $left;
                 return array($mergedConstraints, false);
             }
+        } else {
+            list($lowerBound, $upperBound) = self::extractBoundsFromConstraints($constraints, true);
+            $boundedConstraints = array();
+            $optimized = false;
+            foreach ($constraints as $constraint) {
+                $uBound = $constraint->getUpperBound();
+                if ($uBound->compareTo($lowerBound, '<')) {
+                    return array(array(new MatchNoneConstraint()), null);
+                }
+                $lBound = $constraint->getLowerBound();
+                if ($lBound->compareTo($upperBound, '>')) {
+                    return array(array(new MatchNoneConstraint()), null);
+                }
+                if (
+                    $lBound->compareTo($lowerBound, '<')
+                    && ($c = (string) $constraint)
+                    && $c[0] === '>'
+                ) {
+                    $optimized = true;
+                    continue;
+                }
+                if (
+                    $uBound->compareTo($upperBound, '>')
+                    && ($c = (string) $constraint)
+                    && $c[0] === '<'
+                ) {
+                    $optimized = true;
+                    continue;
+                }
+                $boundedConstraints[] = $constraint;
+            }
+            if ($optimized) {
+                usort($boundedConstraints, function($a, $b) {
+                    return \version_compare($a->getVersion(), $b->getVersion());
+                });
+                return array($boundedConstraints, true);
+            }
         }
 
         // TODO: Here's the place to put more optimizations
@@ -282,20 +319,31 @@ class MultiConstraint implements ConstraintInterface
             return;
         }
 
-        foreach ($this->constraints as $constraint) {
-            if (null === $this->lowerBound && null === $this->upperBound) {
-                $this->lowerBound = $constraint->getLowerBound();
-                $this->upperBound = $constraint->getUpperBound();
+        list($this->lowerBound, $this->upperBound) = self::extractBoundsFromConstraints($this->constraints, $this->conjunctive);
+    }
+
+    private static function extractBoundsFromConstraints(array $constraints, $isConjunctive)
+    {
+        $lowerBound = $upperBound = null;
+        foreach ($constraints as $constraint) {
+            $uBound = $constraint->getUpperBound();
+            $lBound = $constraint->getLowerBound();
+
+            if (null === $lowerBound && null === $upperBound) {
+                $lowerBound = $lBound;
+                $upperBound = $uBound;
                 continue;
             }
 
-            if ($constraint->getLowerBound()->compareTo($this->lowerBound, $this->isConjunctive() ? '>' : '<')) {
-                $this->lowerBound = $constraint->getLowerBound();
+            if ($lBound->compareTo($lowerBound, $isConjunctive ? '>' : '<')) {
+                $lowerBound = $lBound;
             }
 
-            if ($constraint->getUpperBound()->compareTo($this->upperBound, $this->isConjunctive() ? '<' : '>')) {
-                $this->upperBound = $constraint->getUpperBound();
+            if ($uBound->compareTo($upperBound, $isConjunctive ? '<' : '>')) {
+                $upperBound = $uBound;
             }
         }
+
+        return array($lowerBound, $upperBound);
     }
 }
