@@ -251,13 +251,9 @@ class MultiConstraint implements ConstraintInterface
                 ) {
                     $optimized = true;
                     $left = new MultiConstraint(
-                        array_merge(
-                            array(
-                                $left->constraints[0],
-                                $right->constraints[1],
-                            ),
-                            \array_slice($left->constraints, 2),
-                            \array_slice($right->constraints, 2)
+                        array(
+                            $left->constraints[0],
+                            $right->constraints[1],
                         ),
                         true);
                 } else {
