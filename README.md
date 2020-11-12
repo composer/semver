@@ -6,7 +6,7 @@ Semver library that offers utilities, version constraint parsing and validation.
 Originally written as part of [composer/composer](https://github.com/composer/composer),
 now extracted and made available as a stand-alone library.
 
-[![Build Status](https://travis-ci.org/composer/semver.svg?branch=main)](https://travis-ci.org/composer/semver)
+[![Continuous Integration](https://github.com/composer/semver/workflows/Continuous%20Integration/badge.svg?branch=main)](https://github.com/composer/semver/actions)
 
 
 Installation
