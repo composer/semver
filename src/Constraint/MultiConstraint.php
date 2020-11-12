@@ -237,8 +237,6 @@ class MultiConstraint implements ConstraintInterface
                     && $left->conjunctive
                     && $right instanceof self
                     && $right->conjunctive
-                    && \count($left->constraints) === 2
-                    && \count($right->constraints) === 2
                     && ($left0 = (string) $left->constraints[0])
                     && $left0[0] === '>' && $left0[1] === '='
                     && ($left1 = (string) $left->constraints[1])
@@ -249,6 +247,29 @@ class MultiConstraint implements ConstraintInterface
                     && $right1[0] === '<'
                     && substr($left1, 2) === substr($right0, 3)
                 ) {
+                    for ($j = 2, $m = count($right->constraints); $j < $m; $j++) {
+                        $c = (string)$right->constraints[$j];
+                        switch ($c[0]) {
+                            case '!':
+                            case '<':
+                            case '=':
+                                break;
+                            default:
+                                continue 3;
+                        }
+                    }
+                    for ($j = 2, $m = count($left->constraints); $j < $m; $j++) {
+                        $c = (string)$left->constraints[$j];
+                        switch ($c[0]) {
+                            case '!':
+                            case '>':
+                            case '=':
+                                break;
+                            default:
+                                continue 3;
+                        }
+                    }
+
                     $optimized = true;
                     $left = new MultiConstraint(
                         array_merge(
@@ -260,10 +281,11 @@ class MultiConstraint implements ConstraintInterface
                             \array_slice($right->constraints, 2)
                         ),
                         true);
-                } else {
-                    $mergedConstraints[] = $left;
-                    $left = $right;
+                    continue;
                 }
+
+                $mergedConstraints[] = $left;
+                $left = $right;
             }
             if ($optimized) {
                 $mergedConstraints[] = $left;
