@@ -53,6 +53,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   * Added `getUpperBound` and `getLowerBound` to ConstraintInterface. They return `Composer\Semver\Constraint\Bound` instances
   * Added `MultiConstraint::create` to create the most-optimal form of ConstraintInterface from an array of constraint strings
 
+### [1.7.2] 2020-12-03
+
+  * Fixed: Allow installing on php 8
+
 ### [1.7.1] 2020-09-27
 
   * Fixed: accidental validation of broken constraints combining ^/~ and wildcards, and -dev suffix allowing weird cases
@@ -145,6 +149,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [3.0.1]: https://github.com/composer/semver/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/composer/semver/compare/2.0.0...3.0.0
 [2.0.0]: https://github.com/composer/semver/compare/1.5.1...2.0.0
+[1.7.2]: https://github.com/composer/semver/compare/1.7.1...1.7.2
 [1.7.1]: https://github.com/composer/semver/compare/1.7.0...1.7.1
 [1.7.0]: https://github.com/composer/semver/compare/1.6.0...1.7.0
 [1.6.0]: https://github.com/composer/semver/compare/1.5.2...1.6.0
