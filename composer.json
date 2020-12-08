@@ -53,6 +53,6 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/simple-phpunit"
+        "test": "SYMFONY_PHPUNIT_REMOVE_RETURN_TYPEHINT=1 vendor/bin/simple-phpunit"
     }
 }
