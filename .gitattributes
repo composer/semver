@@ -8,6 +8,7 @@
 
 # Ignore these files in GitHub dists and `git archive` actions.
 /.gitattributes export-ignore
+/.github export-ignore
 /.gitignore export-ignore
 /.travis.yml export-ignore
 /.php_cs export-ignore
