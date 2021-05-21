@@ -90,6 +90,21 @@ class MultiConstraintTest extends TestCase
         $this->assertTrue(Intervals::compactConstraint($multiProvide)->matches(Intervals::compactConstraint($multiRequire)));
     }
 
+    public function testConjunctiveMatchesDisjunctiveFalse()
+    {
+        $versionProvideStart = new Constraint('<', '1.0');
+        $versionProvideEnd = new Constraint('>', '2.0');
+
+        $multiRequire = new MultiConstraint(array($this->versionRequireStart, $this->versionRequireEnd), true);
+        $multiProvide = new MultiConstraint(array($versionProvideStart, $versionProvideEnd), false);
+
+        $this->assertFalse($multiRequire->matches($multiProvide));
+        $this->assertFalse($multiProvide->matches($multiRequire));
+        $this->assertFalse(Intervals::haveIntersections($multiRequire, $multiProvide));
+        $this->assertFalse(Intervals::compactConstraint($multiRequire)->matches(Intervals::compactConstraint($multiProvide)));
+        $this->assertFalse(Intervals::compactConstraint($multiProvide)->matches(Intervals::compactConstraint($multiRequire)));
+    }
+
     public function testMultiVersionMatchFails()
     {
         $versionProvide = new Constraint('==', '1.2');
