@@ -34,6 +34,7 @@ class ConstraintTest extends TestCase
     public function testVersionCompareInvalidArgumentException()
     {
         $this->doExpectException('InvalidArgumentException');
+        /** @phpstan-ignore-next-line */
         $result = $this->constraint->versionCompare('1.1', '1.2', '!==');
     }
 
@@ -417,6 +418,7 @@ class ConstraintTest extends TestCase
     {
         $this->doExpectException($expected);
 
+        /** @phpstan-ignore-next-line */
         new Constraint($operator, $version);
     }
 
@@ -439,6 +441,8 @@ class ConstraintTest extends TestCase
      * @param string $normalizedVersion
      * @param Bound  $expectedLower
      * @param Bound  $expectedUpper
+     *
+     * @phpstan-param Constraint::STR_OP_* $operator
      */
     public function testBounds($operator, $normalizedVersion, Bound $expectedLower, Bound $expectedUpper)
     {

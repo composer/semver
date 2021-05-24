@@ -23,15 +23,15 @@ class CompilingMatcher
     private static $enabled;
 
     /**
-     * @phpstan-var array<Constraint::OP_*, string>
+     * @phpstan-var array<Constraint::OP_*, Constraint::STR_OP_*>
      */
     private static $transOpInt = array(
-        Constraint::OP_EQ => '==',
-        Constraint::OP_LT => '<',
-        Constraint::OP_LE => '<=',
-        Constraint::OP_GT => '>',
-        Constraint::OP_GE => '>=',
-        Constraint::OP_NE => '!=',
+        Constraint::OP_EQ => Constraint::STR_OP_EQ,
+        Constraint::OP_LT => Constraint::STR_OP_LT,
+        Constraint::OP_LE => Constraint::STR_OP_LE,
+        Constraint::OP_GT => Constraint::STR_OP_GT,
+        Constraint::OP_GE => Constraint::STR_OP_GE,
+        Constraint::OP_NE => Constraint::STR_OP_NE,
     );
 
     /**

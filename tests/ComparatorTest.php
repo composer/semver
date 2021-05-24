@@ -12,6 +12,7 @@
 namespace Composer\Semver;
 
 use PHPUnit\Framework\TestCase;
+use Composer\Semver\Constraint\Constraint;
 
 /**
  * @coversDefaultClass \Composer\Semver\Comparator
@@ -116,6 +117,8 @@ class ComparatorTest extends TestCase
      * @param string $operator
      * @param string $version2
      * @param bool   $expected
+     *
+     * @phpstan-param Constraint::STR_OP_* $operator
      */
     public function testCompare($version1, $operator, $version2, $expected)
     {

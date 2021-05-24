@@ -41,6 +41,8 @@ interface ConstraintInterface
      * @param int $operator one Constraint::OP_*
      *
      * @return string
+     *
+     * @phpstan-param Constraint::OP_* $operator
      */
     public function compile($operator);
 
