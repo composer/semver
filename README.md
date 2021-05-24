@@ -69,22 +69,24 @@ The [`Composer\Semver\Intervals`](https://github.com/composer/semver/blob/main/s
 a few utilities to work with complex constraints or read version intervals from a constraint:
 
 ```php
+use Composer\Semver\Intervals;
+
 // Checks whether $candidate is a subset of $constraint
-isSubsetOf(ConstraintInterface $candidate, ConstraintInterface $constraint);
+Intervals::isSubsetOf(ConstraintInterface $candidate, ConstraintInterface $constraint);
 
 // Checks whether $a and $b have any intersection, equivalent to $a->matches($b)
-haveIntersections(ConstraintInterface $a, ConstraintInterface $b);
+Intervals::haveIntersections(ConstraintInterface $a, ConstraintInterface $b);
 
 // Optimizes a complex multi constraint by merging all intervals down to the smallest
 // possible multi constraint. The drawbacks are this is not very fast, and the resulting
 // multi constraint will have no human readable prettyConstraint configured on it
-compactConstraint(ConstraintInterface $constraint);
+Intervals::compactConstraint(ConstraintInterface $constraint);
 
 // Creates an array of numeric intervals and branch constraints representing a given constraint
-get(ConstraintInterface $constraint);
+Intervals::get(ConstraintInterface $constraint);
 
 // Clears the memoization cache when you are done processing constraints
-clear()
+Intervals::clear()
 ```
 
 See the class docblocks for more details.
