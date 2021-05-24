@@ -1,5 +1,8 @@
+includes:
+    - tests/baseline.neon
+
 parameters:
-    level: 5
+    level: 8
     paths:
         - src
         - tests

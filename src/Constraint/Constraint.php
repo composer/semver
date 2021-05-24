@@ -108,12 +108,17 @@ class Constraint implements ConstraintInterface
         $this->version = $version;
     }
 
+    /**
+     * @return string
+     */
     public function getVersion()
     {
         return $this->version;
     }
 
     /**
+     * @return string
+     *
      * @phpstan-return self::STR_OP_*
      */
     public function getOperator()
@@ -137,7 +142,7 @@ class Constraint implements ConstraintInterface
     }
 
     /**
-     * @param string|null $prettyString
+     * {@inheritDoc}
      */
     public function setPrettyString($prettyString)
     {
@@ -145,7 +150,7 @@ class Constraint implements ConstraintInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getPrettyString()
     {
@@ -222,9 +227,7 @@ class Constraint implements ConstraintInterface
     }
 
     /**
-     * @param string $otherOperator
-     *
-     * @phpstan-param self::OP_* $otherOperator
+     * {@inheritDoc}
      */
     public function compile($otherOperator)
     {

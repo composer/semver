@@ -29,13 +29,16 @@ class MatchNoneConstraint implements ConstraintInterface
         return false;
     }
 
-    public function compile($operator)
+    /**
+     * {@inheritDoc}
+     */
+    public function compile($otherOperator)
     {
         return 'false';
     }
 
     /**
-     * @param string|null $prettyString
+     * {@inheritDoc}
      */
     public function setPrettyString($prettyString)
     {
@@ -43,7 +46,7 @@ class MatchNoneConstraint implements ConstraintInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getPrettyString()
     {
@@ -55,7 +58,7 @@ class MatchNoneConstraint implements ConstraintInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function __toString()
     {

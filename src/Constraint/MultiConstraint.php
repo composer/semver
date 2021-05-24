@@ -16,7 +16,10 @@ namespace Composer\Semver\Constraint;
  */
 class MultiConstraint implements ConstraintInterface
 {
-    /** @var ConstraintInterface[] */
+    /**
+     * @var ConstraintInterface[]
+     * @phpstan-var non-empty-array<ConstraintInterface>
+     */
     protected $constraints;
 
     /** @var string|null */
@@ -78,6 +81,9 @@ class MultiConstraint implements ConstraintInterface
         return !$this->conjunctive;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function compile($otherOperator)
     {
         $parts = array();
@@ -137,7 +143,7 @@ class MultiConstraint implements ConstraintInterface
     }
 
     /**
-     * @param string|null $prettyString
+     * {@inheritDoc}
      */
     public function setPrettyString($prettyString)
     {
@@ -145,7 +151,7 @@ class MultiConstraint implements ConstraintInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getPrettyString()
     {
@@ -157,7 +163,7 @@ class MultiConstraint implements ConstraintInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function __toString()
     {
@@ -180,6 +186,10 @@ class MultiConstraint implements ConstraintInterface
     {
         $this->extractBounds();
 
+        if (null === $this->lowerBound) {
+            throw new \LogicException('extractBounds should have populated the lowerBound property');
+        }
+
         return $this->lowerBound;
     }
 
@@ -189,6 +199,10 @@ class MultiConstraint implements ConstraintInterface
     public function getUpperBound()
     {
         $this->extractBounds();
+
+        if (null === $this->upperBound) {
+            throw new \LogicException('extractBounds should have populated the upperBound property');
+        }
 
         return $this->upperBound;
     }
@@ -226,7 +240,11 @@ class MultiConstraint implements ConstraintInterface
     }
 
     /**
-     * @return array|null
+     * @param  ConstraintInterface[] $constraints
+     * @param  bool                  $conjunctive
+     * @return ?array
+     *
+     * @phpstan-return array{0: list<ConstraintInterface>, 1: bool}|null
      */
     private static function optimizeConstraints(array $constraints, $conjunctive)
     {
@@ -279,6 +297,9 @@ class MultiConstraint implements ConstraintInterface
         return null;
     }
 
+    /**
+     * @return void
+     */
     private function extractBounds()
     {
         if (null !== $this->lowerBound) {
@@ -286,7 +307,7 @@ class MultiConstraint implements ConstraintInterface
         }
 
         foreach ($this->constraints as $constraint) {
-            if (null === $this->lowerBound && null === $this->upperBound) {
+            if (null === $this->lowerBound || null === $this->upperBound) {
                 $this->lowerBound = $constraint->getLowerBound();
                 $this->upperBound = $constraint->getUpperBound();
                 continue;

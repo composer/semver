@@ -49,11 +49,17 @@ class Bound
         return $this->isInclusive;
     }
 
+    /**
+     * @return bool
+     */
     public function isZero()
     {
         return $this->getVersion() === '0.0.0.0-dev' && $this->isInclusive();
     }
 
+    /**
+     * @return bool
+     */
     public function isPositiveInfinity()
     {
         return $this->getVersion() === PHP_INT_MAX.'.0.0.0' && !$this->isInclusive();

@@ -19,7 +19,12 @@ use Composer\Semver\Constraint\ConstraintInterface;
  */
 class CompilingMatcher
 {
+    /**
+     * @var array
+     * @phpstan-var array<string, callable>
+     */
     private static $compiledCheckerCache = array();
+    /** @var bool */
     private static $enabled;
 
     /**
@@ -47,7 +52,7 @@ class CompilingMatcher
     public static function match(ConstraintInterface $constraint, $operator, $version)
     {
         if (self::$enabled === null) {
-            self::$enabled = !\in_array('eval', explode(',', ini_get('disable_functions')), true);
+            self::$enabled = !\in_array('eval', explode(',', (string) ini_get('disable_functions')), true);
         }
         if (!self::$enabled) {
             return $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));

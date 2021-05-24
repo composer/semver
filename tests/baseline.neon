@@ -1,0 +1,837 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:compareProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:equalToProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:greaterThanOrEqualToProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:greaterThanProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:lessThanOrEqualToProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:lessThanProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:notEqualToProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:testCompare\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:testEqualTo\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:testGreaterThan\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:testGreaterThanOrEqualTo\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:testLessThan\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:testLessThanOrEqualTo\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\ComparatorTest\\:\\:testNotEqualTo\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: ComparatorTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\CompilingMatcherTest\\:\\:testMatch\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: CompilingMatcherTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:bounds\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:doExpectException\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:doExpectException\\(\\) has parameter \\$class with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:failingVersionMatches\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:invalidOperators\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:matchCompiled\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:matchCompiled\\(\\) has parameter \\$operator with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:matchCompiled\\(\\) has parameter \\$version with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:matrix\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:setUp\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:successfulVersionMatches\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testBounds\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testComparableBranches\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testCompile\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testCompile\\(\\) has parameter \\$provideOperator with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testCompile\\(\\) has parameter \\$provideVersion with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testCompile\\(\\) has parameter \\$requireOperator with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testCompile\\(\\) has parameter \\$requireVersion with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testGetPrettyString\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testInvalidOperators\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testInverseMatchingOtherConstraints\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionCompareInvalidArgumentException\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchFails\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchFails\\(\\) has parameter \\$provideOperator with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchFails\\(\\) has parameter \\$provideVersion with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchFails\\(\\) has parameter \\$requireOperator with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchFails\\(\\) has parameter \\$requireVersion with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchSucceeds\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchSucceeds\\(\\) has parameter \\$provideOperator with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchSucceeds\\(\\) has parameter \\$provideVersion with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchSucceeds\\(\\) has parameter \\$requireOperator with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\ConstraintTest\\:\\:testVersionMatchSucceeds\\(\\) has parameter \\$requireVersion with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/ConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MatchAllConstraintTest\\:\\:setUp\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MatchAllConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MatchAllConstraintTest\\:\\:testGetPrettyString\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MatchAllConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MatchAllConstraintTest\\:\\:testMatches\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MatchAllConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MatchNoneConstraintTest\\:\\:setUp\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MatchNoneConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MatchNoneConstraintTest\\:\\:testGetPrettyString\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MatchNoneConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MatchNoneConstraintTest\\:\\:testMatches\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MatchNoneConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:bounds\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:boundsIntegration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:matchCompiled\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:matchCompiled\\(\\) has parameter \\$operator with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:matchCompiled\\(\\) has parameter \\$version with no typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:multiConstraintOptimizations\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:setUp\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testBounds\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testBounds\\(\\) has parameter \\$constraints with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testBoundsIntegrationWithVersionParser\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testConjunctiveMatchesDisjunctiveFalse\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testCreatesMatchAllConstraintIfNoneGiven\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testGetPrettyString\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testIsConjunctive\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testIsDisjunctive\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testMultiConstraintConjunctiveFillWithTrue\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testMultiConstraintNotconjunctiveFillWithFalse\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testMultiConstraintOptimizations\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testMultiVersionMatchFails\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testMultiVersionMatchSucceeds\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testMultiVersionMatchSucceedsInsideForeachLoop\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testMultiVersionProvidedMatchSucceeds\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testMultipleMultiConstraintsMerging\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\Constraint\\\\MultiConstraintTest\\:\\:testMultipleMultiConstraintsMergingWithGaps\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: Constraint/MultiConstraintTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\IntervalsTest\\:\\:compactProvider\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: IntervalsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\IntervalsTest\\:\\:intervalsProvider\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: IntervalsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\IntervalsTest\\:\\:testCompactConstraint\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: IntervalsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\IntervalsTest\\:\\:testCompactConstraint\\(\\) has parameter \\$conjunctive with no typehint specified\\.$#"
+			count: 1
+			path: IntervalsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\IntervalsTest\\:\\:testCompactConstraint\\(\\) has parameter \\$expected with no typehint specified\\.$#"
+			count: 1
+			path: IntervalsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\IntervalsTest\\:\\:testCompactConstraint\\(\\) has parameter \\$toCompact with no typehint specified\\.$#"
+			count: 1
+			path: IntervalsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\IntervalsTest\\:\\:testGetIntervals\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: IntervalsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\IntervalsTest\\:\\:testGetIntervals\\(\\) has parameter \\$constraint with no typehint specified\\.$#"
+			count: 1
+			path: IntervalsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\IntervalsTest\\:\\:testGetIntervals\\(\\) has parameter \\$expected with no typehint specified\\.$#"
+			count: 1
+			path: IntervalsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:satisfiedByProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:satisfiesProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:satisfiesProviderNegative\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:satisfiesProviderPositive\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:sortProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:testSatisfiedBy\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:testSatisfiedBy\\(\\) has parameter \\$expected with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:testSatisfiedBy\\(\\) has parameter \\$versions with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:testSatisfies\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:testSort\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:testSort\\(\\) has parameter \\$rsorted with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:testSort\\(\\) has parameter \\$sorted with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:testSort\\(\\) has parameter \\$versions with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SemverTest\\:\\:testUsortShouldInitialVersionParserClass\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: SemverTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SubsetsTest\\:\\:notSubsets\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: SubsetsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SubsetsTest\\:\\:subsets\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: SubsetsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SubsetsTest\\:\\:testIsNotSubsetOf\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: SubsetsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SubsetsTest\\:\\:testIsNotSubsetOf\\(\\) has parameter \\$aStr with no typehint specified\\.$#"
+			count: 1
+			path: SubsetsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SubsetsTest\\:\\:testIsNotSubsetOf\\(\\) has parameter \\$bStr with no typehint specified\\.$#"
+			count: 1
+			path: SubsetsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SubsetsTest\\:\\:testIsSubsetOf\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: SubsetsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SubsetsTest\\:\\:testIsSubsetOf\\(\\) has parameter \\$aStr with no typehint specified\\.$#"
+			count: 1
+			path: SubsetsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SubsetsTest\\:\\:testIsSubsetOf\\(\\) has parameter \\$bStr with no typehint specified\\.$#"
+			count: 1
+			path: SubsetsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\SubsetsTest\\:\\:testMatchNoneIsNoSubsetNorSupersetExceptOfMatchAll\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: SubsetsTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:caretConstraints\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:constraintProvider\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:doExpectException\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:doExpectException\\(\\) has parameter \\$class with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:doExpectException\\(\\) has parameter \\$message with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:failingConstraints\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:failingNormalizedVersions\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:failingNormalizedVersionsWithBadAlias\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:failingNormalizedVersionsWithBadAliasee\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:hyphenConstraints\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:multiConstraintProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:multiConstraintProvider2\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:numericAliasVersions\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:simpleConstraints\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:stabilityProvider\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:successfulNormalizedBranches\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:successfulNormalizedVersions\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testComplexConjunctive\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testManipulateVersionStringWithReturnNull\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeBranch\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeBranch\\(\\) has parameter \\$expected with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeBranch\\(\\) has parameter \\$input with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeFails\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeFails\\(\\) has parameter \\$input with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeFailsAndReportsAliasIssue\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeFailsAndReportsAliasIssue\\(\\) has parameter \\$fullInput with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeFailsAndReportsAliaseeIssue\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeFailsAndReportsAliaseeIssue\\(\\) has parameter \\$fullInput with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeStability\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeSucceeds\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeSucceeds\\(\\) has parameter \\$expected with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testNormalizeSucceeds\\(\\) has parameter \\$input with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseCaretWildcard\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraints\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraints\\(\\) has parameter \\$constraint with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraints\\(\\) has parameter \\$expected with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsFails\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsFailsOnBadReference\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsIgnoresReferenceOnDevVersion\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsIgnoresStabilityFlag\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsMulti\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsMulti\\(\\) has parameter \\$constraint with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsMultiDisjunctiveHasPrioOverConjuctive\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsMultiWithStabilities\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsMultiWithStabilitiesWildcard\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsMultiWithStabilitiesZero\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsMultiWithStabilitySuffix\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsNudgesRubyDevsTowardsThePathOfRighteousness\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsSimple\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseConstraintsWildcard\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseHyphen\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseNumericAliasPrefix\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseNumericAliasPrefix\\(\\) has parameter \\$expected with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseNumericAliasPrefix\\(\\) has parameter \\$input with no typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseStability\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:testParseTildeWildcard\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:tildeConstraints\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
+		-
+			message: "#^Method Composer\\\\Semver\\\\VersionParserTest\\:\\:wildcardConstraints\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: VersionParserTest.php
+
