@@ -120,6 +120,13 @@ class MultiConstraint implements ConstraintInterface
             return false;
         }
 
+        // when matching a conjunctive and a disjunctive multi constraint we have to iterate over the disjunctive one
+        // otherwise we'd return true if different parts of the disjunctive constraint match the conjunctive one
+        // which would lead to incorrect results, e.g. [>1 and <2] would match [<1 or >2] although they do not intersect
+        if ($provider instanceof MultiConstraint && $provider->isDisjunctive()) {
+            return $provider->matches($this);
+        }
+
         foreach ($this->constraints as $constraint) {
             if (!$provider->matches($constraint)) {
                 return false;
