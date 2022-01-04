@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-### [3.2.6] 2021-10-25
+### [3.2.6] 2022-01-04
 
   * Fixed: type improvements to parseStability
   * Fixed: typo in type definition of Intervals class causing issues with Psalm scanning vendors
