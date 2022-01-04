@@ -431,7 +431,7 @@ class Intervals
     }
 
     /**
-     * @phpstan-return array{'numeric': Interval[], 'branches': array{'names': string[], 'exclude': bool}}}
+     * @phpstan-return array{'numeric': Interval[], 'branches': array{'names': string[], 'exclude': bool}}
      */
     private static function generateSingleConstraintIntervals(Constraint $constraint)
     {
