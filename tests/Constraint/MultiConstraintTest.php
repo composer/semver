@@ -275,6 +275,20 @@ class MultiConstraintTest extends TestCase
         $this->assertInstanceOf('Composer\Semver\Constraint\MatchAllConstraint', MultiConstraint::create(array()));
     }
 
+    public function testCreatesMatchAllConstraintIfConjunctiveAndCombinedWithAnotherONe()
+    {
+        $this->assertInstanceOf('Composer\Semver\Constraint\MatchAllConstraint', MultiConstraint::create(
+            array(new Constraint('>=', '2.5.0.0-dev'), new MatchAllConstraint())
+        ));
+    }
+
+    public function testCreatesMatchAllConstraintIfDisjunctiveAndCombinedWithAnotherONe()
+    {
+        $this->assertInstanceOf('Composer\Semver\Constraint\MatchAllConstraint', MultiConstraint::create(
+            array(new Constraint('>=', '2.5.0.0-dev'), new MatchAllConstraint()), false
+        ));
+    }
+
     /**
      * @dataProvider multiConstraintOptimizations
      *
