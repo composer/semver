@@ -207,9 +207,12 @@ class MultiConstraint implements ConstraintInterface
             return $constraints[0];
         }
 
-        foreach ($constraints as $constraint) {
+        foreach ($constraints as $k => $constraint) {
             if ($constraint instanceof MatchAllConstraint) {
-                return new MatchAllConstraint();
+                if (!$conjunctive) {
+                    return new MatchAllConstraint();
+                }
+                unset($constraints[$k]);
             }
         }
 
