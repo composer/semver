@@ -28,6 +28,9 @@ class IntervalsTest extends TestCase
 
     /**
      * @dataProvider compactProvider
+     * @param string $expected
+     * @param array<string> $toCompact
+     * @param bool $conjunctive
      */
     public function testCompactConstraint($expected, $toCompact, $conjunctive)
     {
@@ -191,6 +194,8 @@ class IntervalsTest extends TestCase
 
     /**
      * @dataProvider intervalsProvider
+     * @param array<mixed>|self::INTERVAL_* $expected
+     * @param string $constraint
      */
     public function testGetIntervals($expected, $constraint)
     {

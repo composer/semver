@@ -27,18 +27,11 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
+          - "8.1"
 
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
-
-      - name: "Choose PHPUnit version"
-        run: |
-          if [ "${{ matrix.php-version }}" = "7.4" ]; then
-            echo "SYMFONY_PHPUNIT_VERSION=7.5" >> $GITHUB_ENV;
-          elif [ "${{ matrix.php-version }}" = "8.0" ]; then
-            echo "SYMFONY_PHPUNIT_VERSION=9.4" >> $GITHUB_ENV;
-          fi
 
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"

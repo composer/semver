@@ -19,6 +19,8 @@ class SubsetsTest extends TestCase
 {
     /**
      * @dataProvider subsets
+     * @param string $aStr
+     * @param string $bStr
      */
     public function testIsSubsetOf($aStr, $bStr)
     {
@@ -29,6 +31,9 @@ class SubsetsTest extends TestCase
         $this->assertTrue(Intervals::isSubsetOf($a, $b), $aStr.' ('.$a.') should be seen as a subset of '.$bStr.' ('.$b.')');
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function subsets()
     {
         return array(
@@ -81,6 +86,8 @@ class SubsetsTest extends TestCase
 
     /**
      * @dataProvider notSubsets
+     * @param string $aStr
+     * @param string $bStr
      */
     public function testIsNotSubsetOf($aStr, $bStr)
     {
@@ -91,6 +98,9 @@ class SubsetsTest extends TestCase
         $this->assertFalse(Intervals::isSubsetOf($a, $b), $aStr.' ('.$a.') should not be seen as a subset of '.$bStr.' ('.$b.')');
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function notSubsets()
     {
         return array(

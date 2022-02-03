@@ -20,6 +20,8 @@ class VersionParserTest extends TestCase
 {
     /**
      * @dataProvider numericAliasVersions
+     * @param string $input
+     * @param string $expected
      */
     public function testParseNumericAliasPrefix($input, $expected)
     {
@@ -28,6 +30,9 @@ class VersionParserTest extends TestCase
         $this->assertSame($expected, $parser->parseNumericAliasPrefix($input));
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function numericAliasVersions()
     {
         return array(
@@ -44,6 +49,8 @@ class VersionParserTest extends TestCase
 
     /**
      * @dataProvider successfulNormalizedVersions
+     * @param string $input
+     * @param string $expected
      */
     public function testNormalizeSucceeds($input, $expected)
     {
@@ -52,6 +59,9 @@ class VersionParserTest extends TestCase
         $this->assertSame($expected, $parser->normalize($input));
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function successfulNormalizedVersions()
     {
         return array(
@@ -125,6 +135,7 @@ class VersionParserTest extends TestCase
 
     /**
      * @dataProvider failingNormalizedVersions
+     * @param string $input
      */
     public function testNormalizeFails($input)
     {
@@ -133,6 +144,9 @@ class VersionParserTest extends TestCase
         $parser->normalize($input);
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function failingNormalizedVersions()
     {
         return array(
@@ -161,6 +175,7 @@ class VersionParserTest extends TestCase
 
     /**
      * @dataProvider failingNormalizedVersionsWithBadAlias
+     * @param string $fullInput
      */
     public function testNormalizeFailsAndReportsAliasIssue($fullInput)
     {
@@ -174,6 +189,9 @@ class VersionParserTest extends TestCase
         }
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function failingNormalizedVersionsWithBadAlias()
     {
         return array(
@@ -187,6 +205,7 @@ class VersionParserTest extends TestCase
 
     /**
      * @dataProvider failingNormalizedVersionsWithBadAliasee
+     * @param string $fullInput
      */
     public function testNormalizeFailsAndReportsAliaseeIssue($fullInput)
     {
@@ -200,6 +219,9 @@ class VersionParserTest extends TestCase
         $parser->normalize($match[2], $fullInput);
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function failingNormalizedVersionsWithBadAliasee()
     {
         return array(
@@ -213,6 +235,8 @@ class VersionParserTest extends TestCase
 
     /**
      * @dataProvider successfulNormalizedBranches
+     * @param string $input
+     * @param string $expected
      */
     public function testNormalizeBranch($input, $expected)
     {
@@ -221,6 +245,9 @@ class VersionParserTest extends TestCase
         $this->assertSame((string) $expected, (string) $parser->normalizeBranch($input));
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function successfulNormalizedBranches()
     {
         return array(
@@ -288,7 +315,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function simpleConstraints()
     {
@@ -347,7 +374,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function wildcardConstraints()
     {
@@ -389,7 +416,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function tildeConstraints()
     {
@@ -436,7 +463,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function caretConstraints()
     {
@@ -486,7 +513,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function hyphenConstraints()
     {
@@ -510,6 +537,8 @@ class VersionParserTest extends TestCase
 
     /**
      * @dataProvider constraintProvider
+     * @param string $constraint
+     * @param string $expected
      */
     public function testParseConstraints($constraint, $expected)
     {
@@ -518,6 +547,9 @@ class VersionParserTest extends TestCase
         $this->assertSame($expected, (string) $parser->parseConstraints($constraint));
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function constraintProvider()
     {
         return array(
@@ -555,6 +587,7 @@ class VersionParserTest extends TestCase
 
     /**
      * @dataProvider multiConstraintProvider
+     * @param string $constraint
      */
     public function testParseConstraintsMulti($constraint)
     {
@@ -567,7 +600,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function multiConstraintProvider()
     {
@@ -619,7 +652,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function multiConstraintProvider2()
     {
@@ -673,7 +706,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function failingConstraints()
     {
@@ -732,7 +765,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function stabilityProvider()
     {
@@ -801,6 +834,11 @@ class VersionParserTest extends TestCase
         $this->assertFalse($parsed->matches($version), '"~0.1 || ~1.0 !=1.0.1" should not allow version "1.0.1.0"');
     }
 
+    /**
+     * @param class-string $class
+     * @param string|null $message
+     * @return void
+     */
     private function doExpectException($class, $message = null)
     {
         if (method_exists($this, 'expectException')) {
