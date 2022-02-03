@@ -54,7 +54,7 @@ class MultiConstraintTest extends TestCase
 
         $this->assertTrue($multiRequire->matches($versionProvide));
         $this->assertTrue($versionProvide->matches($multiRequire));
-        $this->assertTrue($this->matchCompiled($multiRequire, '==', 1.1));
+        $this->assertTrue($this->matchCompiled($multiRequire, '==', '1.1'));
         $this->assertTrue(Intervals::haveIntersections($multiRequire, $versionProvide));
         $this->assertTrue(Intervals::compactConstraint($multiRequire)->matches(Intervals::compactConstraint($versionProvide)));
         $this->assertTrue(Intervals::compactConstraint($versionProvide)->matches(Intervals::compactConstraint($multiRequire)));
@@ -113,7 +113,7 @@ class MultiConstraintTest extends TestCase
 
         $this->assertFalse($multiRequire->matches($versionProvide));
         $this->assertFalse($versionProvide->matches($multiRequire));
-        $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.2));
+        $this->assertFalse($this->matchCompiled($multiRequire, '==', '1.2'));
         $this->assertFalse(Intervals::haveIntersections($multiRequire, $versionProvide));
         $this->assertFalse(Intervals::compactConstraint($multiRequire)->matches(Intervals::compactConstraint($versionProvide)));
         $this->assertFalse(Intervals::compactConstraint($versionProvide)->matches(Intervals::compactConstraint($multiRequire)));
@@ -138,7 +138,7 @@ class MultiConstraintTest extends TestCase
     /**
      * @dataProvider bounds
      *
-     * @param array $constraints
+     * @param array<ConstraintInterface> $constraints
      * @param bool  $conjunctive
      * @param Bound $expectedLower
      * @param Bound $expectedUpper
@@ -152,7 +152,7 @@ class MultiConstraintTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function bounds()
     {
@@ -224,7 +224,7 @@ class MultiConstraintTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function boundsIntegration()
     {
@@ -304,6 +304,9 @@ class MultiConstraintTest extends TestCase
         $this->assertSame((string) $expectedConstraint, (string) $parser->parseConstraints($constraints));
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function multiConstraintOptimizations()
     {
         return array(
@@ -516,7 +519,7 @@ class MultiConstraintTest extends TestCase
 
         $this->assertFalse($multiRequire->matches($versionProvide));
         $this->assertFalse($versionProvide->matches($multiRequire));
-        $this->assertFalse($this->matchCompiled($multiRequire, '==', 1.1));
+        $this->assertFalse($this->matchCompiled($multiRequire, '==', '1.1'));
         $this->assertFalse(Intervals::haveIntersections($multiRequire, $versionProvide));
     }
 
@@ -530,10 +533,15 @@ class MultiConstraintTest extends TestCase
 
         $this->assertTrue($multiRequire->matches($versionProvide));
         $this->assertTrue($versionProvide->matches($multiRequire));
-        $this->assertTrue($this->matchCompiled($multiRequire, '!=', 1.1));
+        $this->assertTrue($this->matchCompiled($multiRequire, '!=', '1.1'));
         $this->assertTrue(Intervals::haveIntersections($multiRequire, $versionProvide));
     }
 
+    /**
+     * @param Constraint::STR_OP_* $operator
+     * @param string $version
+     * @return bool
+     */
     private function matchCompiled(ConstraintInterface $constraint, $operator, $version)
     {
         $map = array(

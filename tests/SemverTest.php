@@ -36,8 +36,8 @@ class SemverTest extends TestCase
      * @dataProvider satisfiedByProvider
      *
      * @param string $constraint
-     * @param array  $versions
-     * @param array  $expected
+     * @param array<string> $versions
+     * @param array<string> $expected
      */
     public function testSatisfiedBy($constraint, $versions, $expected)
     {
@@ -50,9 +50,9 @@ class SemverTest extends TestCase
      * @covers ::usort
      * @dataProvider sortProvider
      *
-     * @param array $versions
-     * @param array $sorted
-     * @param array $rsorted
+     * @param array<string> $versions
+     * @param array<string> $sorted
+     * @param array<string> $rsorted
      */
     public function testSort(array $versions, array $sorted, array $rsorted)
     {
@@ -77,7 +77,7 @@ class SemverTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function sortProvider()
     {
@@ -96,7 +96,7 @@ class SemverTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function satisfiesProvider()
     {
@@ -116,7 +116,7 @@ class SemverTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function satisfiesProviderPositive()
     {
@@ -198,7 +198,7 @@ class SemverTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function satisfiesProviderNegative()
     {
@@ -252,7 +252,7 @@ class SemverTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function satisfiedByProvider()
     {

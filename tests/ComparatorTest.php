@@ -126,7 +126,7 @@ class ComparatorTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function greaterThanProvider()
     {
@@ -141,7 +141,7 @@ class ComparatorTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function greaterThanOrEqualToProvider()
     {
@@ -153,7 +153,7 @@ class ComparatorTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function lessThanProvider()
     {
@@ -169,7 +169,7 @@ class ComparatorTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function lessThanOrEqualToProvider()
     {
@@ -181,7 +181,7 @@ class ComparatorTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function equalToProvider()
     {
@@ -196,7 +196,7 @@ class ComparatorTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function notEqualToProvider()
     {
@@ -208,7 +208,7 @@ class ComparatorTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function compareProvider()
     {

@@ -53,6 +53,9 @@ class ConstraintTest extends TestCase
         $this->assertSame($expectedVersion, $result);
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function successfulVersionMatches()
     {
         return array(
@@ -161,6 +164,10 @@ class ConstraintTest extends TestCase
 
     /**
      * @dataProvider successfulVersionMatches
+     * @param Constraint::STR_OP_* $requireOperator
+     * @param string $requireVersion
+     * @param Constraint::STR_OP_* $provideOperator
+     * @param string $provideVersion
      */
     public function testVersionMatchSucceeds($requireOperator, $requireVersion, $provideOperator, $provideVersion)
     {
@@ -178,6 +185,9 @@ class ConstraintTest extends TestCase
         $this->assertTrue(Intervals::compactConstraint($versionProvide)->matches(Intervals::compactConstraint($versionRequire)));
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function failingVersionMatches()
     {
         return array(
@@ -331,6 +341,10 @@ class ConstraintTest extends TestCase
 
     /**
      * @dataProvider failingVersionMatches
+     * @param Constraint::STR_OP_* $requireOperator
+     * @param string $requireVersion
+     * @param Constraint::STR_OP_* $provideOperator
+     * @param string $provideVersion
      */
     public function testVersionMatchFails($requireOperator, $requireVersion, $provideOperator, $provideVersion)
     {
@@ -411,19 +425,18 @@ class ConstraintTest extends TestCase
      * @dataProvider invalidOperators
      *
      * @param string $version
-     * @param string $operator
-     * @param string $expected
+     * @param Constraint::STR_OP_* $operator
+     * @param class-string $expected
      */
     public function testInvalidOperators($version, $operator, $expected)
     {
         $this->doExpectException($expected);
 
-        /** @phpstan-ignore-next-line */
         new Constraint($operator, $version);
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function invalidOperators()
     {
@@ -437,12 +450,10 @@ class ConstraintTest extends TestCase
     /**
      * @dataProvider bounds
      *
-     * @param string $operator
+     * @param Constraint::STR_OP_* $operator
      * @param string $normalizedVersion
      * @param Bound  $expectedLower
      * @param Bound  $expectedUpper
-     *
-     * @phpstan-param Constraint::STR_OP_* $operator
      */
     public function testBounds($operator, $normalizedVersion, Bound $expectedLower, Bound $expectedUpper)
     {
@@ -453,7 +464,7 @@ class ConstraintTest extends TestCase
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function bounds()
     {
@@ -496,6 +507,10 @@ class ConstraintTest extends TestCase
 
     /**
      * @dataProvider matrix
+     * @param Constraint::STR_OP_* $requireOperator
+     * @param string $requireVersion
+     * @param Constraint::STR_OP_* $provideOperator
+     * @param string $provideVersion
      */
     public function testCompile($requireOperator, $requireVersion, $provideOperator, $provideVersion)
     {
@@ -517,6 +532,9 @@ class ConstraintTest extends TestCase
         $this->assertSame($m, Intervals::haveIntersections($require, $provide));
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function matrix()
     {
         $versions = array('1.0', '2.0', 'dev-master', 'dev-foo', '3.0-b2', '3.0-beta2');
@@ -536,6 +554,11 @@ class ConstraintTest extends TestCase
         return $matrix;
     }
 
+    /**
+     * @param Constraint::STR_OP_* $operator
+     * @param string $version
+     * @return bool
+     */
     private function matchCompiled(ConstraintInterface $constraint, $operator, $version)
     {
         $map = array(
@@ -556,6 +579,10 @@ class ConstraintTest extends TestCase
         return eval("return $code;");
     }
 
+    /**
+     * @param  class-string $class
+     * @return void
+     */
     private function doExpectException($class)
     {
         if (method_exists($this, 'expectException')) {
