@@ -290,6 +290,20 @@ class MultiConstraintTest extends TestCase
         $this->assertInstanceOf('Composer\Semver\Constraint\MatchAllConstraint', MultiConstraint::create(array()));
     }
 
+    public function testRemovesMatchAllConstraintIfConjunctiveAndCombinedWithOtherConstraints()
+    {
+        $this->assertSame('[>= 2.5.0.0-dev <= 3.0.0.0-dev]', (string) MultiConstraint::create(
+            array(new Constraint('>=', '2.5.0.0-dev'), new Constraint('<=', '3.0.0.0-dev'), new MatchAllConstraint())
+        ));
+    }
+
+    public function testCreatesMatchAllConstraintIfDisjunctiveAndCombinedWithAnotherOne()
+    {
+        $this->assertInstanceOf('Composer\Semver\Constraint\MatchAllConstraint', MultiConstraint::create(
+            array(new Constraint('>=', '2.5.0.0-dev'), new MatchAllConstraint()), false
+        ));
+    }
+
     /**
      * @dataProvider multiConstraintOptimizations
      *
