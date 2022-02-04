@@ -228,18 +228,6 @@ class MultiConstraint implements ConstraintInterface
             return $constraints[0];
         }
 
-        foreach ($constraints as $k => $constraint) {
-            if ($constraint instanceof MatchAllConstraint) {
-                if (!$conjunctive) {
-                    return new MatchAllConstraint();
-                }
-                unset($constraints[$k]);
-                if (1 === \count($constraints)) {
-                    return $constraints[0];
-                }
-            }
-        }
-
         $optimized = self::optimizeConstraints($constraints, $conjunctive);
         if ($optimized !== null) {
             list($constraints, $conjunctive) = $optimized;
