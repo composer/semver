@@ -234,6 +234,9 @@ class MultiConstraint implements ConstraintInterface
                     return new MatchAllConstraint();
                 }
                 unset($constraints[$k]);
+                if (1 === \count($constraints)) {
+                    return $constraints[0];
+                }
             }
         }
 
