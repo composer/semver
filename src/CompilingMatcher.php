@@ -24,6 +24,12 @@ class CompilingMatcher
      * @phpstan-var array<string, callable>
      */
     private static $compiledCheckerCache = array();
+    /**
+     * @var array
+     * @phpstan-var array<string, bool>
+     */
+    private static $resultCache = array();
+
     /** @var bool */
     private static $enabled;
 
@@ -51,11 +57,17 @@ class CompilingMatcher
      */
     public static function match(ConstraintInterface $constraint, $operator, $version)
     {
+        $resultCacheKey = $operator.$constraint.$version;
+
+        if (isset(self::$resultCache[$resultCacheKey])) {
+            return self::$resultCache[$resultCacheKey];
+        }
+
         if (self::$enabled === null) {
             self::$enabled = !\in_array('eval', explode(',', (string) ini_get('disable_functions')), true);
         }
         if (!self::$enabled) {
-            return $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));
+            return self::$resultCache[$resultCacheKey] = $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));
         }
 
         $cacheKey = $operator.$constraint;
@@ -66,6 +78,6 @@ class CompilingMatcher
             $function = self::$compiledCheckerCache[$cacheKey];
         }
 
-        return $function($version, strpos($version, 'dev-') === 0);
+        return self::$resultCache[$resultCacheKey] = $function($version, strpos($version, 'dev-') === 0);
     }
 }
