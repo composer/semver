@@ -46,6 +46,17 @@ class CompilingMatcher
     );
 
     /**
+     * Clears the memoization cache once you are done
+     *
+     * @return void
+     */
+    public static function clear()
+    {
+        self::$resultCache = array();
+        self::$compiledCheckerCache = array();
+    }
+
+    /**
      * Evaluates the expression: $constraint match $operator $version
      *
      * @param ConstraintInterface $constraint
