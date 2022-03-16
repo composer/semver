@@ -21,4 +21,10 @@ class CompilingMatcherTest extends TestCase
     {
         $this->assertTrue(CompilingMatcher::match(new Constraint('>=', '1'), Constraint::OP_EQ, '2'));
     }
+
+    public function testCacheKey()
+    {
+        $this->assertFalse(CompilingMatcher::match(new Constraint('>=', '2.11'), Constraint::OP_EQ, '1.0'));
+        $this->assertTrue(CompilingMatcher::match(new Constraint('>=', '2.1'), Constraint::OP_EQ, '11.0'));
+    }
 }

@@ -68,7 +68,7 @@ class CompilingMatcher
      */
     public static function match(ConstraintInterface $constraint, $operator, $version)
     {
-        $resultCacheKey = $operator.$constraint.$version;
+        $resultCacheKey = $operator.$constraint.';'.$version;
 
         if (isset(self::$resultCache[$resultCacheKey])) {
             return self::$resultCache[$resultCacheKey];
