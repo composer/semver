@@ -54,6 +54,7 @@
     },
     "scripts": {
         "test": "SYMFONY_PHPUNIT_REMOVE_RETURN_TYPEHINT=1 vendor/bin/simple-phpunit",
-        "phpstan": "@php vendor/bin/phpstan analyse"
+        "phpstan": "@php vendor/bin/phpstan analyse",
+        "phpstan-baseline": "@php vendor/bin/phpstan --allow-empty-baseline --configuration=phpstan.neon.dist --generate-baseline=phpstan-baseline.neon --memory-limit=-1"
     }
 }

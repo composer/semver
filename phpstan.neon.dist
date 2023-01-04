@@ -1,10 +1,8 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
     level: 8
     paths:
         - src
         - tests
-
-    ignoreErrors:
-        # Ignore some irrelevant errors in test files
-        - '~Method Composer\\Semver\\[^:]+::(setUp(BeforeClass)?|tearDown(AfterClass)?|test[^(]+)\(\) has no return type specified.~'
-        - '~Method Composer\\Semver\\[^:]+::(data\w+|provide\w+|\w+?Provider)\(\) has no return type specified.~'
