@@ -851,4 +851,42 @@ class VersionParserTest extends TestCase
             $this->setExpectedException($class, $message);
         }
     }
+
+    /**
+     * @dataProvider provideUnstableVersionConstraintsThatAreConsideredEqual
+     *
+     * @param string $one
+     * @param string $two
+     */
+    public function testParsedUnstableVersionsConstraintsAreConsideredEqual(
+        $one,
+        $two
+    ) {
+        $parser = new VersionParser();
+
+        $parsedOne = $parser->parseConstraints($one);
+        $parsedTwo = $parser->parseConstraints($two);
+
+        self::assertInstanceOf('Composer\Semver\Constraint\MultiConstraint', $parsedOne);
+        self::assertInstanceOf('Composer\Semver\Constraint\MultiConstraint', $parsedTwo);
+
+        self::assertEquals($parsedOne->getConstraints(), $parsedTwo->getConstraints());
+    }
+
+    /**
+     * @return array<int, array{0: string, 1: string}>
+     */
+    public static function provideUnstableVersionConstraintsThatAreConsideredEqual()
+    {
+        return array(
+            array(
+                '^0.3',
+                '^0.3.0',
+            ),
+            array(
+                '^0.3.0',
+                '~0.3.0',
+            ),
+        );
+    }
 }
