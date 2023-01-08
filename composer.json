@@ -31,7 +31,7 @@
         "issues": "https://github.com/composer/semver/issues"
     },
     "require": {
-        "php": "^5.3.2 || ^7.0 || ^8.0"
+        "php": "^7.0 || ^8.0"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^4.2 || ^5",
