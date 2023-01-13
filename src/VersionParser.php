@@ -142,7 +142,7 @@ class VersionParser
             $index = 5;
         // match date(time) based versioning
         } elseif (preg_match('{^v?(\d{4}(?:[.:-]?\d{2}){1,6}(?:[.:-]?\d{1,3})?)' . self::$modifierRegex . '$}i', $version, $matches)) {
-            $version = preg_replace('{\D}', '.', $matches[1]);
+            $version = (string) preg_replace('{\D}', '.', $matches[1]);
             $index = 2;
         }
 
