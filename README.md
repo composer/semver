@@ -15,7 +15,7 @@ Installation
 Install the latest version with:
 
 ```bash
-$ composer require composer/semver
+composer require composer/semver
 ```
 
 
