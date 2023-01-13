@@ -260,16 +260,16 @@ class VersionParser
         }
         $orGroups = array();
 
-        foreach ($orConstraints as $constraints) {
-            $andConstraints = preg_split('{(?<!^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|$)}', $constraints);
+        foreach ($orConstraints as $orConstraint) {
+            $andConstraints = preg_split('{(?<!^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|$)}', $orConstraint);
             if (false === $andConstraints) {
-                throw new \RuntimeException('Failed to preg_split string: '.$constraints);
+                throw new \RuntimeException('Failed to preg_split string: '.$orConstraint);
             }
             if (\count($andConstraints) > 1) {
                 $constraintObjects = array();
-                foreach ($andConstraints as $constraint) {
-                    foreach ($this->parseConstraint($constraint) as $parsedConstraint) {
-                        $constraintObjects[] = $parsedConstraint;
+                foreach ($andConstraints as $andConstraint) {
+                    foreach ($this->parseConstraint($andConstraint) as $parsedAndConstraint) {
+                        $constraintObjects[] = $parsedAndConstraint;
                     }
                 }
             } else {
@@ -285,11 +285,11 @@ class VersionParser
             $orGroups[] = $constraint;
         }
 
-        $constraint = MultiConstraint::create($orGroups, false);
+        $parsedConstraint = MultiConstraint::create($orGroups, false);
 
-        $constraint->setPrettyString($prettyConstraint);
+        $parsedConstraint->setPrettyString($prettyConstraint);
 
-        return $constraint;
+        return $parsedConstraint;
     }
 
     /**
