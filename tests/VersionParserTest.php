@@ -597,6 +597,7 @@ class VersionParserTest extends TestCase
         $multi = new MultiConstraint(array($first, $second));
 
         $this->assertSame((string) $multi, (string) $parser->parseConstraints($constraint));
+        $this->assertSame((string) $multi, (string) $parser->parseConstraints((string) $multi));
     }
 
     /**

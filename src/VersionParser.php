@@ -261,7 +261,7 @@ class VersionParser
         $orGroups = array();
 
         foreach ($orConstraints as $orConstraint) {
-            $andConstraints = preg_split('{(?<!^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|$)}', $orConstraint);
+            $andConstraints = preg_split('{(?<!^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|$)}', trim($orConstraint, '[]'));
             if (false === $andConstraints) {
                 throw new \RuntimeException('Failed to preg_split string: '.$orConstraint);
             }
