@@ -88,8 +88,13 @@ class VersionParserTest extends TestCase
             'parses dates y.m.Y/2 as classical' => array('2010.10.200', '2010.10.200.0'),
             'parses CalVer YYYYMMDD (as MAJOR) versions' => array('20230131.0.0', '20230131.0.0'),
             'parses CalVer YYYYMMDDhhmm (as MAJOR) versions' => array('202301310000.0.0', '202301310000.0.0'),
-            'parses PHP_INT_MAX MAJOR version' => array(PHP_INT_MAX . '.0.0', PHP_INT_MAX . '.0.0'),
             'strips v/datetime' => array('v20100102', '20100102'),
+            'parses dates no delimiter' => array('20100102', '20100102'),
+            'parses dates no delimiter/2' => array('20100102.0', '20100102.0'),
+            'parses dates no delimiter/3' => array('20100102.1.0', '20100102.1.0'),
+            'parses dates no delimiter/4' => array('20100102.0.3', '20100102.0.3'),
+            'parses dates w/ - and .' => array('2010-01-02-10-20-30.0.3', '2010.01.02.10.20.30.0.3'),
+            'parses dates w/ - and ./2' => array('2010-01-02-10-20-30.5', '2010.01.02.10.20.30.5'),
             'parses dates w/ -' => array('2010-01-02', '2010.01.02'),
             'parses dates w/ .' => array('2012.06.07', '2012.06.07.0'),
             'parses numbers' => array('2010-01-02.5', '2010.01.02.5'),
@@ -173,6 +178,7 @@ class VersionParserTest extends TestCase
             'constraint' => array('~1'),
             'constraint/2' => array('^1'),
             'constraint/3' => array('1.*'),
+            'date versions with 4 bits' => array('20100102.0.3.4', '20100102.0.3.4'),
         );
     }
 
