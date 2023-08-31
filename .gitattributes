@@ -16,3 +16,4 @@
 /phpunit.xml.dist export-ignore
 /tests export-ignore
 /CONTRIBUTING.md export-ignore
+/phpstan-baseline.neon export-ignore
