@@ -74,6 +74,7 @@ class VersionParserTest extends TestCase
             'patch replace' => array('1.0.0.pl3-dev', '1.0.0.0-patch3-dev'),
             'forces w.x.y.z' => array('1.0-dev', '1.0.0.0-dev'),
             'forces w.x.y.z/2' => array('0', '0.0.0.0'),
+            'forces w.x.y.z/maximum major' => array('99999', '99999.0.0.0'),
             'parses long' => array('10.4.13-beta', '10.4.13.0-beta'),
             'parses long/2' => array('10.4.13beta2', '10.4.13.0-beta2'),
             'parses long/semver' => array('10.4.13beta.2', '10.4.13.0-beta2'),
@@ -93,6 +94,7 @@ class VersionParserTest extends TestCase
             'parses dates no delimiter/2' => array('20100102.0', '20100102.0'),
             'parses dates no delimiter/3' => array('20100102.1.0', '20100102.1.0'),
             'parses dates no delimiter/4' => array('20100102.0.3', '20100102.0.3'),
+            'parses dates no delimiter/earliest year' => array('100000', '100000'),
             'parses dates w/ - and .' => array('2010-01-02-10-20-30.0.3', '2010.01.02.10.20.30.0.3'),
             'parses dates w/ - and ./2' => array('2010-01-02-10-20-30.5', '2010.01.02.10.20.30.5'),
             'parses dates w/ -' => array('2010-01-02', '2010.01.02'),
@@ -179,6 +181,11 @@ class VersionParserTest extends TestCase
             'constraint/2' => array('^1'),
             'constraint/3' => array('1.*'),
             'date versions with 4 bits' => array('20100102.0.3.4', '20100102.0.3.4'),
+            'date versions with 4 bits/earliest year' => array('100000.0.0.0', '100000.0.0.0'),
+            'invalid CalVer (as MAJOR) versions/YYYYMMD' => array('2023013.0.0', '2023013.0.0'),
+            'invalid CalVer (as MAJOR) versions/YYYYMMDDh' => array('202301311.0.0', '202301311.0.0'),
+            'invalid CalVer (as MAJOR) versions/YYYYMMDDhhm' => array('20230131000.0.0', '20230131000.0.0'),
+            'invalid CalVer (as MAJOR) versions/YYYYMMDDhhmmX' => array('2023013100000.0.0', '2023013100000.0.0'),
         );
     }
 
