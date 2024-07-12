@@ -820,8 +820,8 @@ class VersionParserTest extends TestCase
 
         $this->assertSame($expectedValue, $result);
 
-        $stability = 'no-rc';
-        $expectedValue = $stability;
+        $stability = 'BeTa';
+        $expectedValue = 'beta';
         $result = $parser->normalizeStability($stability);
 
         $this->assertSame($expectedValue, $result);
