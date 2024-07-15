@@ -128,7 +128,7 @@ class ComparatorTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function greaterThanProvider()
+    public static function greaterThanProvider()
     {
         return array(
             array('1.25.0', '1.24.0', true),
@@ -143,7 +143,7 @@ class ComparatorTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function greaterThanOrEqualToProvider()
+    public static function greaterThanOrEqualToProvider()
     {
         return array(
             array('1.25.0', '1.24.0', true),
@@ -155,7 +155,7 @@ class ComparatorTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function lessThanProvider()
+    public static function lessThanProvider()
     {
         return array(
             array('1.25.0', '1.24.0', false),
@@ -171,7 +171,7 @@ class ComparatorTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function lessThanOrEqualToProvider()
+    public static function lessThanOrEqualToProvider()
     {
         return array(
             array('1.25.0', '1.24.0', false),
@@ -183,7 +183,7 @@ class ComparatorTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function equalToProvider()
+    public static function equalToProvider()
     {
         return array(
             array('1.25.0', '1.24.0', false),
@@ -198,7 +198,7 @@ class ComparatorTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function notEqualToProvider()
+    public static function notEqualToProvider()
     {
         return array(
             array('1.25.0', '1.24.0', true),
@@ -210,7 +210,7 @@ class ComparatorTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function compareProvider()
+    public static function compareProvider()
     {
         return array(
             array('1.25.0', '>', '1.24.0', true),
