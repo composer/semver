@@ -20,7 +20,11 @@ class MatchNoneConstraintTest extends TestCase
      */
     protected $matchNoneConstraint;
 
-    protected function setUp()
+    /**
+     * @before
+     * @return void
+     */
+    public function setUpTestCase()
     {
         $this->matchNoneConstraint = new MatchNoneConstraint();
     }

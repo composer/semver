@@ -25,7 +25,11 @@ class ConstraintTest extends TestCase
      */
     protected $versionProvide;
 
-    protected function setUp()
+    /**
+     * @before
+     * @return void
+     */
+    public function setUpTestCase()
     {
         $this->constraint = new Constraint('==', '1');
         $this->versionProvide = new Constraint('==', 'dev-foo');
