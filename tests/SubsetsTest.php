@@ -34,7 +34,7 @@ class SubsetsTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function subsets()
+    public static function subsets()
     {
         return array(
             // x is subset of y
@@ -101,7 +101,7 @@ class SubsetsTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function notSubsets()
+    public static function notSubsets()
     {
         return array(
             // x is subset of y

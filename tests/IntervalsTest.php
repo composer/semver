@@ -51,7 +51,7 @@ class IntervalsTest extends TestCase
         $this->assertSame((string) $expected, (string) $new);
     }
 
-    public function compactProvider()
+    public static function compactProvider()
     {
         return array(
             'simple disjunctive multi' => array(
@@ -238,7 +238,7 @@ class IntervalsTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
-    public function intervalsProvider()
+    public static function intervalsProvider()
     {
         return array(
             'simple case' => array(
