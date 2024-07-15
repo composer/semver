@@ -33,7 +33,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function numericAliasVersions()
+    public static function numericAliasVersions()
     {
         return array(
             array('0.x-dev', '0.'),
@@ -62,7 +62,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function successfulNormalizedVersions()
+    public static function successfulNormalizedVersions()
     {
         return array(
             'none' => array('1.0.0', '1.0.0.0'),
@@ -157,7 +157,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function failingNormalizedVersions()
+    public static function failingNormalizedVersions()
     {
         return array(
             'empty ' => array(''),
@@ -208,7 +208,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function failingNormalizedVersionsWithBadAlias()
+    public static function failingNormalizedVersionsWithBadAlias()
     {
         return array(
             'Alias and caret' => array('1.0.0+foo as ^2.0'),
@@ -238,7 +238,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function failingNormalizedVersionsWithBadAliasee()
+    public static function failingNormalizedVersionsWithBadAliasee()
     {
         return array(
             'Alias and caret' => array('^2.0 as 1.0.0+foo'),
@@ -264,7 +264,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function successfulNormalizedBranches()
+    public static function successfulNormalizedBranches()
     {
         return array(
             'parses x' => array('v1.x', '1.9999999.9999999.9999999-dev'),
@@ -333,7 +333,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function simpleConstraints()
+    public static function simpleConstraints()
     {
         return array(
             'match any' => array('*', new MatchAllConstraint()),
@@ -392,7 +392,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function wildcardConstraints()
+    public static function wildcardConstraints()
     {
         return array(
             array('v2.*', new Constraint('>=', '2.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
@@ -434,7 +434,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function tildeConstraints()
+    public static function tildeConstraints()
     {
         return array(
             array('~v1', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '2.0.0.0-dev')),
@@ -481,7 +481,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function caretConstraints()
+    public static function caretConstraints()
     {
         return array(
             array('^v1', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '2.0.0.0-dev')),
@@ -531,7 +531,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function hyphenConstraints()
+    public static function hyphenConstraints()
     {
         return array(
             array('v1 - v2', new Constraint('>=', '1.0.0.0-dev'), new Constraint('<', '3.0.0.0-dev')),
@@ -566,7 +566,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function constraintProvider()
+    public static function constraintProvider()
     {
         return array(
             // numeric branch
@@ -618,7 +618,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function multiConstraintProvider()
+    public static function multiConstraintProvider()
     {
         return array(
             array('>2.0,<=3.0'),
@@ -670,7 +670,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function multiConstraintProvider2()
+    public static function multiConstraintProvider2()
     {
         return array(
             array('>2.0,<2.0.5 | >2.0.6'),
@@ -724,7 +724,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function failingConstraints()
+    public static function failingConstraints()
     {
         return array(
             'empty ' => array(''),
@@ -783,7 +783,7 @@ class VersionParserTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function stabilityProvider()
+    public static function stabilityProvider()
     {
         return array(
             array('stable', '1'),

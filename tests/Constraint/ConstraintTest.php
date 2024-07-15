@@ -442,7 +442,7 @@ class ConstraintTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function invalidOperators()
+    public static function invalidOperators()
     {
         return array(
             array('1.2.3', 'invalid', 'InvalidArgumentException'),
@@ -470,7 +470,7 @@ class ConstraintTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function bounds()
+    public static function bounds()
     {
         return array(
             'equal to 1.0.0.0' => array('==', '1.0.0.0', new Bound('1.0.0.0', true), new Bound('1.0.0.0', true)),
@@ -539,7 +539,7 @@ class ConstraintTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function matrix()
+    public static function matrix()
     {
         $versions = array('1.0', '2.0', 'dev-master', 'dev-foo', '3.0-b2', '3.0-beta2');
         $operators = array('==', '!=', '>', '<', '>=', '<=');
