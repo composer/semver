@@ -66,7 +66,7 @@ class SemverTest extends TestCase
         $semver = new \ReflectionClass('\Composer\Semver\Semver');
         $versionParserProperty = $semver->getProperty('versionParser');
         $versionParserProperty->setAccessible(true);
-        $versionParserProperty->setValue(null);
+        $versionParserProperty->setValue(null, null);
 
         $manipulateVersionStringMethod = $semver->getMethod('usort');
         $manipulateVersionStringMethod->setAccessible(true);
