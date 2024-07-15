@@ -377,13 +377,13 @@ class ConstraintTest extends TestCase
         $multiConstraint = $this
             ->getMockBuilder('Composer\Semver\Constraint\MultiConstraint')
             ->disableOriginalConstructor()
-            ->setMethods(array('matches'))
+            ->onlyMethods(array('matches'))
             ->getMock()
         ;
 
         $matchAllConstraint = $this
             ->getMockBuilder('Composer\Semver\Constraint\MatchAllConstraint')
-            ->setMethods(array('matches'))
+            ->onlyMethods(array('matches'))
             ->getMock()
         ;
 
