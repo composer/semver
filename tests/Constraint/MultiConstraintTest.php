@@ -154,7 +154,7 @@ class MultiConstraintTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function bounds()
+    public static function bounds()
     {
         return array(
             'all equal' => array(
@@ -226,7 +226,7 @@ class MultiConstraintTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function boundsIntegration()
+    public static function boundsIntegration()
     {
         return array(
             '^7.0' => array(
@@ -321,7 +321,7 @@ class MultiConstraintTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function multiConstraintOptimizations()
+    public static function multiConstraintOptimizations()
     {
         return array(
             'Test collapses contiguous' => array(

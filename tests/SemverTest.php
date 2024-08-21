@@ -79,7 +79,7 @@ class SemverTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function sortProvider()
+    public static function sortProvider()
     {
         return array(
             array(
@@ -98,19 +98,19 @@ class SemverTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function satisfiesProvider()
+    public static function satisfiesProvider()
     {
         $positive = array_map(function ($array) {
             array_unshift($array, true);
 
             return $array;
-        }, $this->satisfiesProviderPositive());
+        }, static::satisfiesProviderPositive());
 
         $negative = array_map(function ($array) {
             array_unshift($array, false);
 
             return $array;
-        }, $this->satisfiesProviderNegative());
+        }, static::satisfiesProviderNegative());
 
         return array_merge($positive, $negative);
     }
@@ -118,7 +118,7 @@ class SemverTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function satisfiesProviderPositive()
+    public static function satisfiesProviderPositive()
     {
         return array(
             array('1.2.3', '1.0.0 - 2.0.0'),
@@ -200,7 +200,7 @@ class SemverTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function satisfiesProviderNegative()
+    public static function satisfiesProviderNegative()
     {
         return array(
             array('2.2.3', '1.0.0 - 2.0.0'),
@@ -254,7 +254,7 @@ class SemverTest extends TestCase
     /**
      * @return array<mixed>
      */
-    public function satisfiedByProvider()
+    public static function satisfiedByProvider()
     {
         return array(
             array(
