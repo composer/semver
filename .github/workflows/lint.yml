@@ -15,6 +15,7 @@ jobs:
         php-version:
           - "5.3"
           - "7.4"
+          - "8.3"
 
     steps:
       - name: "Checkout"

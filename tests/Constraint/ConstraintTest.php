@@ -11,6 +11,8 @@
 
 namespace Composer\Semver\Constraint;
 
+use Exception;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use Composer\Semver\Intervals;
 
@@ -397,7 +399,7 @@ class ConstraintTest extends TestCase
                 ->with($constraint)
                 ->willReturn(true)
             ;
-            // @phpstan-ignore-next-line
+            /** @var ConstraintInterface $otherConstraintMock */
             $this->assertTrue($constraint->matches($otherConstraintMock));
         }
     }
@@ -426,7 +428,7 @@ class ConstraintTest extends TestCase
      *
      * @param string $version
      * @param Constraint::STR_OP_* $operator
-     * @param class-string $expected
+     * @param class-string<Exception> $expected
      */
     public function testInvalidOperators($version, $operator, $expected)
     {
@@ -580,16 +582,17 @@ class ConstraintTest extends TestCase
     }
 
     /**
-     * @param  class-string $class
+     * @param  class-string<Exception> $class
      * @return void
      */
     private function doExpectException($class)
     {
         if (method_exists($this, 'expectException')) {
             $this->expectException($class);
-        } else {
-            // @phpstan-ignore-next-line
+        } elseif (method_exists($this, 'setExpectedException')) {
             $this->setExpectedException($class);
+        } else {
+            throw new LogicException('Expected method "expectException" or "setExpectedException" to exist.');
         }
     }
 }

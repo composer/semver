@@ -14,6 +14,8 @@ namespace Composer\Semver;
 use Composer\Semver\Constraint\MatchAllConstraint;
 use Composer\Semver\Constraint\MultiConstraint;
 use Composer\Semver\Constraint\Constraint;
+use Exception;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 
 class VersionParserTest extends TestCase
@@ -851,7 +853,7 @@ class VersionParserTest extends TestCase
     }
 
     /**
-     * @param class-string $class
+     * @param class-string<Exception> $class
      * @param string|null $message
      * @return void
      */
@@ -862,9 +864,10 @@ class VersionParserTest extends TestCase
             if ($message) {
                 $this->expectExceptionMessage($message);
             }
-        } else {
-            // @phpstan-ignore-next-line
+        } elseif (method_exists($this, 'setExpectedException')) {
             $this->setExpectedException($class, $message);
+        } else {
+            throw new LogicException('Expected method "expectException" or "setExpectedException" to exist.');
         }
     }
 }
