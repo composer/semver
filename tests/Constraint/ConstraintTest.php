@@ -25,7 +25,11 @@ class ConstraintTest extends TestCase
      */
     protected $versionProvide;
 
-    protected function setUp()
+    /**
+     * @before
+     * @return void
+     */
+    public function setUpTestCase()
     {
         $this->constraint = new Constraint('==', '1');
         $this->versionProvide = new Constraint('==', 'dev-foo');
@@ -373,33 +377,29 @@ class ConstraintTest extends TestCase
     public function testInverseMatchingOtherConstraints()
     {
         $constraint = new Constraint('>', '1.0.0');
+        $otherConstraintClasses = array(
+            'Composer\Semver\Constraint\MultiConstraint',
+            'Composer\Semver\Constraint\MatchAllConstraint'
+        );
 
-        $multiConstraint = $this
-            ->getMockBuilder('Composer\Semver\Constraint\MultiConstraint')
-            ->disableOriginalConstructor()
-            ->setMethods(array('matches'))
-            ->getMock()
-        ;
-
-        $matchAllConstraint = $this
-            ->getMockBuilder('Composer\Semver\Constraint\MatchAllConstraint')
-            ->setMethods(array('matches'))
-            ->getMock()
-        ;
-
-        foreach (array($multiConstraint, $matchAllConstraint) as $mock) {
-            $mock
+        foreach ($otherConstraintClasses as $otherConstraintClass) {
+            $otherConstraintMockBuilder =  $this->getMockBuilder($otherConstraintClass);
+            $otherConstraintMockBuilder->disableOriginalConstructor();
+            if (method_exists($otherConstraintMockBuilder, 'onlyMethods')) {
+                $otherConstraintMockBuilder->onlyMethods(array('matches'));
+            } elseif (method_exists($otherConstraintMockBuilder, 'setMethods')) {
+                $otherConstraintMockBuilder->setMethods(array('matches'));
+            }
+            $otherConstraintMock = $otherConstraintMockBuilder->getMock();
+            $otherConstraintMock
                 ->expects($this->once())
                 ->method('matches')
                 ->with($constraint)
                 ->willReturn(true)
             ;
+            // @phpstan-ignore-next-line
+            $this->assertTrue($constraint->matches($otherConstraintMock));
         }
-
-        // @phpstan-ignore-next-line
-        $this->assertTrue($constraint->matches($multiConstraint));
-        // @phpstan-ignore-next-line
-        $this->assertTrue($constraint->matches($matchAllConstraint));
     }
 
     public function testComparableBranches()

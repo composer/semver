@@ -26,7 +26,11 @@ class MultiConstraintTest extends TestCase
      */
     protected $versionRequireEnd;
 
-    protected function setUp()
+    /**
+     * @before
+     * @return void
+     */
+    public function setUpTestCase()
     {
         $this->versionRequireStart = new Constraint('>', '1.0');
         $this->versionRequireEnd = new Constraint('<', '1.2');

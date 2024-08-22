@@ -24,7 +24,11 @@ class MatchAllConstraintTest extends TestCase
      */
     protected $matchAllConstraint;
 
-    protected function setUp()
+    /**
+     * @before
+     * @return void
+     */
+    public function setUpTestCase()
     {
         $this->versionProvide = new Constraint('==', '1.1');
         $this->matchAllConstraint = new MatchAllConstraint();
