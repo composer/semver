@@ -16,8 +16,11 @@ jobs:
 
     strategy:
       matrix:
-        php-version:
-          - "7.4"
+        include:
+          - php-version: "7.4"
+            phpunit-version-constraint: "^7.5"
+          - php-version: "8.3"
+            phpunit-version-constraint: "^9.6"
 
     steps:
       - name: "Checkout"
@@ -44,7 +47,6 @@ jobs:
         run: "composer update ${{ env.COMPOSER_FLAGS }}"
 
       - name: Run PHPStan
-        # Locked to phpunit 7.5 here as newer ones have void return types which break inheritance
         run: |
-          composer require --dev phpunit/phpunit:^7.5.20 --with-all-dependencies ${{ env.COMPOSER_FLAGS }}
+          composer require --dev phpunit/phpunit:"${{ matrix.phpunit-version-constraint }}" --with-all-dependencies ${{ env.COMPOSER_FLAGS }}
           vendor/bin/phpstan analyse
