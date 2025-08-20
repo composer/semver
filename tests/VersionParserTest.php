@@ -198,7 +198,7 @@ class VersionParserTest extends TestCase
     public function testNormalizeFailsAndReportsAliasIssue($fullInput)
     {
         if (!preg_match('{^([^,\s#]+)(?:#[^ ]+)? +as +([^,\s]+)$}', $fullInput, $match)) {
-            $this->fail($fullInput.' did not match the regex');
+            throw new \RuntimeException($fullInput.' did not match the regex');
         }
         $parser = new VersionParser();
         $parser->normalize($match[1], $fullInput);
@@ -230,7 +230,7 @@ class VersionParserTest extends TestCase
     public function testNormalizeFailsAndReportsAliaseeIssue($fullInput)
     {
         if (!preg_match('{^([^,\s#]+)(?:#[^ ]+)? +as +([^,\s]+)$}', $fullInput, $match)) {
-            $this->fail($fullInput.' did not match the regex');
+            throw new \RuntimeException($fullInput.' did not match the regex');
         }
         $parser = new VersionParser();
         try {
