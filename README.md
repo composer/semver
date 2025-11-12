@@ -44,6 +44,10 @@ Basic usage
 The [`Composer\Semver\VersionParser`](https://github.com/composer/semver/blob/main/src/VersionParser.php)
 class provides the following methods for parsing, normalizing and validating versions and constraints.
 
+Numeric versions are normalized to a 4 component versions (e.g. `1.2.3` is normalized to `1.2.3.0`)
+for internal consistency and compatibility with `version_compare`. Normalized versions are used for
+constraints internally but should not be shown to end users.
+
 For versions:
 
 * isValid($version)
