@@ -50,6 +50,33 @@ class VersionParserTest extends TestCase
     }
 
     /**
+     * @dataProvider isValidVersions
+     * @param string $input
+     * @param bool $expected
+     */
+    public function testIsValid($input, $expected)
+    {
+        $parser = new VersionParser();
+
+        $this->assertSame($expected, $parser->isValid($input));
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public static function isValidVersions()
+    {
+        return array(
+            array('0.x-dev', true),
+            array('dev-develop', true),
+            array('1.0.2', true),
+            array('1.0.2.5', true),
+            array('1.0.2.5.5', false),
+            array('foo', false),
+        );
+    }
+
+    /**
      * @dataProvider successfulNormalizedVersions
      * @param string $input
      * @param string $expected

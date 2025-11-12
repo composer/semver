@@ -96,6 +96,22 @@ class VersionParser
     }
 
     /**
+     * @param string $version
+     *
+     * @return bool
+     */
+    public function isValid($version)
+    {
+        try {
+            $this->normalize($version);
+        } catch (\UnexpectedValueException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Normalizes a version string to be able to perform comparisons on it.
      *
      * @param string $version
