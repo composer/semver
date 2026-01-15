@@ -139,8 +139,8 @@ class VersionParser
             $version = substr($version, 0, strlen($version) - strlen($match[0]));
         }
 
-        // normalize master/trunk/default branches to dev-name for BC with 1.x as these used to be valid constraints
-        if (\in_array($version, array('master', 'trunk', 'default'), true)) {
+        // normalize master/main/trunk/default branches to dev-name for BC with 1.x as these used to be valid constraints
+        if (\in_array($version, array('master', 'main', 'trunk', 'default'), true)) {
             $version = 'dev-' . $version;
         }
 
