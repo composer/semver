@@ -140,6 +140,8 @@ class VersionParserTest extends TestCase
             'parses dt Ym+patch' => array('201903.0-p2', '201903.0-patch2'),
             'parses master' => array('dev-master', 'dev-master'),
             'parses master w/o dev' => array('master', 'dev-master'),
+            'parses main' => array('dev-main', 'dev-main'),
+            'parses main w/o dev' => array('main', 'dev-main'),
             'parses trunk' => array('dev-trunk', 'dev-trunk'),
             'parses branches' => array('1.x-dev', '1.9999999.9999999.9999999-dev'),
             'parses arbitrary' => array('dev-feature-foo', 'dev-feature-foo'),
