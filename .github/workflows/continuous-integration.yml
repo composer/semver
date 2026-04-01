@@ -45,7 +45,7 @@ jobs:
       - name: "Remove PHPStan as it requires a newer PHP"
         run: composer remove phpstan/phpstan --dev --no-update
 
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
 
