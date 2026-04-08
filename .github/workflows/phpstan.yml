@@ -17,7 +17,7 @@ jobs:
       matrix:
         include:
           - php-version: "7.4"
-            phpunit-version-constraint: "^7.5"
+            phpunit-version-constraint: "^8.5"
           - php-version: "8.3"
             phpunit-version-constraint: "^9.6"
 
