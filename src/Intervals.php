@@ -150,6 +150,17 @@ class Intervals
             $constraints[] = $intervals['numeric'][0]->getStart();
             $hasNumericMatchAll = true;
         } else {
+            // A bare "!= N" matches every dev-* version (see generateSingleConstraintIntervals),
+            // whereas "< N || > N" matches none. So the swap below must be skipped when it
+            // would collapse the whole numeric line (except N) into a bare != for a
+            // constraint that matches no dev version -- otherwise "> 1 != 2 || < 1.9"
+            // (no branch) becomes "!= 2" (every branch). A bounded conjunctive != such
+            // as [!= 3 < 5] keeps a numeric bound and stays dev-free, so it is fine.
+            // exclude === true means the dev baseline is "all dev" (any named branches
+            // are subtracted separately below), so a bare != is the right baseline;
+            // exclude === false means "no dev", where a bare != would wrongly add them.
+            $branchesMatchAllDev = $intervals['branches']['exclude'];
+
             $unEqualConstraints = array();
             for ($i = 0, $count = \count($intervals['numeric']); $i < $count; $i++) {
                 $interval = $intervals['numeric'][$i];
@@ -160,7 +171,10 @@ class Intervals
                 // they are zero/+inf
                 if ($interval->getEnd()->getOperator() === '<' && $i+1 < $count) {
                     $nextInterval = $intervals['numeric'][$i+1];
-                    if ($interval->getEnd()->getVersion() === $nextInterval->getStart()->getVersion() && $nextInterval->getStart()->getOperator() === '>') {
+                    $wouldBeBareNotEqual = 2 === $count
+                        && (string) $interval->getStart() === (string) Interval::fromZero()
+                        && (string) $nextInterval->getEnd() === (string) Interval::untilPositiveInfinity();
+                    if ($interval->getEnd()->getVersion() === $nextInterval->getStart()->getVersion() && $nextInterval->getStart()->getOperator() === '>' && ($branchesMatchAllDev || !$wouldBeBareNotEqual)) {
                         // only add a start if we didn't already do so, can be skipped if we're looking at second
                         // interval in [>=M, <N] || [>N, <P] || [>P, <Q] where unEqualConstraints currently contains
                         // [>=M, !=N] already and we only want to add !=P right now

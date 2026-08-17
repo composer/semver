@@ -51,6 +51,25 @@ class IntervalsTest extends TestCase
         $this->assertSame((string) $expected, (string) $new);
     }
 
+    public function testCompactConstraintKeepsANumericOnlyConstraintDevFree()
+    {
+        $parser = new VersionParser;
+        // "> 1.0.0 != 2.0.0 || < 1.9.0" covers the whole numeric line except 2.0.0
+        // and matches no dev-* version. The numeric part compacts to a bare != 2.0.0,
+        // which on its own matches every dev branch, so compaction must not use it here.
+        $constraint = new MultiConstraint(array(
+            $parser->parseConstraints('> 1.0.0 != 2.0.0'),
+            $parser->parseConstraints('< 1.9.0'),
+        ), false);
+
+        $compacted = Intervals::compactConstraint($constraint);
+        $dev = new Constraint('==', $parser->normalize('dev-foo'));
+
+        $this->assertFalse($compacted->matches($dev), (string) $compacted);
+        $this->assertTrue(Intervals::isSubsetOf($compacted, $constraint));
+        $this->assertTrue(Intervals::isSubsetOf($constraint, $compacted));
+    }
+
     public static function compactProvider()
     {
         return array(
