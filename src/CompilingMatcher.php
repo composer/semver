@@ -21,12 +21,12 @@ class CompilingMatcher
 {
     /**
      * @var array
-     * @phpstan-var array<string, callable>
+     * @phpstan-var array<int, array<string, callable>>
      */
     private static $compiledCheckerCache = array();
     /**
      * @var array
-     * @phpstan-var array<string, bool>
+     * @phpstan-var array<int, array<string, array<string, bool>>>
      */
     private static $resultCache = array();
 
@@ -68,27 +68,30 @@ class CompilingMatcher
      */
     public static function match(ConstraintInterface $constraint, $operator, $version)
     {
-        $resultCacheKey = $operator.$constraint.';'.$version;
+        $constraintString = (string) $constraint;
+        // Resolve the operator and constraint cache bucket once, so each read or write below
+        // only needs to look up the version. Using a reference avoids repeating both outer
+        // array lookups and ensures new results are stored in the static cache, not a local copy.
+        $resultCache = &self::$resultCache[$operator][$constraintString];
 
-        if (isset(self::$resultCache[$resultCacheKey])) {
-            return self::$resultCache[$resultCacheKey];
+        if (isset($resultCache[$version])) {
+            return $resultCache[$version];
         }
 
         if (self::$enabled === null) {
             self::$enabled = !\in_array('eval', explode(',', (string) ini_get('disable_functions')), true);
         }
         if (!self::$enabled) {
-            return self::$resultCache[$resultCacheKey] = $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));
+            return $resultCache[$version] = $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));
         }
 
-        $cacheKey = $operator.$constraint;
-        if (!isset(self::$compiledCheckerCache[$cacheKey])) {
+        if (!isset(self::$compiledCheckerCache[$operator][$constraintString])) {
             $code = $constraint->compile($operator);
-            self::$compiledCheckerCache[$cacheKey] = $function = eval('return function($v, $b){return '.$code.';};');
+            self::$compiledCheckerCache[$operator][$constraintString] = $function = eval('return function($v, $b){return '.$code.';};');
         } else {
-            $function = self::$compiledCheckerCache[$cacheKey];
+            $function = self::$compiledCheckerCache[$operator][$constraintString];
         }
 
-        return self::$resultCache[$resultCacheKey] = $function($version, strpos($version, 'dev-') === 0);
+        return $resultCache[$version] = $function($version, strpos($version, 'dev-') === 0);
     }
 }
