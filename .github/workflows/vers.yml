@@ -1,0 +1,39 @@
+name: "VERS Compatibility"
+
+on:
+  push:
+  pull_request:
+  schedule:
+    # the VERS test suite is always fetched at its latest version, so also check periodically for upstream changes
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: "VERS test suite"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: "8.4"
+          coverage: none
+
+      - uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+
+      - name: Fetch VERS test suite
+        run: git clone --depth 1 https://github.com/package-url/vers-spec.git "$RUNNER_TEMP/vers-spec"
+
+      - name: Run VERS test suite
+        run: php tests/vers/run-vers-tests.php "$RUNNER_TEMP/vers-spec/tests" --baseline=tests/vers/baseline.json
