@@ -150,31 +150,38 @@ class Intervals
             $constraints[] = $intervals['numeric'][0]->getStart();
             $hasNumericMatchAll = true;
         } else {
-            // A bare "!= N" matches every dev-* version (see generateSingleConstraintIntervals),
-            // whereas "< N || > N" matches none. So the swap below must be skipped when it
-            // would collapse the whole numeric line (except N) into a bare != for a
-            // constraint that matches no dev version -- otherwise "> 1 != 2 || < 1.9"
-            // (no branch) becomes "!= 2" (every branch). A bounded conjunctive != such
-            // as [!= 3 < 5] keeps a numeric bound and stays dev-free, so it is fine.
-            // exclude === true means the dev baseline is "all dev" (any named branches
-            // are subtracted separately below), so a bare != is the right baseline;
-            // exclude === false means "no dev", where a bare != would wrongly add them.
-            $branchesMatchAllDev = $intervals['branches']['exclude'];
+            // A bare != N matches all dev-* versions, so if the numeric part is the whole line minus some points,
+            // only compact it into unbounded != constraints when the branches already match all dev versions
+            $numeric = $intervals['numeric'];
+            $count = \count($numeric);
+            $skipNotEqual = false;
+            if (!$intervals['branches']['exclude'] && $count > 1
+                && (string) $numeric[0]->getStart() === (string) Interval::fromZero()
+                && (string) $numeric[$count - 1]->getEnd() === (string) Interval::untilPositiveInfinity()
+            ) {
+                $skipNotEqual = true;
+                for ($i = 0; $i < $count - 1; $i++) {
+                    if ($numeric[$i]->getEnd()->getOperator() !== '<'
+                        || $numeric[$i + 1]->getStart()->getOperator() !== '>'
+                        || $numeric[$i]->getEnd()->getVersion() !== $numeric[$i + 1]->getStart()->getVersion()
+                    ) {
+                        $skipNotEqual = false;
+                        break;
+                    }
+                }
+            }
 
             $unEqualConstraints = array();
-            for ($i = 0, $count = \count($intervals['numeric']); $i < $count; $i++) {
-                $interval = $intervals['numeric'][$i];
+            for ($i = 0; $i < $count; $i++) {
+                $interval = $numeric[$i];
 
                 // if current interval ends with < N and next interval begins with > N we can swap this out for != N
                 // but this needs to happen as a conjunctive expression together with the start of the current interval
                 // and end of next interval, so [>=M, <N] || [>N, <P] => [>=M, !=N, <P] but M/P can be skipped if
                 // they are zero/+inf
-                if ($interval->getEnd()->getOperator() === '<' && $i+1 < $count) {
-                    $nextInterval = $intervals['numeric'][$i+1];
-                    $wouldBeBareNotEqual = 2 === $count
-                        && (string) $interval->getStart() === (string) Interval::fromZero()
-                        && (string) $nextInterval->getEnd() === (string) Interval::untilPositiveInfinity();
-                    if ($interval->getEnd()->getVersion() === $nextInterval->getStart()->getVersion() && $nextInterval->getStart()->getOperator() === '>' && ($branchesMatchAllDev || !$wouldBeBareNotEqual)) {
+                if (!$skipNotEqual && $interval->getEnd()->getOperator() === '<' && $i+1 < $count) {
+                    $nextInterval = $numeric[$i+1];
+                    if ($interval->getEnd()->getVersion() === $nextInterval->getStart()->getVersion() && $nextInterval->getStart()->getOperator() === '>') {
                         // only add a start if we didn't already do so, can be skipped if we're looking at second
                         // interval in [>=M, <N] || [>N, <P] || [>P, <Q] where unEqualConstraints currently contains
                         // [>=M, !=N] already and we only want to add !=P right now

@@ -51,23 +51,41 @@ class IntervalsTest extends TestCase
         $this->assertSame((string) $expected, (string) $new);
     }
 
-    public function testCompactConstraintKeepsANumericOnlyConstraintDevFree()
+    /**
+     * @dataProvider compactDevSafetyProvider
+     * @param array<string> $toCompact
+     * @param bool $conjunctive
+     */
+    public function testCompactConstraintKeepsMatchedSet($toCompact, $conjunctive)
     {
         $parser = new VersionParser;
-        // "> 1.0.0 != 2.0.0 || < 1.9.0" covers the whole numeric line except 2.0.0
-        // and matches no dev-* version. The numeric part compacts to a bare != 2.0.0,
-        // which on its own matches every dev branch, so compaction must not use it here.
-        $constraint = new MultiConstraint(array(
-            $parser->parseConstraints('> 1.0.0 != 2.0.0'),
-            $parser->parseConstraints('< 1.9.0'),
-        ), false);
+
+        $parts = array();
+        foreach ($toCompact as $part) {
+            $parts[] = $parser->parseConstraints($part);
+        }
+        $constraint = new MultiConstraint($parts, $conjunctive);
 
         $compacted = Intervals::compactConstraint($constraint);
-        $dev = new Constraint('==', $parser->normalize('dev-foo'));
+        $dev = new Constraint('==', 'dev-foo');
 
-        $this->assertFalse($compacted->matches($dev), (string) $compacted);
-        $this->assertTrue(Intervals::isSubsetOf($compacted, $constraint));
-        $this->assertTrue(Intervals::isSubsetOf($constraint, $compacted));
+        $this->assertSame($constraint->matches($dev), $compacted->matches($dev), (string) $compacted);
+        $this->assertTrue(Intervals::isSubsetOf($compacted, $constraint), (string) $compacted);
+        $this->assertTrue(Intervals::isSubsetOf($constraint, $compacted), (string) $compacted);
+    }
+
+    public static function compactDevSafetyProvider()
+    {
+        return array(
+            'whole line minus one point, no dev' => array(array('> 1.0.0 != 2.0.0', '< 1.9.0'), false),
+            'whole line minus two points, no dev' => array(array('> 1.0.0 != 2.0.0 != 3.0.0', '< 1.5'), false),
+            'whole line minus one point, named branch' => array(array('> 1.0.0 != 2.0.0', '< 1.5', 'dev-bar'), false),
+            'whole line minus two points, named branch' => array(array('> 1.0.0 != 2.0.0 != 3.0.0', '< 1.5', 'dev-bar'), false),
+            'bounded != group' => array(array('> 1.0.0 != 2.0.0 < 3.0.0', '< 1.5', '>= 5.0'), false),
+            'conjunctive !=, all dev' => array(array('!= 2.0', '!= 3.0'), true),
+            'conjunctive != with excluded branch' => array(array('!= 2.0', '!= dev-foo'), true),
+            'disjunctive != with named branch' => array(array('!= 2.0', 'dev-bar'), false),
+        );
     }
 
     public static function compactProvider()
@@ -131,6 +149,21 @@ class IntervalsTest extends TestCase
             'disjunctive with complex negation' => array(
                 '*',
                 array('!= 1.0', '!= 1.0', '!= dev-foo', '1.0.5.*'),
+                false
+            ),
+            'whole line minus one point without dev does not become a bare !=' => array(
+                '< 2.0.0.0-stable || > 2.0.0',
+                array('> 1.0.0 != 2.0.0', '< 1.9.0'),
+                false
+            ),
+            'whole line minus two points without dev does not become a bare !=' => array(
+                '< 2.0.0.0-stable || > 2.0.0 < 3.0.0.0-stable || > 3.0.0',
+                array('> 1.0.0 != 2.0.0 != 3.0.0', '< 1.5'),
+                false
+            ),
+            'whole line minus two points with named branch does not become a bare !=' => array(
+                '< 2.0.0.0-stable || > 2.0.0 < 3.0.0.0-stable || > 3.0.0 || dev-bar',
+                array('> 1.0.0 != 2.0.0 != 3.0.0', '< 1.5', 'dev-bar'),
                 false
             ),
             'conjunctive with complex negation' => array(
