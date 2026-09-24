@@ -86,7 +86,7 @@ class CompilingMatcher
         }
 
         $compiledCheckerCache = &self::$compiledCheckerCache[$operator][$constraintString];
-        if (null === $compiledCheckerCache) {
+        if (!isset($compiledCheckerCache)) {
             $code = $constraint->compile($operator);
             $compiledCheckerCache = eval('return function($v, $b){return '.$code.';};');
         }
