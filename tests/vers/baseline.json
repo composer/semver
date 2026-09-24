@@ -1,0 +1,57 @@
+{
+    "conan_range_from_native_basic_test.json": {
+        "~2.5": "mismatch",
+        "*": "mismatch",
+        "*, include_prerelease=True": "native_error",
+        "*-": "native_error",
+        ">1- <2.0": "native_error",
+        ">1- <2.0 || ^3.2 ": "native_error"
+    },
+    "conan_range_from_native_test.json": {
+        "=1.13.1-1": "native_error",
+        "": "native_error",
+        "<9d": "native_error",
+        "=4.0.3-35": "native_error",
+        ">=1.1.1d <=1.1.1f": "native_error",
+        ">=1.0.2 <=1.0.2v": "native_error",
+        ">=1.0.2 <=1.0.2w||>=1.1.1 <=1.1.1h": "native_error",
+        "=1.0.2s": "native_error",
+        ">=1.0.2 <1.0.2y||>=1.1.1 <1.1.1j": "native_error",
+        ">=1.1.1 <1.1.1k": "native_error",
+        ">=1.1.1h <1.1.1k": "native_error",
+        ">=1.1.1 <1.1.1l": "native_error",
+        ">=1.0.2 <1.0.2za||>=1.1.1 <1.1.1l": "native_error",
+        ">=1.0.2 <1.1.1m||=3.0.0": "native_error",
+        ">=1.0.2 <1.0.2zd||>=1.1.0 <1.1.1n||>=3.0.0 <3.0.2": "native_error",
+        ">=1.0.2 <1.0.2ze||>=1.1.1 <1.1.1o||>=3.0.0 <3.0.3": "native_error",
+        ">=1.0.2 <1.0.2zf||>=1.1.1 <1.1.1p||>=3.0.0 <3.0.4": "native_error",
+        ">=1.1.1 <1.1.1q||>=3.0.0 <3.0.5": "native_error",
+        "=cci.20200203": "native_error"
+    },
+    "gem_range_from_native_test.json": {
+        "~>2.0.8": "native_error"
+    },
+    "nginx_range_from_native_test.json": {
+        "0.8.40+": "native_error",
+        "0.7.52-0.8.39": "native_error",
+        "1.5.0+, 1.4.1+": "native_error"
+    },
+    "npm_range_from_native_test.json": {
+        "2.1.0-M1 || 2.1.0-M2": "native_error",
+        ">= 0.2.0 <= 0.9.6 || ~0.8.0-pre": "native_error",
+        ">= 2.2.x": "native_error",
+        ">=5.0.3 >=4.2.1": "mismatch",
+        ">= 1.x": "native_error",
+        "1.1.2 1.2.2": "mismatch"
+    },
+    "nuget_range_from_native_test.json": {
+        "[1.0.0, 2.0.0)": "native_error"
+    },
+    "openssl_range_from_native_test.json": {
+        "3.0.0, 1.0.1b": "mismatch",
+        "0.9.8j": "native_error",
+        "1.1.1ak": "native_error",
+        "3.0.1, 0.9.7a": "mismatch",
+        "1.0.2ck, 3.1.2": "native_error"
+    }
+}
