@@ -21,7 +21,7 @@ class CompilingMatcher
 {
     /**
      * @var array
-     * @phpstan-var array<int, array<string, callable>>
+     * @phpstan-var array<int, array<int|string, callable>>
      */
     private static $compiledCheckerCache = array();
     /**
