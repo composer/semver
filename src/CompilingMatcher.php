@@ -21,12 +21,12 @@ class CompilingMatcher
 {
     /**
      * @var array
-     * @phpstan-var array<int, array<int|string, callable>>
+     * @phpstan-var array<Constraint::OP_*, array<int|string, callable>>
      */
     private static $compiledCheckerCache = array();
     /**
      * @var array
-     * @phpstan-var array<int, array<string, array<int|string, bool>>>
+     * @phpstan-var array<Constraint::OP_*, array<string, array<int|string, bool>>>
      */
     private static $resultCache = array();
 
@@ -85,13 +85,12 @@ class CompilingMatcher
             return $resultCache[$version] = $constraint->matches(new Constraint(self::$transOpInt[$operator], $version));
         }
 
-        if (!isset(self::$compiledCheckerCache[$operator][$constraintString])) {
+        $compiledCheckerCache = &self::$compiledCheckerCache[$operator][$constraintString];
+        if (null === $compiledCheckerCache) {
             $code = $constraint->compile($operator);
-            self::$compiledCheckerCache[$operator][$constraintString] = $function = eval('return function($v, $b){return '.$code.';};');
-        } else {
-            $function = self::$compiledCheckerCache[$operator][$constraintString];
+            $compiledCheckerCache = eval('return function($v, $b){return '.$code.';};');
         }
 
-        return $resultCache[$version] = $function($version, strpos($version, 'dev-') === 0);
+        return $resultCache[$version] = $compiledCheckerCache($version, strpos($version, 'dev-') === 0);
     }
 }
