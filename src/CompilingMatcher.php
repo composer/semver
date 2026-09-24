@@ -26,7 +26,7 @@ class CompilingMatcher
     private static $compiledCheckerCache = array();
     /**
      * @var array
-     * @phpstan-var array<int, array<string, array<string, bool>>>
+     * @phpstan-var array<int, array<string, array<int|string, bool>>>
      */
     private static $resultCache = array();
 
