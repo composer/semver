@@ -400,6 +400,11 @@ class VersionParserTest extends TestCase
             'ignores aliases' => array('dev-master as 1.0.0', new Constraint('=', 'dev-master')),
             'lesser than override' => array('<1.2.3.4-stable', new Constraint('<', '1.2.3.4')),
             'great/eq than override' => array('>=1.2.3.4-stable', new Constraint('>=', '1.2.3.4')),
+            'lesser than with stability' => array('<1.2.3-beta1', new Constraint('<', '1.2.3.0-beta1')),
+            'great/eq than with stability' => array('>=1.2.3-alpha1', new Constraint('>=', '1.2.3.0-alpha1')),
+            'lesser than with RC' => array('<1.2.3-RC1', new Constraint('<', '1.2.3.0-RC1')),
+            'great/eq than with RC' => array('>=1.2.3-RC1', new Constraint('>=', '1.2.3.0-RC1')),
+            'great/eq than with lowercase rc' => array('>=1.2.3-rc1', new Constraint('>=', '1.2.3.0-RC1')),
         );
     }
 
