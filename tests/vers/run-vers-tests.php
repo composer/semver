@@ -35,11 +35,11 @@ $baselineFile = null;
 $updateBaseline = false;
 foreach (array_slice($argv, 1) as $arg) {
     if (0 === strpos($arg, '--scheme=')) {
-        $schemes = explode(',', substr($arg, 9));
+        $schemes = explode(',', (string) substr($arg, 9));
     } elseif (0 === strpos($arg, '--file=')) {
-        $fileFilter = substr($arg, 7);
+        $fileFilter = (string) substr($arg, 7);
     } elseif (0 === strpos($arg, '--baseline=')) {
-        $baselineFile = substr($arg, 11);
+        $baselineFile = (string) substr($arg, 11);
     } elseif ($arg === '--update-baseline') {
         $updateBaseline = true;
     } elseif ($arg === '-v' || $arg === '--verbose') {
