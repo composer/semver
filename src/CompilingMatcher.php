@@ -21,7 +21,7 @@ class CompilingMatcher
 {
     /**
      * @var array
-     * @phpstan-var array<Constraint::OP_*, array<int|string, callable>|null>
+     * @phpstan-var array<Constraint::OP_*, array<int|string, callable|null>>
      */
     private static $compiledCheckerCache = array();
     /**
@@ -86,7 +86,7 @@ class CompilingMatcher
         }
 
         $compiledCheckerCache = &self::$compiledCheckerCache[$operator][$constraintString];
-        if (!isset($compiledCheckerCache)) {
+        if (null === $compiledCheckerCache) {
             $code = $constraint->compile($operator);
             $compiledCheckerCache = eval('return function($v, $b){return '.$code.';};');
         }
