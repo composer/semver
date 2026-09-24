@@ -27,4 +27,34 @@ class CompilingMatcherTest extends TestCase
         $this->assertFalse(CompilingMatcher::match(new Constraint('>=', '2.11'), Constraint::OP_EQ, '1.0'));
         $this->assertTrue(CompilingMatcher::match(new Constraint('>=', '2.1'), Constraint::OP_EQ, '11.0'));
     }
+
+    public function testCacheSeparatesOperatorsConstraintsAndVersions()
+    {
+        CompilingMatcher::clear();
+        $constraint = new Constraint('>=', '2');
+
+        $this->assertFalse(CompilingMatcher::match($constraint, Constraint::OP_EQ, '1'));
+        $this->assertTrue(CompilingMatcher::match($constraint, Constraint::OP_GT, '1'));
+        $this->assertTrue(CompilingMatcher::match(new Constraint('<', '2'), Constraint::OP_EQ, '1'));
+        $this->assertTrue(CompilingMatcher::match($constraint, Constraint::OP_EQ, '3'));
+        $this->assertFalse(CompilingMatcher::match($constraint, Constraint::OP_EQ, '1'));
+        CompilingMatcher::clear();
+    }
+
+    public function testReusesCompiledCheckerAndClearsBothCaches()
+    {
+        CompilingMatcher::clear();
+        $constraint = $this->getMockBuilder('Composer\\Semver\\Constraint\\Constraint')
+            ->setConstructorArgs(array('>=', '1'))
+            ->setMethods(array('compile'))
+            ->getMock();
+        $constraint->expects($this->exactly(2))->method('compile')->willReturn('$v === "2"');
+
+        $this->assertFalse(CompilingMatcher::match($constraint, Constraint::OP_EQ, '1'));
+        $this->assertFalse(CompilingMatcher::match($constraint, Constraint::OP_EQ, '1'));
+        $this->assertTrue(CompilingMatcher::match($constraint, Constraint::OP_EQ, '2'));
+        CompilingMatcher::clear();
+        $this->assertFalse(CompilingMatcher::match($constraint, Constraint::OP_EQ, '1'));
+        CompilingMatcher::clear();
+    }
 }
