@@ -482,7 +482,7 @@ class Intervals
         }
         if ($op[0] === '<') { // < & <=
             // filter out the invalid interval >= 0.0.0.0-dev - < 0.0.0.0-dev
-            if ($op === '<' && version_compare($constraint->getVersion(), Interval::fromZero()->getVersion(), '=')) {
+            if ($op === '<' && $constraint->getVersion() === '0.0.0.0-dev') {
                 return array('numeric' => array(), 'branches' => Interval::noDev());
             }
 
