@@ -841,6 +841,10 @@ class IntervalsTest extends TestCase
                 self::INTERVAL_ANY,
                 '== dev-foo || != dev-bar || != dev-foo'
             ),
+            'less than zero results in no interval' => array(
+                self::INTERVAL_NONE,
+                '< 0.0.0'
+            ),
             'match-none constraints result in no interval' => array(
                 self::INTERVAL_NONE,
                 new MatchNoneConstraint

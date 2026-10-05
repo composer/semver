@@ -481,6 +481,11 @@ class Intervals
             return array('numeric' => array(new Interval($constraint, Interval::untilPositiveInfinity())), 'branches' => Interval::noDev());
         }
         if ($op[0] === '<') { // < & <=
+            // filter out the invalid interval >= 0.0.0.0-dev - < 0.0.0.0-dev
+            if ($op === '<' && $constraint->getVersion() === '0.0.0.0-dev') {
+                return array('numeric' => array(), 'branches' => Interval::noDev());
+            }
+
             return array('numeric' => array(new Interval(Interval::fromZero(), $constraint)), 'branches' => Interval::noDev());
         }
         if ($op === '!=') {
