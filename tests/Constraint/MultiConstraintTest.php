@@ -190,6 +190,35 @@ class MultiConstraintTest extends TestCase
                 new Bound('1.0.0.0', true),
                 Bound::positiveInfinity(),
             ),
+            '"<" should take precedence "<=" for upper bound when conjunctive' => array(
+                array(
+                    new Constraint('<', '1.0.0.0'),
+                    new Constraint('<=', '1.0.0.0'),
+                    new Constraint('<', '1.0.0.0'),
+                ),
+                true,
+                Bound::zero(),
+                new Bound('1.0.0.0', false),
+            ),
+            '"<=" should take precedence "<" for upper bound when disjunctive' => array(
+                array(
+                    new Constraint('<', '1.0.0.0'),
+                    new Constraint('<=', '1.0.0.0'),
+                    new Constraint('<', '1.0.0.0'),
+                ),
+                false,
+                Bound::zero(),
+                new Bound('1.0.0.0', true),
+            ),
+            '"==" should extend a "<" upper bound at the same version when disjunctive' => array(
+                array(
+                    new Constraint('<', '1.0.0.0'),
+                    new Constraint('==', '1.0.0.0'),
+                ),
+                false,
+                Bound::zero(),
+                new Bound('1.0.0.0', true),
+            ),
             'Bounds should be limited when conjunctive' => array(
                 array(
                     new Constraint('>=', '7.0.0.0'),

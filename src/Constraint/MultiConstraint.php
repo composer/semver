@@ -317,8 +317,16 @@ class MultiConstraint implements ConstraintInterface
                 $this->lowerBound = $constraint->getLowerBound();
             }
 
-            if ($constraint->getUpperBound()->compareTo($this->upperBound, $this->isConjunctive() ? '<' : '>')) {
-                $this->upperBound = $constraint->getUpperBound();
+            $upperBound = $constraint->getUpperBound();
+            if (version_compare($upperBound->getVersion(), $this->upperBound->getVersion(), '==')) {
+                // Bound::compareTo() orders same-version bounds as lower bounds, where exclusive is higher, but
+                // for upper bounds inclusive is higher, so keep the exclusive one when conjunctive and the
+                // inclusive one when disjunctive
+                if ($upperBound->isInclusive() === $this->isDisjunctive()) {
+                    $this->upperBound = $upperBound;
+                }
+            } elseif ($upperBound->compareTo($this->upperBound, $this->isConjunctive() ? '<' : '>')) {
+                $this->upperBound = $upperBound;
             }
         }
     }
