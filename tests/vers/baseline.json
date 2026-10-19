@@ -40,9 +40,8 @@
         "2.1.0-M1 || 2.1.0-M2": "native_error",
         ">= 0.2.0 <= 0.9.6 || ~0.8.0-pre": "native_error",
         ">= 2.2.x": "native_error",
-        ">=5.0.3 >=4.2.1": "mismatch",
         ">= 1.x": "native_error",
-        "1.1.2 1.2.2": "mismatch"
+        "1.1.2 1.2.2": "failure_not_raised"
     },
     "nuget_range_from_native_test.json": {
         "[1.0.0, 2.0.0)": "native_error"
