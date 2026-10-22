@@ -282,6 +282,21 @@ class MultiConstraintTest extends TestCase
                 new Bound('7.2.0.0-dev', true),
                 new Bound('7.5.0.0-dev', false),
             ),
+            '^1.0 || 2.0.0-dev' => array(
+                '^1.0 || 2.0.0-dev',
+                new Bound('1.0.0.0-dev', true),
+                new Bound('2.0.0.0-dev', true),
+            ),
+            '<=2.0-beta2 || <2.0-beta2' => array(
+                '<=2.0-beta2 || <2.0-beta2',
+                Bound::zero(),
+                new Bound('2.0.0.0-beta2', true),
+            ),
+            '<2.0-beta2 <=2.0-beta2' => array(
+                '<2.0-beta2 <=2.0-beta2',
+                Bound::zero(),
+                new Bound('2.0.0.0-beta2', false),
+            ),
         );
     }
 

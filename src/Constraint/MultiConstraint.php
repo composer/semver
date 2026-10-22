@@ -318,14 +318,13 @@ class MultiConstraint implements ConstraintInterface
             }
 
             $upperBound = $constraint->getUpperBound();
-            if (version_compare($upperBound->getVersion(), $this->upperBound->getVersion(), '==')) {
-                // Bound::compareTo() orders same-version bounds as lower bounds, where exclusive is higher, but
-                // for upper bounds inclusive is higher, so keep the exclusive one when conjunctive and the
-                // inclusive one when disjunctive
+            $cmp = version_compare($upperBound->getVersion(), $this->upperBound->getVersion());
+            if (0 === $cmp) {
+                // same version: for upper bounds inclusive is higher (compareTo() assumes lower bounds)
                 if ($upperBound->isInclusive() === $this->isDisjunctive()) {
                     $this->upperBound = $upperBound;
                 }
-            } elseif ($upperBound->compareTo($this->upperBound, $this->isConjunctive() ? '<' : '>')) {
+            } elseif ($cmp === ($this->isConjunctive() ? -1 : 1)) {
                 $this->upperBound = $upperBound;
             }
         }
