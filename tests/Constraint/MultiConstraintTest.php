@@ -190,6 +190,35 @@ class MultiConstraintTest extends TestCase
                 new Bound('1.0.0.0', true),
                 Bound::positiveInfinity(),
             ),
+            '"<" should take precedence "<=" for upper bound when conjunctive' => array(
+                array(
+                    new Constraint('<', '1.0.0.0'),
+                    new Constraint('<=', '1.0.0.0'),
+                    new Constraint('<', '1.0.0.0'),
+                ),
+                true,
+                Bound::zero(),
+                new Bound('1.0.0.0', false),
+            ),
+            '"<=" should take precedence "<" for upper bound when disjunctive' => array(
+                array(
+                    new Constraint('<', '1.0.0.0'),
+                    new Constraint('<=', '1.0.0.0'),
+                    new Constraint('<', '1.0.0.0'),
+                ),
+                false,
+                Bound::zero(),
+                new Bound('1.0.0.0', true),
+            ),
+            '"==" should extend a "<" upper bound at the same version when disjunctive' => array(
+                array(
+                    new Constraint('<', '1.0.0.0'),
+                    new Constraint('==', '1.0.0.0'),
+                ),
+                false,
+                Bound::zero(),
+                new Bound('1.0.0.0', true),
+            ),
             'Bounds should be limited when conjunctive' => array(
                 array(
                     new Constraint('>=', '7.0.0.0'),
@@ -252,6 +281,21 @@ class MultiConstraintTest extends TestCase
                 '7.2.* || 7.4.*',
                 new Bound('7.2.0.0-dev', true),
                 new Bound('7.5.0.0-dev', false),
+            ),
+            '^1.0 || 2.0.0-dev' => array(
+                '^1.0 || 2.0.0-dev',
+                new Bound('1.0.0.0-dev', true),
+                new Bound('2.0.0.0-dev', true),
+            ),
+            '<=2.0-beta2 || <2.0-beta2' => array(
+                '<=2.0-beta2 || <2.0-beta2',
+                Bound::zero(),
+                new Bound('2.0.0.0-beta2', true),
+            ),
+            '<2.0-beta2 <=2.0-beta2' => array(
+                '<2.0-beta2 <=2.0-beta2',
+                Bound::zero(),
+                new Bound('2.0.0.0-beta2', false),
             ),
         );
     }
