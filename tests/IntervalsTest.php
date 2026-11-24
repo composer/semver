@@ -489,6 +489,24 @@ class IntervalsTest extends TestCase
                 ), 'branches' => array('names' => array('dev-master', 'dev-foo'), 'exclude' => true)),
                 '!= dev-master, != dev-foo || > 5'
             ),
+            'branch names are a list when duplicates are removed' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('names' => array('dev-master', 'dev-foo'), 'exclude' => true)),
+                '!= dev-master, != dev-master, != dev-foo'
+            ),
+            'branch names are a list when names are dropped by a disjunction' => array(
+                array('numeric' => array(
+                    array(
+                        'start' => '>= 0.0.0.0-dev',
+                        'end' => '< '.PHP_INT_MAX.'.0.0.0',
+                    ),
+                ), 'branches' => array('names' => array('dev-foo'), 'exclude' => true)),
+                '!= dev-master, != dev-foo || != dev-foo'
+            ),
             'conjunctive constraints should be intersected' => array(
                 array('numeric' => array(
                     array(

@@ -407,7 +407,8 @@ class Intervals
             }
         }
 
-        $branches['names'] = array_unique($branches['names']);
+        // reindex, as the array functions above keep the keys and isSubsetOf compares the names by index
+        $branches['names'] = array_values(array_unique($branches['names']));
 
         if (\count($numericGroups) === 1) {
             return array('numeric' => $numericGroups[0], 'branches' => $branches);
