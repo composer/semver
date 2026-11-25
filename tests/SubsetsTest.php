@@ -62,6 +62,9 @@ class SubsetsTest extends TestCase
             array('<3',              '<=3'),
             array('= dev-foo',       '= dev-foo'),
             array('!= dev-foo',      '!= dev-foo'),
+            array('!= dev-foo, != dev-foo, != dev-bar', '!= dev-foo'),
+            array('!= dev-foo, != dev-bar || != dev-bar', '!= dev-bar'),
+            array('!= dev-foo, != dev-bar || != dev-bar', '!= dev-foo, != dev-bar || != dev-bar'),
             array('< dev-foo',       '= dev-foo'), // invalid range matches nothing so is a subset of any other
             array('< 0.0.0',         '< 0.0.0'), // empty numeric range matches nothing so is a subset of itself
             array('< 0.0.0',         '^1.0'),
